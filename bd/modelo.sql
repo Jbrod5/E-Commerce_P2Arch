@@ -26,8 +26,11 @@ suspension
 
 
 tarjetas
-    tarjeta PK
-    id_usuario
+    numero_tarjeta PK
+    titular -- string
+    parte_visible -- entero o string con unicamente los ultimos 4 digitos por seguridad :3 
+    id_usuario REFERENCES usuario(id_usuario)
+    -- deben guardarse los datos de fecha de vencimiento y codigo de seguridad???
 
 
 categoria_producto
@@ -54,7 +57,7 @@ producto
 solicitud_producto
     id_solicitud (PK)
     producto REFERENCES producto(id_producto)
-    moderador REFERENCES usuario(correo)  -- quien revisó
+    moderador REFERENCES usuario(id_usuario)  -- quien revisó
     fecha_solicitud TIMESTAMP
     fecha_revision TIMESTAMP
     aprobado BOOLEAN
@@ -103,7 +106,7 @@ detalle_venta_vendedor -- para llevar el control a los vendedores de sus ventas 
     id_detalle_venta (PK)
     pedido REFERENCES pedido(id_pedido)
     producto REFERENCES producto(id_producto)
-    vendedor REFERENCES usuario(correo)
+    vendedor REFERENCES usuario(id_usuario)
     cantidad INTEGER
     precio_unitario DECIMAL  -- guardar el precio al momento de la venta
     subtotal DECIMAL
