@@ -8,7 +8,7 @@ usuario
     id_usuario
     rol REFERENCES rol(id_rol)
     nombre
-    correo
+    correo UNIQUE
     contrasena 
 
     activo boolean -- para evitar eliminar usuarios, tambien para ver si un usuario vendedor está sancionado :3
@@ -26,11 +26,15 @@ suspension
 
 
 tarjetas
-    numero_tarjeta PK
-    titular -- string
+    id_tarjeta PK
+    numero_tarjeta UNIQUE -- numero tarjeta completo
     parte_visible -- entero o string con unicamente los ultimos 4 digitos por seguridad :3 
+    titular -- string
     id_usuario REFERENCES usuario(id_usuario)
-    fecha_vencimiento --timestamp??
+    
+    -- para vencimiento
+    mes_vencimiento 
+    anio_vencimiento
     -- no guardar el numero de seguridad :3
 
 
@@ -52,7 +56,8 @@ producto
     imagen
     precio
     stock -- minimo 1
-    estado -- nuevo o usado, esto puede ser un boolean? 
+    --estado -- nuevo o usado, esto puede ser un boolean? 
+    producto_nuevo boolean
     categoria REFERENCES categoria_producto(id_categoria)
 
     -- solo por eficiencia para no tener consultas enormes :c
@@ -81,10 +86,13 @@ estado_pedido
     id_estado_pedido
     nombre_estado -- en curso, entregado
 
-pedido
+pedido -- cuando se hace el pedido es pq ya se hizo la venta :3 o sea es tanto para pedido como para venta
     id_pedido 
     usuario REFERENCES usuario(id_usuario)
+
     monto_total
+    tarjeta_usada references tarjetas(id_tarjeta)
+
     estado REFERENCES estado_pedido(id_estado_pedido)
     fecha_realizacion timestamp
     fecha_entrega_estimada timestamp
@@ -100,26 +108,19 @@ lista_producto_pedido -- lista de productos en un pedido
     precio_unitario 
     subtotal
 
---registro_venta
---    id_registro_venta
---    pedido REFERENCES pedido(id_pedido)
---    usuario REFERENCES usuario(id_usuario)
---    monto total
---
---    tarjeta REFERENCES tarjetas (tarjeta)
---    fecha_realizacion TIMESTAMP
-    -- cuando se haga la venta crear la recaudacion_plataforma
 
 detalle_venta_vendedor -- para llevar el control a los vendedores de sus ventas :3
     id_detalle_venta (PK)
     pedido REFERENCES pedido(id_pedido)
     producto REFERENCES producto(id_producto)
     vendedor REFERENCES usuario(id_usuario)
+    comision_plataforma DECIMAL  -- 5%
+    ganancia_vendedor DECIMAL  -- 95%
+
     cantidad INTEGER
     precio_unitario DECIMAL  -- guardar el precio al momento de la venta
     subtotal DECIMAL
-    comision_plataforma DECIMAL  -- 5%
-    ganancia_vendedor DECIMAL  -- 95%
+    fecha timestamp
 
 calificacion_producto
 
