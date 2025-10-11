@@ -30,13 +30,19 @@ tarjetas
     titular -- string
     parte_visible -- entero o string con unicamente los ultimos 4 digitos por seguridad :3 
     id_usuario REFERENCES usuario(id_usuario)
-    -- deben guardarse los datos de fecha de vencimiento y codigo de seguridad???
+    fecha_vencimiento --timestamp??
+    -- no guardar el numero de seguridad :3
 
 
 categoria_producto
     id_categoria
     nombre_categoria
     -- tecnologia, hogar, academico, personal, decoracion, etc
+
+estado_aprobacion_producto
+    id_estado_aprobacion
+    nombre_estado_aprobacion   
+    -- pendiente, aprobado, rechazado
 
 producto
     id_producto
@@ -49,10 +55,10 @@ producto
     estado -- nuevo o usado, esto puede ser un boolean? 
     categoria REFERENCES categoria_producto(id_categoria)
 
+    -- solo por eficiencia para no tener consultas enormes :c
     promedio_calificaciones -- de 1 a 5 estrellas, que sea un double :3
     cantidad_compras --veces que fue comprado o unidades vendidas??
-
-    aprobado boolean -- un moderador puede aceptarlo o rechazarlo
+    estado_aprobacion REFERENCES estado_aprobacion_producto(id_estado_aprobacion)
 
 solicitud_producto
     id_solicitud (PK)
@@ -91,15 +97,17 @@ lista_producto_pedido -- lista de productos en un pedido
     primary key id_pedido, id_producto
 
     cantidad 
+    precio_unitario 
+    subtotal
 
-registro_venta
-    id_registro_venta
-    pedido REFERENCES pedido(id_pedido)
-    usuario REFERENCES usuario(id_usuario)
-    monto total
-
-    tarjeta REFERENCES tarjetas (tarjeta)
-    fecha_realizacion TIMESTAMP
+--registro_venta
+--    id_registro_venta
+--    pedido REFERENCES pedido(id_pedido)
+--    usuario REFERENCES usuario(id_usuario)
+--    monto total
+--
+--    tarjeta REFERENCES tarjetas (tarjeta)
+--    fecha_realizacion TIMESTAMP
     -- cuando se haga la venta crear la recaudacion_plataforma
 
 detalle_venta_vendedor -- para llevar el control a los vendedores de sus ventas :3
