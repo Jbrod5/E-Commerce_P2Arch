@@ -20,7 +20,7 @@ echo ""
 echo ""
 
 echo "Insertando en BD" 
-psql --U $USER -d $DB -f DML.sql 
+psql -U $USER -d $DB -f DML.sql 
 echo "Inserciones terminadas :3"
 
 echo ""
