@@ -2,35 +2,38 @@
 
 -- 1 administrador
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo)
-VALUES (4, 'Admin Principal', 'admin@ecommercegt.com', 'admin123', TRUE);
+VALUES (4, 'Admin Principal', 'admin@ecommercegt.com', '$2a$10$R.L3kZuz6sqYzG.ONjXKPe.bQXDzZYIZ.asDmE65PN.rHD0A8YV.6', TRUE);
+-- admin123
 
 -- 5 moderadores
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo) VALUES
-(2, 'Moderador 1', 'mod1@ecommercegt.com', 'mod123', TRUE),
-(2, 'Moderador 2', 'mod2@ecommercegt.com', 'mod123', TRUE),
-(2, 'Moderador 3', 'mod3@ecommercegt.com', 'mod123', TRUE),
-(2, 'Moderador 4', 'mod4@ecommercegt.com', 'mod123', TRUE),
-(2, 'Moderador 5', 'mod5@ecommercegt.com', 'mod123', TRUE);
+(2, 'Moderador 1', 'mod1@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
+(2, 'Moderador 2', 'mod2@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
+(2, 'Moderador 3', 'mod3@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
+(2, 'Moderador 4', 'mod4@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
+(2, 'Moderador 5', 'mod5@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE);
+-- mod123
 
 -- 3 logistica
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo) VALUES
-(3, 'Logistica 1', 'log1@ecommercegt.com', 'log123', TRUE),
-(3, 'Logistica 2', 'log2@ecommercegt.com', 'log123', TRUE),
-(3, 'Logistica 3', 'log3@ecommercegt.com', 'log123', TRUE);
+(3, 'Logistica 1', 'log1@ecommercegt.com', '$2a$10$LhGdJfeFNdvDx105uDCn.e5LYEKjcdF/lEddMvPywfRIFv2xJkmxi', TRUE),
+(3, 'Logistica 2', 'log2@ecommercegt.com', '$2a$10$LhGdJfeFNdvDx105uDCn.e5LYEKjcdF/lEddMvPywfRIFv2xJkmxi', TRUE),
+(3, 'Logistica 3', 'log3@ecommercegt.com', '$2a$10$LhGdJfeFNdvDx105uDCn.e5LYEKjcdF/lEddMvPywfRIFv2xJkmxi', TRUE);
+-- log123
 
 -- 10 usuarios comunes
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo) VALUES
-(1, 'Juan Perez', 'juanperez@correo.com', 'user123', TRUE),
-(1, 'Maria Gomez', 'mariagomez@correo.com', 'user123', TRUE),
-(1, 'Carlos Hernandez', 'carloshernandez@correo.com', 'user123', TRUE),
-(1, 'Lucia Fernandez', 'luciafernandez@correo.com', 'user123', TRUE),
-(1, 'Jose Ramirez', 'joseramirez@correo.com', 'user123', TRUE),
-(1, 'Ana Torres', 'anatorres@correo.com', 'user123', TRUE),
-(1, 'Pedro Lopez', 'pedrolopez@correo.com', 'user123', TRUE),
-(1, 'Sofia Morales', 'sofiamorales@correo.com', 'user123', TRUE),
-(1, 'Luis Castillo', 'luiscastillo@correo.com', 'user123', TRUE),
-(1, 'Daniela Ruiz', 'danielaruiz@correo.com', 'user123', TRUE);
-
+(1, 'Juan Perez'        , 'juanperez@correo.com'        , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Maria Gomez'       , 'mariagomez@correo.com'       , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Carlos Hernandez'  , 'carloshernandez@correo.com'  , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Lucia Fernandez'   ,  'luciafernandez@correo.com'  , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Jose Ramirez'      , 'joseramirez@correo.com'      , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Ana Torres'        , 'anatorres@correo.com'        , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Pedro Lopez'       , 'pedrolopez@correo.com'       , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Sofia Morales'     , 'sofiamorales@correo.com'     , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Luis Castillo'     , 'luiscastillo@correo.com'     , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
+(1, 'Daniela Ruiz'      , 'danielaruiz@correo.com'      , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE);
+-- user123
 
 
 -- TARJETAS DE USUARIOS COMUNES
@@ -54,16 +57,16 @@ VALUES
 -- PRODUCTOS DE JUAN PEREZ (id_usuario = 10)
 INSERT INTO producto (id_vendedor, nombre_producto, descripcion, imagen, precio, stock, producto_nuevo, categoria, promedio_calificaciones, cantidad_compras, estado_aprobacion)
 VALUES
-(10, 'Mouse Inalambrico', 'Mouse ergonomico con sensor optico de alta precision', 'mouse.jpg', 150.00, 15, TRUE, 1, 4.5, 12, 2),       -- Tecnología
-(10, 'Teclado Mecanico RGB', 'Teclado con switches azules y retroiluminacion', 'teclado.jpg', 350.00, 10, TRUE, 1, 4.8, 25, 2),       -- Tecnología
-(10, 'Audifonos Bluetooth', 'Audifonos con cancelacion de ruido y microfono integrado', 'audifonos.jpg', 200.00, 20, TRUE, 1, 4.6, 18, 2), -- Tecnología
-(10, 'Webcam HD', 'Camara web 1080p con microfono', 'webcam.jpg', 250.00, 8, TRUE, 1, 4.3, 8, 2),                                   -- Tecnología
-(10, 'Parlante portatil', 'Bluetooth, bateria recargable', 'parlante.jpg', 180.00, 10, TRUE, 1, 4.4, 15, 2),                        -- Tecnología
-(10, 'Lampara LED', 'Lampara de escritorio con luz blanca', 'lampara.jpg', 120.00, 5, TRUE, 2, 4.1, 4, 2),                          -- Hogar
-(10, 'Taza decorativa', 'Taza de ceramica con diseno personalizado', 'taza.jpg', 80.00, 30, TRUE, 5, 4.7, 10, 2),                     -- Decoración
-(10, 'Cuaderno de notas', 'Tapa dura, 100 hojas', 'cuaderno.jpg', 60.00, 25, TRUE, 3, 4.5, 9, 2),                                   -- Papelería
-(10, 'Camisa de algodon', 'Camisa blanca unisex', 'camisa.jpg', 90.00, 18, TRUE, 4, 4.0, 3, 2),                                     -- Ropa
-(10, 'Set de cables USB', 'Incluye cables tipo C y microUSB', 'cables.jpg', 70.00, 40, TRUE, 1, 4.2, 6, 2);                            -- Tecnología
+(10, 'Mouse Inalambrico'    , 'Mouse ergonomico con sensor optico de alta precision', 'mouse.jpg', 150.00, 15, TRUE, 1, 4.5, 12, 2),       -- Tecnología
+(10, 'Teclado Mecanico RGB' , 'Teclado con switches azules y retroiluminacion', 'teclado.jpg', 350.00, 10, TRUE, 1, 4.8, 25, 2),       -- Tecnología
+(10, 'Audifonos Bluetooth'  , 'Audifonos con cancelacion de ruido y microfono integrado', 'audifonos.jpg', 200.00, 20, TRUE, 1, 4.6, 18, 2), -- Tecnología
+(10, 'Webcam HD'            , 'Camara web 1080p con microfono', 'webcam.jpg', 250.00, 8, TRUE, 1, 4.3, 8, 2),                                   -- Tecnología
+(10, 'Parlante portatil'    , 'Bluetooth, bateria recargable', 'parlante.jpg', 180.00, 10, TRUE, 1, 4.4, 15, 2),                        -- Tecnología
+(10, 'Lampara LED'          , 'Lampara de escritorio con luz blanca', 'lampara.jpg', 120.00, 5, TRUE, 2, 4.1, 4, 2),                          -- Hogar
+(10, 'Taza decorativa'      , 'Taza de ceramica con diseno personalizado', 'taza.jpg', 80.00, 30, TRUE, 5, 4.7, 10, 2),                     -- Decoración
+(10, 'Cuaderno de notas'    , 'Tapa dura, 100 hojas', 'cuaderno.jpg', 60.00, 25, TRUE, 3, 4.5, 9, 2),                                   -- Papelería
+(10, 'Camisa de algodon'    , 'Camisa blanca unisex', 'camisa.jpg', 90.00, 18, TRUE, 4, 4.0, 3, 2),                                     -- Ropa
+(10, 'Set de cables USB'    , 'Incluye cables tipo C y microUSB', 'cables.jpg', 70.00, 40, TRUE, 1, 4.2, 6, 2);                            -- Tecnología
 
 
 -- PRODUCTOS DE MARIA GOMEZ (id_usuario = 11)
