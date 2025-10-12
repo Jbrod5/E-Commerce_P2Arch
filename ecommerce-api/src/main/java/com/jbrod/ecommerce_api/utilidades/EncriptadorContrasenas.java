@@ -14,7 +14,7 @@ public class EncriptadorContrasenas {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         // 2. Define la contraseña que deseas encriptar (ej. la de tu usuario ADMIN)
-        String contrasenaPlana = "user123";
+        String contrasenaPlana = "admin123";
 
         // 3. Genera el hash (el resultado es diferente cada vez)
         String hashGenerado = encoder.encode(contrasenaPlana);

@@ -1,10 +1,10 @@
 package com.jbrod.ecommerce_api.modelos;
 
-
 import jakarta.persistence.*;
 
 /**
  * Entidad JPA que mapea la tabla 'usuario' de la base de datos.
+ * CORREGIDA: Eliminado 'apellido' y 'telefono', y arreglado el nombre de la columna foranea del 'Rol'.
  */
 @Entity
 @Table(name = "usuario")
@@ -22,38 +22,36 @@ public class Usuario {
     private String correo;
 
     @Column(name = "contrasena", nullable = false)
-    private String contrasena; // NOTA: Aquí se almacenará la contraseña encriptada
+    private String contrasena;
 
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @Column(name = "apellido", length = 100)
-    private String apellido;
+    // **CAMPO ELIMINADO:** private String telefono;
 
-    @Column(name = "telefono", length = 20)
-    private String telefono;
+    @Column(name = "activo", nullable = false)
+    private Boolean activo;
 
     // --- Relación con Rol (Muchos Usuarios tienen Un Rol) ---
 
     @ManyToOne // Define la relación Muchos a Uno
-    @JoinColumn(name = "id_rol", nullable = false) // Especifica la columna de la llave foránea
+    // CORRECCIÓN ANTERIOR: Mapeo de FK a la columna 'rol'
+    @JoinColumn(name = "rol", nullable = false)
     private Rol rol; // Un objeto Rol asociado a este Usuario
 
     // --- Constructores ---
 
     // Constructor vacio, requerido por JPA
-    public Usuario() {
-    }
+    public Usuario() {}
 
-    // Constructor completo
-    public Usuario(String correo, String contrasena, String nombre, String apellido, String telefono, Rol rol) {
+    // Constructor completo ACTUALIZADO (Apellido y Teléfono eliminados)
+    public Usuario(String correo, String contrasena, String nombre, Boolean activo, Rol rol) {
         this.correo = correo;
         this.contrasena = contrasena;
         this.nombre = nombre;
-        this.apellido = apellido;
-        this.telefono = telefono;
-        this
-                .rol = rol;
+        // Teléfono eliminado del constructor
+        this.activo = activo;
+        this.rol = rol;
     }
 
     // --- Getters y Setters ---
@@ -90,20 +88,14 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    public String getApellido() {
-        return apellido;
+    // **MÉTODOS ELIMINADOS:** getTelefono() y setTelefono()
+
+    public Boolean getActivo() {
+        return activo;
     }
 
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     public Rol getRol() {

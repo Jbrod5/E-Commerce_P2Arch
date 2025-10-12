@@ -29,14 +29,21 @@ public class UsuarioServicio implements UserDetailsService {
         com.jbrod.ecommerce_api.modelos.Usuario usuario = usuarioRepositorio.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
-        // 2. Mapea la información del usuario de nuestra Entidad a un UserDetails de Spring Security.
-        // Usaremos la clase 'User' predeterminada de Spring Security (org.springframework.security.core.userdetails.User).
+        // -------------------------------------------------------------------------
+        // DEBUGGING: Imprimir los valores para verificar si el mapeo es correcto.
+        // Si el login sigue fallando, estos valores deben ser correctos.
+        System.out.println("DEBUG HASH DB: " + usuario.getContrasena());
+        System.out.println("DEBUG ROL: " + usuario.getRol().getNombre());
+        System.out.println("DEBUG ACTIVO: " + usuario.getActivo());
+        // -------------------------------------------------------------------------
 
-        // El rol del usuario se mapea como una Colección de Autoridades (permisos)
+        // 2. Mapea la información del usuario a un UserDetails de Spring Security.
         return org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getCorreo())
-                .password(usuario.getContrasena()) // La contraseña debe ser la encriptada
-                .roles(usuario.getRol().getNombre().toUpperCase()) // Asignamos el rol como autoridad
+                .password(usuario.getContrasena()) // Contraseña encriptada de la DB
+                .roles(usuario.getRol().getNombre().toUpperCase()) // Rol (Spring añade automáticamente ROLE_)
+                // CORRECCIÓN CLAVE: Usar el campo 'activo' para indicar que la cuenta está habilitada
+                .disabled(!usuario.getActivo()) // Si ACTIVO es TRUE, !TRUE es FALSE (no deshabilitado)
                 .build();
     }
 }

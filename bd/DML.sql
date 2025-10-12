@@ -2,37 +2,37 @@
 
 -- 1 administrador
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo)
-VALUES (4, 'Admin Principal', 'admin@ecommercegt.com', '$2a$10$R.L3kZuz6sqYzG.ONjXKPe.bQXDzZYIZ.asDmE65PN.rHD0A8YV.6', TRUE);
+VALUES (4, 'Admin Principal', 'admin@ecommercegt.com', '$2a$10$ZLEjDNg5cNhf/JFJjB6J0ejz3ROepN4N.awtQlUTF5pZ9sEE8R8jW', TRUE);
 -- admin123
 
 -- 5 moderadores
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo) VALUES
-(2, 'Moderador 1', 'mod1@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
-(2, 'Moderador 2', 'mod2@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
-(2, 'Moderador 3', 'mod3@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
-(2, 'Moderador 4', 'mod4@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE),
-(2, 'Moderador 5', 'mod5@ecommercegt.com', '$2a$10$Of.2j91FXVXEQEGneJeBw.744t6ZYEnjGy7RgaPbsCjFsr1r8uaRi', TRUE);
+(2, 'Moderador 1', 'mod1@ecommercegt.com', '$2a$10$9e6HTOc4c/k6Sh6PLgqVGeuVt.mBscs0ZvhDPOOfSlFTlL61U67KG', TRUE),
+(2, 'Moderador 2', 'mod2@ecommercegt.com', '$2a$10$9e6HTOc4c/k6Sh6PLgqVGeuVt.mBscs0ZvhDPOOfSlFTlL61U67KG', TRUE),
+(2, 'Moderador 3', 'mod3@ecommercegt.com', '$2a$10$9e6HTOc4c/k6Sh6PLgqVGeuVt.mBscs0ZvhDPOOfSlFTlL61U67KG', TRUE),
+(2, 'Moderador 4', 'mod4@ecommercegt.com', '$2a$10$9e6HTOc4c/k6Sh6PLgqVGeuVt.mBscs0ZvhDPOOfSlFTlL61U67KG', TRUE),
+(2, 'Moderador 5', 'mod5@ecommercegt.com', '$2a$10$9e6HTOc4c/k6Sh6PLgqVGeuVt.mBscs0ZvhDPOOfSlFTlL61U67KG', TRUE);
 -- mod123
 
 -- 3 logistica
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo) VALUES
-(3, 'Logistica 1', 'log1@ecommercegt.com', '$2a$10$LhGdJfeFNdvDx105uDCn.e5LYEKjcdF/lEddMvPywfRIFv2xJkmxi', TRUE),
-(3, 'Logistica 2', 'log2@ecommercegt.com', '$2a$10$LhGdJfeFNdvDx105uDCn.e5LYEKjcdF/lEddMvPywfRIFv2xJkmxi', TRUE),
-(3, 'Logistica 3', 'log3@ecommercegt.com', '$2a$10$LhGdJfeFNdvDx105uDCn.e5LYEKjcdF/lEddMvPywfRIFv2xJkmxi', TRUE);
+(3, 'Logistica 1', 'log1@ecommercegt.com', '$2a$10$dW7AzEMtwFA/rs8YMfkR/uOCdjTinE3AK0VXnDugZYMKHNrCgnYU2', TRUE),
+(3, 'Logistica 2', 'log2@ecommercegt.com', '$2a$10$dW7AzEMtwFA/rs8YMfkR/uOCdjTinE3AK0VXnDugZYMKHNrCgnYU2', TRUE),
+(3, 'Logistica 3', 'log3@ecommercegt.com', '$2a$10$dW7AzEMtwFA/rs8YMfkR/uOCdjTinE3AK0VXnDugZYMKHNrCgnYU2', TRUE);
 -- log123
 
 -- 10 usuarios comunes
 INSERT INTO usuario (rol, nombre, correo, contrasena, activo) VALUES
-(1, 'Juan Perez'        , 'juanperez@correo.com'        , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Maria Gomez'       , 'mariagomez@correo.com'       , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Carlos Hernandez'  , 'carloshernandez@correo.com'  , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Lucia Fernandez'   ,  'luciafernandez@correo.com'  , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Jose Ramirez'      , 'joseramirez@correo.com'      , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Ana Torres'        , 'anatorres@correo.com'        , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Pedro Lopez'       , 'pedrolopez@correo.com'       , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Sofia Morales'     , 'sofiamorales@correo.com'     , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Luis Castillo'     , 'luiscastillo@correo.com'     , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE),
-(1, 'Daniela Ruiz'      , 'danielaruiz@correo.com'      , '$2a$10$3LE3iSZg4u.rsGn/3cq4.erBqdgBPpoGF2M5MLZUW64Em5zq.PZ6G', TRUE);
+(1, 'Juan Perez'        , 'juanperez@correo.com'        , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Maria Gomez'       , 'mariagomez@correo.com'       , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Carlos Hernandez'  , 'carloshernandez@correo.com'  , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Lucia Fernandez'   ,  'luciafernandez@correo.com'  , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Jose Ramirez'      , 'joseramirez@correo.com'      , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Ana Torres'        , 'anatorres@correo.com'        , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Pedro Lopez'       , 'pedrolopez@correo.com'       , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Sofia Morales'     , 'sofiamorales@correo.com'     , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Luis Castillo'     , 'luiscastillo@correo.com'     , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE),
+(1, 'Daniela Ruiz'      , 'danielaruiz@correo.com'      , '$2a$10$o7IoAyJG64s8kvVUZdZRTO0kknL1XDz5G0AkgLyV9Q9CuOxtrnvni', TRUE);
 -- user123
 
 
