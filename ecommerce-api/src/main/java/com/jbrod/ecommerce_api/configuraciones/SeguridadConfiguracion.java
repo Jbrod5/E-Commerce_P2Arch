@@ -1,5 +1,6 @@
 package com.jbrod.ecommerce_api.configuraciones;
 
+import com.jbrod.ecommerce_api.servicios.JwtFiltroAutenticacion;
 import com.jbrod.ecommerce_api.servicios.UsuarioServicio;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,25 +14,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; // <-- 2. IMPORTAR CLASE DE REFERENCIA
 
 /**
  * Configuración principal de Spring Security para la API REST.
  * Deshabilita la seguridad basada en sesiones y la reemplaza por JWT (stateless).
  */
 @Configuration
-@EnableWebSecurity // Habilita la configuración de seguridad web de Spring
+@EnableWebSecurity
 public class SeguridadConfiguracion {
 
     private final UsuarioServicio usuarioServicio;
+    private final JwtFiltroAutenticacion jwtAuthFiltro; // <-- 3. DECLARAR EL FILTRO
 
-    // Inyectamos el servicio que creamos
-    public SeguridadConfiguracion(UsuarioServicio usuarioServicio) {
+    // 4. Inyectamos ambos servicios en el constructor
+    public SeguridadConfiguracion(UsuarioServicio usuarioServicio, JwtFiltroAutenticacion jwtAuthFiltro) {
         this.usuarioServicio = usuarioServicio;
+        this.jwtAuthFiltro = jwtAuthFiltro;
     }
 
     /**
      * Define el codificador de contraseñas.
-     * BCrypt es el estándar de la industria.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -44,8 +47,8 @@ public class SeguridadConfiguracion {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(usuarioServicio); // Usa nuestro servicio
-        authProvider.setPasswordEncoder(passwordEncoder()); // Usa nuestro codificador
+        authProvider.setUserDetailsService(usuarioServicio);
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
@@ -63,10 +66,10 @@ public class SeguridadConfiguracion {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Deshabilita CSRF (es necesario para APIs REST que usan JWT)
+                // 1. Deshabilita CSRF
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 2. Define las reglas de autorización para las peticiones HTTP
+                // 2. Define las reglas de autorización
                 .authorizeHttpRequests(auth -> auth
                         // Permite el acceso libre al endpoint de autenticacion (login/registro)
                         .requestMatchers("/api/auth/**").permitAll()
@@ -75,15 +78,17 @@ public class SeguridadConfiguracion {
                 )
 
                 // 3. Configura la política de sesiones como sin estado (STATELESS)
-                // Esto es CRUCIAL para JWT. No se crean sesiones en el servidor.
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 // 4. Agrega nuestro proveedor de autenticación
-                .authenticationProvider(authenticationProvider());
+                .authenticationProvider(authenticationProvider())
 
-        // NOTA: Más adelante, aquí agregaremos el filtro JWT para validar el token.
+                // 5. AGREGAR EL FILTRO JWT
+                // Agregamos nuestro filtro antes del filtro de autenticación estándar de Spring.
+                // Esto asegura que el token se valide antes de que Spring intente buscar usuario/contraseña.
+                .addFilterBefore(jwtAuthFiltro, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
