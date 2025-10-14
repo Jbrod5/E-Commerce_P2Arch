@@ -1,9 +1,8 @@
 // src/stores/auth.js
 
 import { defineStore } from 'pinia';
-// import axios from 'axios'; // <-- ELIMINAR ESTA LÍNEA
 import Cookies from 'js-cookie';
-import api from '@/plugins/axios.js'; // <-- USAR INSTANCIA CONFIGURADA
+import api from '@/plugins/axios.js'; 
 
 // Definimos la URL base para el endpoint de login, relativo a la baseURL de 'api'
 const LOGIN_ENDPOINT = '/auth/login';
@@ -11,11 +10,25 @@ const REGISTER_ENDPOINT = '/auth/register'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
+        // El token persiste en la cookie
         token: Cookies.get('jwtToken') || null, 
-        user: null, 
+        // El objeto user con el rol persiste en la cookie, si existe
+        user: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null, 
         isAuthenticated: !!Cookies.get('jwtToken'),
     }),
     
+
+    getters: {
+        // Métodos para verificar el rol del usuario de forma sencilla :3333
+        isAdmin: (state) => state.user?.rol === 'ROLE_ADMINISTRADOR',
+        isModerador: (state) => state.user?.rol === 'ROLE_MODERADOR',
+        isLogistica: (state) => state.user?.rol === 'ROLE_LOGISTICA',
+        isComun: (state) => state.user?.rol === 'ROLE_COMUN',
+
+        // Getter para obtener el rol actual
+        rol: (state) => state.user?.rol || null,
+    },
+
     actions: {
         initialize() {
             if (this.token) {
@@ -29,30 +42,32 @@ export const useAuthStore = defineStore('auth', {
 
         async login(correo, contrasena) {
             try {
-                // Petición POST usando la instancia 'api'
                 const response = await api.post(LOGIN_ENDPOINT, {
                     correo: correo,
                     contrasena: contrasena,
                 });
                 
+                // Extraemos el token Y el rol del backend
                 const { token, rol } = response.data;
+                const userData = { correo, rol }; // Objeto a guardar
 
-                // 1. Guardar el token y la información del usuario en el estado
+                // 1. Guardar en el estado
                 this.token = token;
-                this.user = { correo, rol };
+                this.user = userData;
                 this.isAuthenticated = true;
 
-                // 2. Guardar el token en una cookie (es mejor que localStorage para JWT)
-                Cookies.set('jwtToken', token, { expires: 7 }); 
+                // 2. Guardar en cookies
+                Cookies.set('jwtToken', token, { expires: 7, secure: false, sameSite: 'Lax' }); 
+                Cookies.set('user', JSON.stringify(userData), { expires: 7, secure: false, sameSite: 'Lax' });
+                
+                // 3. Configurar Axios
+                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 
                 return true; 
 
             } catch (error) {
-                this.token = null;
-                this.user = null;
-                this.isAuthenticated = false;
-                Cookies.remove('jwtToken');
-                
+                // Limpiar si falla
+                this.logout();
                 throw error; 
             }
         },
