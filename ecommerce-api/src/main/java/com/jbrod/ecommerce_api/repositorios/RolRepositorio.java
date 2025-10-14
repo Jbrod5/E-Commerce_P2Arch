@@ -1,9 +1,10 @@
 package com.jbrod.ecommerce_api.repositorios;
 
-
 import com.jbrod.ecommerce_api.modelos.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional; // <-- IMPORTACIÓN NECESARIA
 
 /**
  * Repositorio de Spring Data JPA para la entidad Rol.
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RolRepositorio extends JpaRepository<Rol, Integer> {
 
-    // Se crea un método de búsqueda personalizado.
-    // Spring Data JPA infiere la consulta SQL basándose en el nombre del método.
-    Rol findByNombre(String nombre);
+    // Se cambia el tipo de retorno para usar Optional, lo que permite el uso de orElseThrow() en el servicio.
+    Optional<Rol> findByNombre(String nombre);
 }

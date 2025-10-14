@@ -31,39 +31,37 @@
       </button>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+      <router-link to="/register" class="link-register">
+        ¿Aún no tienes cuenta? Regístrate aquí.
+      </router-link>
     </form>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { useAuthStore } from '@/stores/auth'; // Importamos el almacén de Pinia
-import { useRouter } from 'vue-router'; // Importamos el router
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
-// --- Variables reactivas para el formulario ---
-//const correo = ref('admin@ecommercegt.com'); // Valor por defecto para pruebas
-//const contrasena = ref('administrador123'); // Valor por defecto para pruebas
+// CORRECCIÓN: Definir las variables del formulario
+const correo = ref(''); 
+const contrasena = ref(''); 
 const errorMessage = ref(null);
 const isLoading = ref(false);
 
-// --- Inicializar Pinia y Router ---
 const authStore = useAuthStore();
 const router = useRouter();
 
-// --- Lógica de Manejo del Login ---
 const handleLogin = async () => {
     isLoading.value = true;
-    errorMessage.value = null; // Limpiar errores
+    errorMessage.value = null;
 
     try {
-        // Llama a la acción 'login' del store de Pinia, pasando las credenciales
         await authStore.login(correo.value, contrasena.value);
-        
-        // Si tiene éxito, redirigir al Dashboard o a la ruta protegida
         router.push('/'); 
         
     } catch (err) {
-        // Manejar errores de la API (ej: 401 Unauthorized)
         errorMessage.value = 'Fallo en el inicio de sesión. Verifique sus credenciales.';
         console.error('Error durante la autenticación:', err);
 
@@ -75,6 +73,7 @@ const handleLogin = async () => {
 
 <style scoped>
 .login-container {
+    /* ... (Estilos existentes) ... */
     max-width: 400px;
     margin: 50px auto;
     padding: 20px;
@@ -88,4 +87,14 @@ const handleLogin = async () => {
 button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
 button:disabled { background-color: #a0c9ff; cursor: not-allowed; }
 .error-message { color: red; text-align: center; margin-top: 10px; }
+
+/* NUEVO ESTILO */
+.link-register {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #007bff;
+    text-decoration: none;
+}
 </style>

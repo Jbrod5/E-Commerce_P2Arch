@@ -1,12 +1,10 @@
 package com.jbrod.ecommerce_api.servicios;
 
 
-import com.jbrod.ecommerce_api.servicios.UsuarioServicio;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,11 +17,15 @@ import java.io.IOException;
 @Component
 public class JwtFiltroAutenticacion extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtServicio jwtServicio;
+    // Cambiar a final e inyectar por constructor
+    private final JwtServicio jwtServicio;
+    private final UsuarioServicio usuarioServicio; // Tu UserDetailsService
 
-    @Autowired
-    private UsuarioServicio usuarioServicio; // Tu UserDetailsService
+    // Inyección de Constructor: Spring inyecta las dependencias al crear el bean
+    public JwtFiltroAutenticacion(JwtServicio jwtServicio, UsuarioServicio usuarioServicio) {
+        this.jwtServicio = jwtServicio;
+        this.usuarioServicio = usuarioServicio;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

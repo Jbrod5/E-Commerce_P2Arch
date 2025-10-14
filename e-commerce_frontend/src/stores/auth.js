@@ -1,22 +1,25 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+// src/stores/auth.js
 
-// Definimos la URL base de tu backend Spring Boot
-const API_URL = 'http://localhost:8080/api/auth/login';
+import { defineStore } from 'pinia';
+// import axios from 'axios'; // <-- ELIMINAR ESTA LÍNEA
+import Cookies from 'js-cookie';
+import api from '@/plugins/axios.js'; // <-- USAR INSTANCIA CONFIGURADA
+
+// Definimos la URL base para el endpoint de login, relativo a la baseURL de 'api'
+const LOGIN_ENDPOINT = '/auth/login'; 
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        token: Cookies.get('jwtToken') || null, // Cargar token desde cookie
-        user: null, // Almacenará { correo, rol }
+        token: Cookies.get('jwtToken') || null, 
+        user: null, 
         isAuthenticated: !!Cookies.get('jwtToken'),
     }),
     
     actions: {
         async login(correo, contrasena) {
             try {
-                // Petición POST a tu endpoint de Spring Boot
-                const response = await axios.post(API_URL, {
+                // Petición POST usando la instancia 'api'
+                const response = await api.post(LOGIN_ENDPOINT, {
                     correo: correo,
                     contrasena: contrasena,
                 });
@@ -29,9 +32,9 @@ export const useAuthStore = defineStore('auth', {
                 this.isAuthenticated = true;
 
                 // 2. Guardar el token en una cookie (es mejor que localStorage para JWT)
-                Cookies.set('jwtToken', token, { expires: 7 }); // Expira en 7 días
+                Cookies.set('jwtToken', token, { expires: 7 }); 
                 
-                return true; // Éxito
+                return true; 
 
             } catch (error) {
                 this.token = null;
@@ -39,7 +42,6 @@ export const useAuthStore = defineStore('auth', {
                 this.isAuthenticated = false;
                 Cookies.remove('jwtToken');
                 
-                // Lanzar el error para que el componente Login lo maneje
                 throw error; 
             }
         },

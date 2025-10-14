@@ -3,8 +3,9 @@ import HomeView from '../views/HomeView.vue'
 
 
 
-// Importa el nuevo componente de Login
+// Importaciones de los componentes
 import LoginView from '../views/LoginView.vue';
+import RegistroView from '../views/RegistroView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,11 @@ const router = createRouter({
       name: 'login',
       component: LoginView 
     },
+    {
+      path: '/register', // <-- 2. DEFINIR LA RUTA
+      name: 'register',
+      component: RegistroView // <-- 3. ASIGNAR EL COMPONENTE
+    }
   ],
 })
 

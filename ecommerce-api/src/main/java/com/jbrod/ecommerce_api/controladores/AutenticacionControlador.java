@@ -2,21 +2,24 @@ package com.jbrod.ecommerce_api.controladores;
 
 import com.jbrod.ecommerce_api.dto.CredencialesPeticion;
 import com.jbrod.ecommerce_api.servicios.JwtServicio;
+import com.jbrod.ecommerce_api.servicios.UsuarioServicio; // <-- NUEVO: Para manejar el registro
+import com.jbrod.ecommerce_api.modelos.Usuario; // <-- NUEVO: Para recibir el objeto de registro
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus; // <-- NUEVO: Para el estado 201 CREATED
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails; // <-- Nueva Importación
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.Map; // <-- Nueva Importación para la respuesta JSON
+import java.util.Map;
 
 /**
  * Controlador para manejar las peticiones de autenticacion (login y registro).
@@ -26,13 +29,18 @@ import java.util.Map; // <-- Nueva Importación para la respuesta JSON
 @RequestMapping("/api/auth")
 public class AutenticacionControlador {
 
-    // Inyectamos el gestor de autenticacion que configuramos en SecurityConfig
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    // INYECTAMOS EL NUEVO SERVICIO PARA MANEJAR JWT
     @Autowired
     private JwtServicio jwtServicio;
+
+    @Autowired
+    private UsuarioServicio usuarioServicio; // <-- NUEVO: Inyectamos el servicio de usuario
+
+    // --------------------------------------------------------------------------
+    // --- ENDPOINT DE LOGIN ---
+    // --------------------------------------------------------------------------
 
     /**
      * Endpoint para el inicio de sesion (Login).
@@ -46,23 +54,23 @@ public class AutenticacionControlador {
             Authentication authenticationToken =
                     new UsernamePasswordAuthenticationToken(credenciales.getCorreo(), credenciales.getContrasena());
 
-            // 2. Intentar autenticar. Si la autenticación es exitosa, Spring nos devuelve el objeto Authentication
+            // 2. Intentar autenticar.
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-            // 3. Obtener los detalles del usuario que fue cargado por UsuarioServicio
-            // El principal es el objeto UserDetails que construimos
+            // 3. Obtener los detalles del usuario
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // 4. PASO CRUCIAL: Generar el JWT
+            // 4. Generar el JWT
             String jwt = jwtServicio.generarToken(userDetails);
 
-            // 5. Construir la respuesta con el Token y detalles (formato JSON)
+            // 5. Construir la respuesta con el Token y detalles
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("token", jwt);
-            respuesta.put("tipo", "Bearer"); // Standard de la industria
+            respuesta.put("tipo", "Bearer");
 
-            // Opcional: Agregar el correo y rol para referencia del cliente
+            // Opcional: Agregar el correo y rol
             respuesta.put("correo", userDetails.getUsername());
+            // Nota: Se asume que el rol es el primer (y único) authority
             respuesta.put("rol", userDetails.getAuthorities().iterator().next().getAuthority());
 
 
@@ -70,15 +78,45 @@ public class AutenticacionControlador {
             return ResponseEntity.ok(respuesta);
 
         } catch (AuthenticationException e) {
-            // 7. Manejo de Error: Si la autenticacion falla (credenciales incorrectas)
-            // Aquí se retorna el ResponseEntity.status(401) sin necesidad de un Map
+            // 7. Manejo de Error de autenticación (401 Unauthorized)
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Credenciales inválidas");
             errorResponse.put("mensaje", "Acceso denegado. Verifique su correo y contraseña.");
 
-            return ResponseEntity.status(401).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
 
-    // NOTA: El endpoint de Registro (POST /api/auth/register) se agregará después.
+    // --------------------------------------------------------------------------
+    // --- ENDPOINT DE REGISTRO ---
+    // --------------------------------------------------------------------------
+
+    /**
+     * Endpoint para el registro de nuevos usuarios.
+     * POST /api/auth/register
+     * * @param nuevoUsuario El objeto Usuario (con nombre, correo y contraseña).
+     * @return ResponseEntity con el Usuario creado (sin contraseña) y estado 201 CREATED.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario nuevoUsuario) {
+
+        try {
+            // Llama al servicio para codificar la contraseña, asignar rol y guardar
+            Usuario usuarioGuardado = usuarioServicio.registrarNuevoUsuario(nuevoUsuario);
+
+            // Buena práctica: Limpiar la contraseña antes de devolver el objeto
+            usuarioGuardado.setContrasena(null);
+
+            // Retorna un estado 201 CREATED con el objeto del usuario creado
+            return ResponseEntity.status(HttpStatus.CREATED).body(usuarioGuardado);
+
+        } catch (RuntimeException e) {
+            // Maneja la excepción si el correo ya existe o si el rol no se encuentra
+            // Retorna un estado 400 BAD REQUEST con el mensaje de error
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+    }
 }

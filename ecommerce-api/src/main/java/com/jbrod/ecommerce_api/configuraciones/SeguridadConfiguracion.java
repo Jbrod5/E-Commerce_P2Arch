@@ -2,8 +2,10 @@ package com.jbrod.ecommerce_api.configuraciones;
 
 import com.jbrod.ecommerce_api.servicios.JwtFiltroAutenticacion;
 import com.jbrod.ecommerce_api.servicios.UsuarioServicio;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy; // Importación necesaria
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -15,11 +17,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration; // <-- Importación para CORS
-import org.springframework.web.cors.CorsConfigurationSource; // <-- Importación para CORS
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // <-- Importación para CORS
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays; // <-- Importación para Listas
+import java.util.Arrays;
 
 /**
  * Configuración principal de Spring Security para la API REST.
@@ -29,14 +31,15 @@ import java.util.Arrays; // <-- Importación para Listas
 @EnableWebSecurity
 public class SeguridadConfiguracion {
 
-    private final UsuarioServicio usuarioServicio;
-    private final JwtFiltroAutenticacion jwtAuthFiltro;
+    // CAMBIO CRUCIAL: Usamos @Lazy aquí. Esto permite que SeguridadConfiguracion se cree
+    // (y defina PasswordEncoder) antes de que el filtro JWT esté completamente resuelto.
+    @Autowired
+    @Lazy
+    private JwtFiltroAutenticacion jwtAuthFiltro;
 
-    // Inyectamos ambos servicios en el constructor
-    public SeguridadConfiguracion(UsuarioServicio usuarioServicio, JwtFiltroAutenticacion jwtAuthFiltro) {
-        this.usuarioServicio = usuarioServicio;
-        this.jwtAuthFiltro = jwtAuthFiltro;
-    }
+    // ----------------------------------------------------------------------
+    // --- BEANS DE SEGURIDAD ---
+    // ----------------------------------------------------------------------
 
     /**
      * Define el codificador de contraseñas.
@@ -46,45 +49,33 @@ public class SeguridadConfiguracion {
         return new BCryptPasswordEncoder();
     }
 
-    // ----------------------------------------------------------------------
-    // --- NUEVA CONFIGURACIÓN: CORS ---
-    // ----------------------------------------------------------------------
     /**
-     * Define la configuración de CORS para permitir peticiones desde el frontend de Vue.js.
+     * Define cómo se obtienen los datos del usuario y cómo se verifica la contraseña.
+     * Se inyecta UsuarioServicio por parámetro.
      */
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(UsuarioServicio usuarioServicio) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(usuarioServicio);
+        // Llama directamente al bean passwordEncoder()
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    // ----------------------------------------------------------------------
+    // --- CONFIGURACIÓN CORS ---
+    // ----------------------------------------------------------------------
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // El origen de tu aplicación Vue.js en desarrollo
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-
-        // Métodos permitidos (GET, POST, etc.)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // Encabezados permitidos (CRUCIAL para el token Authorization)
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
-
-        // Permite el uso de credenciales (necesario si usas cookies o sesiones)
         configuration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplicar esta configuración a todas las rutas
         source.registerCorsConfiguration("/**", configuration);
-
+        // CORRECCIÓN: Devolver 'source' que implementa CorsConfigurationSource
         return source;
-    }
-    // ----------------------------------------------------------------------
-
-    /**
-     * Define cómo se obtienen los datos del usuario y cómo se verifica la contraseña.
-     */
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(usuarioServicio);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
     }
 
     /**
@@ -95,11 +86,15 @@ public class SeguridadConfiguracion {
         return config.getAuthenticationManager();
     }
 
+    // ----------------------------------------------------------------------
+    // --- SECURITY FILTER CHAIN ---
+    // ----------------------------------------------------------------------
+
     /**
      * Configuración del filtro de seguridad HTTP. Define las reglas de acceso.
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, DaoAuthenticationProvider daoAuthenticationProvider) throws Exception {
         http
                 // 1. HABILITAR CORS usando la configuración que definimos arriba
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -109,9 +104,7 @@ public class SeguridadConfiguracion {
 
                 // 3. Define las reglas de autorización
                 .authorizeHttpRequests(auth -> auth
-                        // Permite el acceso libre al endpoint de autenticacion (login/registro)
                         .requestMatchers("/api/auth/**").permitAll()
-                        // Todas las demas peticiones requieren autenticación
                         .anyRequest().authenticated()
                 )
 
@@ -120,10 +113,11 @@ public class SeguridadConfiguracion {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // 5. Agrega nuestro proveedor de autenticación
-                .authenticationProvider(authenticationProvider())
+                // 5. Agrega nuestro proveedor de autenticación.
+                // Spring inyecta automáticamente el bean DaoAuthenticationProvider que definimos.
+                .authenticationProvider(daoAuthenticationProvider)
 
-                // 6. AGREGAR EL FILTRO JWT
+                // 6. AGREGAR EL FILTRO JWT (inyectado por campo)
                 .addFilterBefore(jwtAuthFiltro, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
