@@ -12,8 +12,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'login',
+      component: LoginView,
     },
     {
       path: '/about',
@@ -23,11 +23,11 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
     },
-    {
-      path: '/login', // <--- Nueva Ruta de Login
-      name: 'login',
-      component: LoginView 
-    },
+    //{
+    //  path: '/login', // <--- Nueva Ruta de Login
+    //  name: 'login',
+    //  component: LoginView 
+    //},
     {
       path: '/register', // <-- 2. DEFINIR LA RUTA
       name: 'register',

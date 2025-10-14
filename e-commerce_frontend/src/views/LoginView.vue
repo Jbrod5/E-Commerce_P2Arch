@@ -1,50 +1,71 @@
 <template>
-  <div class="login-container">
-    <h2>Iniciar Sesión en E-commerce</h2>
-    
-    <form @submit.prevent="handleLogin" class="login-form">
+  <!-- Contenedor principal centrado con margen superior y sombra -->
+  <div class="container d-flex justify-content-center align-items-center mt-5 mb-5">
+    <div class="card shadow-lg p-4 p-md-5 w-100" style="max-width: 450px;">
       
-      <div class="input-group">
-        <label for="correo">Correo Electrónico</label>
-        <input 
-          type="email" 
-          id="correo" 
-          v-model="correo" 
-          required 
-          placeholder="ejemplo@correo.com"
-        />
-      </div>
+      <!-- Título de la tarjeta -->
+      <h2 class="card-title text-center mb-4 text-primary">Iniciar Sesión</h2>
+      
+      <form @submit.prevent="handleLogin" class="needs-validation" novalidate>
+        
+        <!-- Campo Correo Electrónico -->
+        <div class="mb-3">
+          <label for="correo" class="form-label fw-bold">Correo Electrónico</label>
+          <input 
+            type="email" 
+            id="correo" 
+            v-model="correo" 
+            class="form-control"
+            required 
+            placeholder="ejemplo@correo.com"
+          />
+        </div>
 
-      <div class="input-group">
-        <label for="contrasena">Contraseña</label>
-        <input 
-          type="password" 
-          id="contrasena" 
-          v-model="contrasena" 
-          required 
-          placeholder="********"
-        />
-      </div>
+        <!-- Campo Contraseña -->
+        <div class="mb-4">
+          <label for="contrasena" class="form-label fw-bold">Contraseña</label>
+          <input 
+            type="password" 
+            id="contrasena" 
+            v-model="contrasena" 
+            class="form-control" 
+            required 
+            placeholder="********"
+          />
+        </div>
 
-      <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Cargando...' : 'Acceder' }}
-      </button>
+        <!-- Botón de Acceder -->
+        <button 
+          type="submit" 
+          :disabled="isLoading"
+          class="btn btn-primary w-100 py-2 rounded-pill shadow-sm"
+        >
+          <!-- Usa un spinner de Bootstrap si está cargando -->
+          <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          {{ isLoading ? 'Cargando...' : 'Acceder' }}
+        </button>
 
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <!-- Mensaje de Error (alerta de Bootstrap) -->
+        <p v-if="errorMessage" class="alert alert-danger text-center mt-3 p-2" role="alert">
+          {{ errorMessage }}
+        </p>
 
-      <router-link to="/register" class="link-register">
-        ¿Aún no tienes cuenta? Regístrate aquí.
-      </router-link>
-    </form>
+        <!-- Enlace de Registro -->
+        <router-link to="/register" class="d-block text-center mt-3 text-muted">
+          ¿No tienes cuenta? Regístrate aquí.
+        </router-link>
+      </form>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+// Asumo que tienes una store Pinia llamada auth, si no existe, créala.
+import { useAuthStore } from '@/stores/auth'; 
 import { useRouter } from 'vue-router';
 
-// CORRECCIÓN: Definir las variables del formulario
+// --- Estado del formulario ---
 const correo = ref(''); 
 const contrasena = ref(''); 
 const errorMessage = ref(null);
@@ -58,10 +79,13 @@ const handleLogin = async () => {
     errorMessage.value = null;
 
     try {
+        // Llama a la acción de login en tu Pinia store
         await authStore.login(correo.value, contrasena.value);
+        // Redirige al inicio si es exitoso
         router.push('/'); 
         
     } catch (err) {
+        // Mensaje de error genérico en caso de fallo de credenciales o de red
         errorMessage.value = 'Fallo en el inicio de sesión. Verifique sus credenciales.';
         console.error('Error durante la autenticación:', err);
 
@@ -71,30 +95,7 @@ const handleLogin = async () => {
 };
 </script>
 
+<!-- Se eliminaron los estilos scope, ya que estamos usando clases de Bootstrap -->
 <style scoped>
-.login-container {
-    /* ... (Estilos existentes) ... */
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.login-form > * { margin-bottom: 15px; }
-.input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-.input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-button:disabled { background-color: #a0c9ff; cursor: not-allowed; }
-.error-message { color: red; text-align: center; margin-top: 10px; }
-
-/* NUEVO ESTILO */
-.link-register {
-    display: block;
-    text-align: center;
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #007bff;
-    text-decoration: none;
-}
+/* No se necesitan estilos personalizados gracias a Bootstrap */
 </style>
