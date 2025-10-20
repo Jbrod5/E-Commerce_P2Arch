@@ -1,14 +1,16 @@
 package com.jbrod.ecommerce_api.configuraciones;
 
 import com.jbrod.ecommerce_api.servicios.JwtFiltroAutenticacion;
-import com.jbrod.ecommerce_api.servicios.UsuarioServicio;
+import com.jbrod.ecommerce_api.servicios.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy; // Importación necesaria
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,10 +31,10 @@ import java.util.Arrays;
  */
 @Configuration
 @EnableWebSecurity
-public class SeguridadConfiguracion {
+@EnableMethodSecurity(prePostEnabled = true) //Habilitar PreAutorized en controladores :3
+public class SeguridadConfig {
 
-    // CAMBIO CRUCIAL: Usamos @Lazy aquí. Esto permite que SeguridadConfiguracion se cree
-    // (y defina PasswordEncoder) antes de que el filtro JWT esté completamente resuelto.
+    // Usamos @Lazy permitiendo que SeguridadConfiguracion se cree
     @Autowired
     @Lazy
     private JwtFiltroAutenticacion jwtAuthFiltro;
@@ -54,10 +56,9 @@ public class SeguridadConfiguracion {
      * Se inyecta UsuarioServicio por parámetro.
      */
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(UsuarioServicio usuarioServicio) {
+    public DaoAuthenticationProvider authenticationProvider(UsuarioService usuarioService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(usuarioServicio);
-        // Llama directamente al bean passwordEncoder()
+        authProvider.setUserDetailsService(usuarioService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -74,7 +75,6 @@ public class SeguridadConfiguracion {
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        // CORRECCIÓN: Devolver 'source' que implementa CorsConfigurationSource
         return source;
     }
 
@@ -104,7 +104,18 @@ public class SeguridadConfiguracion {
 
                 // 3. Define las reglas de autorización
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Acceso público para autenticación (LOGIN, REGISTRO)
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // 2. Rutas que requieren un rol específico
+                        // CORRECCIÓN: Usar hasAuthority() para la cadena literal 'moderador'
+                        .requestMatchers("/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
+
+                        // CORRECCIÓN CLAVE: Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador'
+                        .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN")
+                        // **********************************************************************************
+
+                        // 3. El resto de rutas requieren autenticación (el catch-all final)
                         .anyRequest().authenticated()
                 )
 
@@ -114,7 +125,6 @@ public class SeguridadConfiguracion {
                 )
 
                 // 5. Agrega nuestro proveedor de autenticación.
-                // Spring inyecta automáticamente el bean DaoAuthenticationProvider que definimos.
                 .authenticationProvider(daoAuthenticationProvider)
 
                 // 6. AGREGAR EL FILTRO JWT (inyectado por campo)

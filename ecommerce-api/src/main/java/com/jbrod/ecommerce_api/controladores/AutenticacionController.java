@@ -1,8 +1,8 @@
 package com.jbrod.ecommerce_api.controladores;
 
 import com.jbrod.ecommerce_api.dto.CredencialesPeticion;
-import com.jbrod.ecommerce_api.servicios.JwtServicio;
-import com.jbrod.ecommerce_api.servicios.UsuarioServicio; // <-- NUEVO: Para manejar el registro
+import com.jbrod.ecommerce_api.servicios.JwtService;
+import com.jbrod.ecommerce_api.servicios.UsuarioService; // <-- NUEVO: Para manejar el registro
 import com.jbrod.ecommerce_api.modelos.Usuario; // <-- NUEVO: Para recibir el objeto de registro
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +27,16 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/auth")
-public class AutenticacionControlador {
+public class AutenticacionController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtServicio jwtServicio;
+    private JwtService jwtService;
 
     @Autowired
-    private UsuarioServicio usuarioServicio; // <-- NUEVO: Inyectamos el servicio de usuario
+    private UsuarioService usuarioService; // <-- NUEVO: Inyectamos el servicio de usuario
 
     // --------------------------------------------------------------------------
     // --- ENDPOINT DE LOGIN ---
@@ -61,7 +61,7 @@ public class AutenticacionControlador {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             // 4. Generar el JWT
-            String jwt = jwtServicio.generarToken(userDetails);
+            String jwt = jwtService.generarToken(userDetails);
 
             // 5. Construir la respuesta con el Token y detalles
             Map<String, Object> respuesta = new HashMap<>();
@@ -102,7 +102,7 @@ public class AutenticacionControlador {
 
         try {
             // Llama al servicio para codificar la contraseña, asignar rol y guardar
-            Usuario usuarioGuardado = usuarioServicio.registrarNuevoUsuario(nuevoUsuario);
+            Usuario usuarioGuardado = usuarioService.registrarNuevoUsuario(nuevoUsuario);
 
             // Buena práctica: Limpiar la contraseña antes de devolver el objeto
             usuarioGuardado.setContrasena(null);

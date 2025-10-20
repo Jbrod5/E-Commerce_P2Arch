@@ -18,13 +18,13 @@ import java.io.IOException;
 public class JwtFiltroAutenticacion extends OncePerRequestFilter {
 
     // Cambiar a final e inyectar por constructor
-    private final JwtServicio jwtServicio;
-    private final UsuarioServicio usuarioServicio; // Tu UserDetailsService
+    private final JwtService jwtService;
+    private final UsuarioService usuarioService; // Tu UserDetailsService
 
     // Inyección de Constructor: Spring inyecta las dependencias al crear el bean
-    public JwtFiltroAutenticacion(JwtServicio jwtServicio, UsuarioServicio usuarioServicio) {
-        this.jwtServicio = jwtServicio;
-        this.usuarioServicio = usuarioServicio;
+    public JwtFiltroAutenticacion(JwtService jwtService, UsuarioService usuarioService) {
+        this.jwtService = jwtService;
+        this.usuarioService = usuarioService;
     }
 
     @Override
@@ -46,16 +46,16 @@ public class JwtFiltroAutenticacion extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
 
         // 3. Extraer el correo (username) del token
-        userEmail = jwtServicio.extractUsername(jwt);
+        userEmail = jwtService.extractUsername(jwt);
 
         // 4. Si encontramos el correo y el usuario no está ya autenticado en el contexto de Spring Security
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Cargar el UserDetails desde la base de datos (usando tu UsuarioServicio)
-            UserDetails userDetails = this.usuarioServicio.loadUserByUsername(userEmail);
+            UserDetails userDetails = this.usuarioService.loadUserByUsername(userEmail);
 
             // 5. Validar el token y la vigencia del usuario
-            if (jwtServicio.isTokenValid(jwt, userDetails)) {
+            if (jwtService.isTokenValid(jwt, userDetails)) {
 
                 // Si el token es válido, crear un objeto de autenticación
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

@@ -11,7 +11,7 @@ import java.util.Optional; // <-- IMPORTACIÓN NECESARIA
  * Permite realizar operaciones CRUD sin escribir código SQL.
  */
 @Repository
-public interface RolRepositorio extends JpaRepository<Rol, Integer> {
+public interface RolRepository extends JpaRepository<Rol, Integer> {
 
     // Se cambia el tipo de retorno para usar Optional, lo que permite el uso de orElseThrow() en el servicio.
     Optional<Rol> findByNombre(String nombre);

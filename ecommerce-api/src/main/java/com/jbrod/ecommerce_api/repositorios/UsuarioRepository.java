@@ -12,7 +12,7 @@ import java.util.Optional; // Necesario para manejar la posibilidad de que no se
  */
 @Repository
 // JpaRepository<[Clase Entidad], [Tipo de Dato de la Llave Primaria (Integer)]>
-public interface UsuarioRepositorio extends JpaRepository<Usuario, Integer> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     /**
      * Busca un usuario por su correo electrónico.
@@ -22,4 +22,5 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Integer> {
      * @return Un Optional que contiene el Usuario si existe, o vacío si no.
      */
     Optional<Usuario> findByCorreo(String correo);
+
 }

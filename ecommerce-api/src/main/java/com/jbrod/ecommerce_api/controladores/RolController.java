@@ -3,7 +3,7 @@ package com.jbrod.ecommerce_api.controladores;
 
 
 import com.jbrod.ecommerce_api.modelos.Rol;
-import com.jbrod.ecommerce_api.repositorios.RolRepositorio;
+import com.jbrod.ecommerce_api.repositorios.RolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +15,11 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/roles") // Ruta base: http://localhost:8080/api/roles
-public class RolControlador {
+public class RolController {
 
     // Inyección de Dependencia para usar los métodos CRUD
     @Autowired
-    private RolRepositorio rolRepositorio;
+    private RolRepository rolRepository;
 
     /**
      * Obtiene todos los roles.
@@ -27,7 +27,7 @@ public class RolControlador {
      */
     @GetMapping
     public List<Rol> obtenerTodosLosRoles() {
-        return rolRepositorio.findAll();
+        return rolRepository.findAll();
     }
 
     /**
@@ -37,7 +37,7 @@ public class RolControlador {
     @GetMapping("/{id}")
     public ResponseEntity<Rol> obtenerRolPorId(@PathVariable Integer id) {
         // Usa Optional para manejar el caso de que el rol no exista (404 Not Found)
-        return rolRepositorio.findById(id)
+        return rolRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -48,6 +48,6 @@ public class RolControlador {
      */
     @PostMapping
     public Rol crearRol(@RequestBody Rol nuevoRol) {
-        return rolRepositorio.save(nuevoRol); // Guarda y devuelve el objeto Rol con su ID generado
+        return rolRepository.save(nuevoRol); // Guarda y devuelve el objeto Rol con su ID generado
     }
 }

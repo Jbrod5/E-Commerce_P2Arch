@@ -1,6 +1,10 @@
 package com.jbrod.ecommerce_api.modelos;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.jbrod.ecommerce_api.modelos.productos.Producto;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 /**
  * Entidad JPA que mapea la tabla 'usuario' de la base de datos.
@@ -27,7 +31,6 @@ public class Usuario {
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    // **CAMPO ELIMINADO:** private String telefono;
 
     @Column(name = "activo", nullable = false)
     private Boolean activo;
@@ -39,12 +42,17 @@ public class Usuario {
     @JoinColumn(name = "rol", nullable = false)
     private Rol rol; // Un objeto Rol asociado a este Usuario
 
+    // --- Relación con Productos (Un Usuario puede tener Muchos Productos a la venta) ---
+    @OneToMany(mappedBy = "vendedor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // Indica que esta es la referencia 'manager' o principal del ciclo bidireccional
+    private List<Producto> productosVendidos;
+
     // --- Constructores ---
 
     // Constructor vacio, requerido por JPA
     public Usuario() {}
 
-    // Constructor completo ACTUALIZADO (Apellido y Teléfono eliminados)
+    // Constructor completo
     public Usuario(String correo, String contrasena, String nombre, Boolean activo, Rol rol) {
         this.correo = correo;
         this.contrasena = contrasena;
@@ -88,7 +96,6 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    // **MÉTODOS ELIMINADOS:** getTelefono() y setTelefono()
 
     public Boolean getActivo() {
         return activo;
@@ -104,5 +111,18 @@ public class Usuario {
 
     public void setRol(Rol rol) {
         this.rol = rol;
+    }
+
+
+
+
+
+
+    public List<Producto> getProductosVendidos() {
+        return productosVendidos;
+    }
+
+    public void setProductosVendidos(List<Producto> productosVendidos) {
+        this.productosVendidos = productosVendidos;
     }
 }

@@ -2,7 +2,7 @@ package com.jbrod.ecommerce_api.servicios;
 
 import com.jbrod.ecommerce_api.modelos.Rol;
 import com.jbrod.ecommerce_api.modelos.Usuario;
-import com.jbrod.ecommerce_api.repositorios.UsuarioRepositorio;
+import com.jbrod.ecommerce_api.repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +11,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.jbrod.ecommerce_api.repositorios.RolRepositorio;
+import com.jbrod.ecommerce_api.repositorios.RolRepository;
+// Importación necesaria para manejar la autoridad como objeto
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.List; // Importación para List.of() o Collections.singletonList()
 
 /**
  * Implementa la interfaz UserDetailsService de Spring Security.
@@ -19,18 +22,16 @@ import com.jbrod.ecommerce_api.repositorios.RolRepositorio;
  * durante el proceso de autenticación.
  */
 @Service
-public class UsuarioServicio implements UserDetailsService {
+public class UsuarioService implements UserDetailsService {
 
     @Autowired
-    private UsuarioRepositorio usuarioRepositorio;
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private RolRepositorio rolRepositorio;
+    private RolRepository rolRepository;
 
-    // Se declara la dependencia sin @Autowired en el campo.
     private PasswordEncoder passwordEncoder;
 
-    // CRUCIAL: Inyección por Setter. Spring la ejecuta después de crear este bean, rompiendo el ciclo.
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -45,25 +46,44 @@ public class UsuarioServicio implements UserDetailsService {
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
 
         // 1. Busca el usuario en la base de datos por el correo.
-        com.jbrod.ecommerce_api.modelos.Usuario usuario = usuarioRepositorio.findByCorreo(correo)
+        com.jbrod.ecommerce_api.modelos.Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
         // -------------------------------------------------------------------------
-        // DEBUGGING: Imprimir los valores para verificar si el mapeo es correcto.
+        // Imprimir los valores para verificar si el mapeo de usuario es correcto :c
+        System.out.println("HASH DB: "  + usuario.getContrasena());
+        System.out.println("ROL: "      + usuario.getRol().getNombre());
+        System.out.println("ACTIVO: "   + usuario.getActivo());
+        System.out.println();
         // -------------------------------------------------------------------------
-        System.out.println("DEBUG HASH DB: " + usuario.getContrasena());
-        System.out.println("DEBUG ROL: " + usuario.getRol().getNombre());
-        System.out.println("DEBUG ACTIVO: " + usuario.getActivo());
-        // -------------------------------------------------------------------------
+
+        // --- CORRECCIÓN CRUCIAL: Mapeamos a autoridad exacta y en minúsculas ---
+        // 1. Obtenemos el nombre del rol y lo convertimos a minúsculas
+        String rolNombre = usuario.getRol().getNombre().toLowerCase();
 
         // 2. Mapea la información del usuario a un UserDetails de Spring Security.
         return org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getCorreo())
                 .password(usuario.getContrasena()) // Contraseña encriptada de la DB
-                .roles(usuario.getRol().getNombre().toUpperCase()) // Rol
+                // Usamos .authorities() para evitar el prefijo 'ROLE_'
+                // y aseguramos que la autoridad sea exactamente "comun" o "administrador".
+                .authorities(List.of(new SimpleGrantedAuthority(rolNombre)))
                 .disabled(!usuario.getActivo())
                 .build();
     }
+
+    // ... el resto de la clase UsuarioService se mantiene igual ...
+    /**
+     * Método de soporte para otros servicios que necesitan la entidad Usuario (JPA).
+     * @param correo Correo del usuario.
+     * @return Optional que contiene la entidad Usuario.
+     */
+    public Optional<Usuario> obtenerUsuarioPorCorreo(String correo) {
+        return usuarioRepository.findByCorreo(correo);
+    }
+
+
+
 
 
     /**
@@ -75,7 +95,7 @@ public class UsuarioServicio implements UserDetailsService {
     public Usuario registrarNuevoUsuario(Usuario nuevoUsuario) {
 
         // 1. Verificar si el usuario ya existe (por correo)
-        Optional<Usuario> usuarioExistente = usuarioRepositorio.findByCorreo(nuevoUsuario.getCorreo());
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByCorreo(nuevoUsuario.getCorreo());
         if (usuarioExistente.isPresent()) {
             throw new RuntimeException("El correo ya está registrado: " + nuevoUsuario.getCorreo());
         }
@@ -86,7 +106,7 @@ public class UsuarioServicio implements UserDetailsService {
         nuevoUsuario.setContrasena(contrasenaCodificada);
 
         // 3. Asignar el rol por defecto (ROLE_CLIENTE)
-        Rol rolCliente = rolRepositorio.findByNombre("comun")
+        Rol rolCliente = rolRepository.findByNombre("comun")
                 .orElseThrow(() -> new RuntimeException("Rol 'comun' no encontrado."));
 
         nuevoUsuario.setRol(rolCliente);
@@ -95,6 +115,6 @@ public class UsuarioServicio implements UserDetailsService {
         nuevoUsuario.setActivo(true);
 
         // 5. Guardar en la base de datos
-        return usuarioRepositorio.save(nuevoUsuario);
+        return usuarioRepository.save(nuevoUsuario);
     }
 }

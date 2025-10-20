@@ -9,16 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwtServicio {
+public class JwtService {
 
     // Clave secreta fuerte (debe estar en application.properties, pero la ponemos aquí temporalmente)
     //Ahora se encripta en EncriptadorContraseñas xd

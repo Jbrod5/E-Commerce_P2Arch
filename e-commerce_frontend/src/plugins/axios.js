@@ -5,8 +5,10 @@ import Cookies from 'js-cookie';
 const api = axios.create({
     // La URL base para la mayoría de tus endpoints (ej. /api/productos)
     baseURL: 'http://localhost:8080/api', 
+    
+
     headers: {
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json', 
     },
 });
 
