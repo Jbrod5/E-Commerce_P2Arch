@@ -5,8 +5,8 @@
     </h1>
     <div class="card shadow-lg p-5 rounded-3">
       
-      <!-- Se ha eliminado el comentario anterior para evitar errores de compilación en el template -->
-      <form v-on:submit.prevent="submitProduct" enctype="multipart/form-data" novalidate>
+      <!-- Ya NO usamos enctype="multipart/form-data" -->
+      <form v-on:submit.prevent="submitProduct" novalidate>
 
         <div class="row">
           <!-- Columna 1: Datos del Producto -->
@@ -43,7 +43,6 @@
             <div class="mb-3">
               <label for="idCategoria" class="form-label fw-bold">Categoría</label>
               <select id="idCategoria" v-model.number="form.idCategoria" class="form-select" required>
-                <!-- Usando mock data en el script para hacerlo dinámico -->
                 <option v-for="cat in categoriasMock" :key="cat.id" :value="cat.id">
                   {{ cat.nombre }} (ID: {{ cat.id }})
                 </option>
@@ -67,20 +66,26 @@
             <!-- Campo de Archivo -->
             <div class="mb-3">
               <label for="imagenFile" class="form-label fw-bold">Seleccionar Imagen</label>
-              <input class="form-control" type="file" id="imagenFile" @change="handleFileUpload" required>
-              <div class="form-text">Formatos permitidos: JPG, PNG. Máx. 5MB.</div>
+              <!-- Usamos @change para activar el handler de conversión a Base64 -->
+              <input class="form-control" type="file" id="imagenFile" @change="handleFileUpload" required accept="image/*">
+              <div class="form-text">La imagen se convertirá a Base64 y se enviará en el JSON. Máx. 5MB.</div>
             </div>
 
             <!-- Previsualización de la Imagen -->
-            <div v-if="imageUrl" class="mt-4 p-3 border rounded bg-white shadow-sm">
+            <!-- Usamos form.imagenBase64 (que ahora es el URL de datos) -->
+            <div v-if="form.imagenBase64" class="mt-4 p-3 border rounded bg-white shadow-sm">
               <p class="fw-bold text-muted mb-2">Previsualización:</p>
               <img 
-                :src="imageUrl" 
+                :src="form.imagenBase64" 
                 alt="Previsualización del producto" 
                 class="img-fluid rounded shadow-sm" 
                 style="max-height: 250px; width: 100%; object-fit: cover;"
               >
             </div>
+            
+            <!-- Mensaje de error específico para la imagen si el Base64 falla -->
+            <div v-if="imageError" class="alert alert-warning mt-2">{{ imageError }}</div>
+            
           </div>
         </div>
 
@@ -95,7 +100,7 @@
           {{ isLoading ? 'Guardando...' : 'Guardar Producto' }}
         </button>
 
-        <!-- Mensajes de Estado -->
+        <!-- Mensajes de Estado Globales -->
         <div v-if="errorMessage" class="alert alert-danger mt-4">{{ errorMessage }}</div>
         <div v-if="successMessage" class="alert alert-success mt-4">{{ successMessage }}</div>
 
@@ -105,15 +110,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeUnmount } from 'vue';
+import { ref, reactive } from 'vue';
 import axios from '@/plugins/axios'; // Asume que este archivo configura la base URL y el interceptor
 
 const isLoading = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
-const imageUrl = ref(null); 
-const file = ref(null); 
-const currentObjectUrl = ref(null); 
+const imageError = ref(''); // Para errores específicos de imagen
 
 // Data mock para las categorías
 const categoriasMock = [
@@ -129,80 +132,77 @@ const form = reactive({
   stock: 1,
   idCategoria: 1, 
   esNuevo: true,
+  imagenBase64: null, // NUEVO CAMPO para almacenar la cadena Base64
 });
 
 /**
- * Revoca el URL de objeto temporal para liberar memoria.
- */
-const revokeTemporaryUrl = () => {
-  if (currentObjectUrl.value) {
-    URL.revokeObjectURL(currentObjectUrl.value);
-    currentObjectUrl.value = null;
-    imageUrl.value = null;
-  }
-};
-
-/**
- * Hook de ciclo de vida: Asegura que el URL se revoque si el usuario abandona el componente.
- */
-onBeforeUnmount(() => {
-    revokeTemporaryUrl();
-});
-
-/**
- * Maneja la selección del archivo, revoca el URL anterior y crea uno nuevo para previsualizar.
+ * Maneja la selección del archivo y lo convierte a Base64.
  */
 const handleFileUpload = (event) => {
-  const selectedFile = event.target.files[0];
-  
-  revokeTemporaryUrl(); 
-  
-  if (selectedFile) {
-    file.value = selectedFile;
-    const newUrl = URL.createObjectURL(selectedFile);
-    currentObjectUrl.value = newUrl; 
-    imageUrl.value = newUrl; 
-    errorMessage.value = ''; 
+  const file = event.target.files[0];
+  form.imagenBase64 = null; // Resetear Base64
+  imageError.value = '';
+
+  if (file) {
+    // Validación de tamaño (Max 5MB)
+    if (file.size > 5 * 1024 * 1024) { 
+        imageError.value = 'El archivo es demasiado grande. Máximo 5MB.';
+        event.target.value = null; // Limpiar el input file
+        return;
+    }
+
+    const reader = new FileReader();
+    
+    // Función que se ejecuta cuando el archivo ha sido leído
+    reader.onload = (e) => {
+        // e.target.result es la cadena Base64 con el prefijo (data:image/png;base64,...)
+        form.imagenBase64 = e.target.result; 
+    };
+
+    // Función que se ejecuta si hay un error de lectura
+    reader.onerror = () => {
+        imageError.value = 'No se pudo leer el archivo.';
+    };
+
+    // Iniciar la lectura del archivo como Base64
+    reader.readAsDataURL(file);
+    
   } else {
-    file.value = null;
+    imageError.value = 'Debe seleccionar una imagen para el producto.';
   }
 };
 
+
 /**
- * Envia la data del formulario como multipart/form-data.
- * Confiamos en el interceptor de axios para añadir el JWT desde las Cookies.
+ * Envia la data del formulario como JSON.
+ * Ya no necesitamos FormData.
  */
 const submitProduct = async () => {
   errorMessage.value = '';
   successMessage.value = '';
+  imageError.value = '';
   
-  if (!file.value) {
-    errorMessage.value = 'Debe seleccionar una imagen para el producto.';
+  if (!form.imagenBase64) {
+    errorMessage.value = 'Debe seleccionar y cargar una imagen Base64 antes de enviar.';
     return;
   }
   
   isLoading.value = true;
-
-  // 1. Crear el objeto FormData
-  const formData = new FormData();
   
-  // 2. Añadir la parte JSON del DTO bajo la clave 'data'
-  // Es importante usar JSON.stringify para que Spring pueda mapear esto a un DTO en el backend
-  formData.append('data', JSON.stringify(form)); 
+  // 1. Crear el DTO final. 
+  // Opcional: Si el backend SÓLO quiere la data pura (sin el prefijo 'data:image/...'), 
+  // se lo quitamos aquí antes de enviar:
+  const payload = { ...form }; // Copiamos el formulario
   
-  // 3. Añadir la parte del archivo bajo la clave 'imagenFile'
-  formData.append('imagenFile', file.value);
-
+  // Si el Base64 empieza con el prefijo y el backend NO lo quiere
+  if (payload.imagenBase64.startsWith('data:')) {
+     payload.imagenBase64 = payload.imagenBase64.split(',')[1];
+  }
+  
   try {
-    // 4. Hacer la petición POST a la API.
-    // **CAMBIO CLAVE**: Pasamos la configuración de headers para asegurar que el Content-Type
-    // sea manejado correctamente por el navegador como 'multipart/form-data',
-    // evitando el error 'application/octet-stream' en el backend.
-    const response = await axios.post('/productos', formData, {
-        headers: {
-            'Content-Type': undefined // Deja que el navegador establezca multipart/form-data automáticamente
-        }
-    });
+    // 2. Hacer la petición POST a la API.
+    // El Content-Type por defecto de Axios será 'application/json', lo cual es correcto.
+    const response = await axios.post('/productos', payload);
 
     successMessage.value = `Producto "${response.data.nombre}" creado exitosamente (ID: ${response.data.id}).`;
     
@@ -214,17 +214,17 @@ const submitProduct = async () => {
         stock: 1,
         idCategoria: categoriasMock[0].id,
         esNuevo: true,
+        imagenBase64: null, // Limpiar la Base64 y la previsualización
     });
-    
-    revokeTemporaryUrl(); // Limpiar la previsualización
 
   } catch (error) {
     if (error.response) {
       if (error.response.status === 403 || error.response.status === 401) {
-        // 401/403 es el error más probable si la configuración de Content-Type se arregló
+        // El 403 (Forbidden) original que te salió.
         errorMessage.value = 'Acceso Denegado (401/403): Su sesión ha expirado o no tiene permisos. Verifique su login y las Cookies.';
       } else if (error.response.status === 400) {
-         errorMessage.value = 'Error de validación (400): Verifique los datos ingresados y que la imagen sea válida.';
+         // Error de validación, quizás el Base64 era muy grande o datos inválidos.
+         errorMessage.value = `Error de validación (400): ${error.response.data?.message || 'Verifique los datos ingresados.'}`;
       } else {
          errorMessage.value = `Error al crear el producto. Código: ${error.response.status} - ${error.response.data?.message || 'Error en el servidor'}`;
       }

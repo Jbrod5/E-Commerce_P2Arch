@@ -104,8 +104,11 @@ public class SeguridadConfig {
 
                 // 3. Define las reglas de autorización
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Acceso público para autenticación (LOGIN, REGISTRO)
+                        // 1. Acceso público
+                        //para autenticación (LOGIN, REGISTRO)
                         .requestMatchers("/api/auth/**").permitAll()
+                        //recursos como imagenes
+                        .requestMatchers("/imagenes/**").permitAll()
 
                         // 2. Rutas que requieren un rol específico
                         // CORRECCIÓN: Usar hasAuthority() para la cadena literal 'moderador'

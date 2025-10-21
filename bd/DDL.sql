@@ -177,19 +177,27 @@ CREATE TABLE notificacion (
 );
 
 
--- el carrito de compras debe estar en la base de datos??? o se maneja por cookie? :3
+-- manejarlo en la base de datos para mantenerlo si se inicia sesión otra vez
 CREATE TABLE carrito (
     id_carrito SERIAL PRIMARY KEY,
     usuario INTEGER NOT NULL REFERENCES usuario(id_usuario),
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_ultima_modificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    -- Asegura que un usuario solo tenga un carrito abierto (o activo) a la vez
+    CONSTRAINT uq_usuario_carrito UNIQUE (usuario)
 );
 
 
 CREATE TABLE detalle_carrito (
-    id_detalle SERIAL PRIMARY KEY,
     carrito INTEGER NOT NULL REFERENCES carrito(id_carrito),
     producto INTEGER NOT NULL REFERENCES producto(id_producto),
+
+
     cantidad INTEGER NOT NULL,
-    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+
+    -- Congela el precio al momento de añadir el producto.
+    precio_unitario DECIMAL(10, 2) NOT NULL,
+
+    -- Clave Primaria Compuesta: La combinación de Carrito + Producto debe ser única.
+    PRIMARY KEY (carrito, producto)
 );

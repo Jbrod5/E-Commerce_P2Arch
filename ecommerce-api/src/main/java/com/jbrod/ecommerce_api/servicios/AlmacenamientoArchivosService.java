@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import java.util.Base64; // Importación necesaria para el Base64, aunque no se usa directamente aquí, es buena práctica.
 
 /**
  * Servicio que encapsula la lógica de almacenamiento de archivos.
@@ -56,6 +57,44 @@ public class AlmacenamientoArchivosService {
 
         // Transferir el contenido del archivo subido al disco
         file.transferTo(filePath.toFile());
+
+        // 4. Devolver la URL de acceso público
+        return BASE_URL_MOCK + uniqueFilename;
+    }
+
+    /**
+     * ***************************************************************
+     * NUEVO MÉTODO: Sube un arreglo de bytes (imagen decodificada de Base64)
+     * ***************************************************************
+     * Guarda el array de bytes físicamente y genera una URL de acceso.
+     * Dado que Base64 no incluye la extensión, asumimos una extensión común (.png).
+     * @param bytes El array de bytes de la imagen decodificada.
+     * @return La URL pública donde se accedería a la imagen.
+     * @throws IOException Si la subida falla.
+     */
+    public String uploadBytes(byte[] bytes) throws IOException {
+        if (bytes == null || bytes.length == 0) {
+            throw new IOException("No se puede subir un array de bytes vacío.");
+        }
+
+        // 1. Asegurar que la carpeta de destino exista
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // 2. Generar un nombre de archivo único y ASUMIR una extensión.
+        // NOTA: Si necesitas una detección de extensión más precisa, tendrías que
+        // examinar los primeros bytes del array (magic number) o requerir el mimetype
+        // en el DTO del producto. Asumimos .png por simplicidad.
+        String extension = ".png"; // Asumimos PNG o puedes usar .jpg si es más común para tu caso.
+        String uniqueFilename = "prod-" + UUID.randomUUID().toString() + extension;
+
+        // 3. Crear el path final y guardar el archivo
+        Path filePath = uploadPath.resolve(uniqueFilename);
+
+        // Escribir el contenido binario (los bytes) directamente al disco
+        Files.write(filePath, bytes);
 
         // 4. Devolver la URL de acceso público
         return BASE_URL_MOCK + uniqueFilename;

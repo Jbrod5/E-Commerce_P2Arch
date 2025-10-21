@@ -16,7 +16,7 @@ public class ProductoCreacionDTO {
     @NotBlank(message = "La descripción del producto es obligatoria.")
     private String descripcion;
 
-    // La URL de la imagen es opcional según la tabla SQL
+    // Ya no se usa para recibir, pero lo dejo por si es parte de tu modelo
     private String imagenUrl;
 
     @NotNull(message = "El precio es obligatorio.")
@@ -32,6 +32,12 @@ public class ProductoCreacionDTO {
 
     @NotNull(message = "La categoría es obligatoria.")
     private Long idCategoria; // Solo recibimos el ID de la categoría
+
+    // *************************************************************
+    // CAMBIO CLAVE: Nuevo campo para recibir la imagen Base64
+    // *************************************************************
+    @NotBlank(message = "La imagen en formato Base64 es obligatoria.")
+    private String imagenBase64;
 
     // --- Getters y Setters ---
 
@@ -89,5 +95,16 @@ public class ProductoCreacionDTO {
 
     public void setIdCategoria(Long idCategoria) {
         this.idCategoria = idCategoria;
+    }
+
+    // *************************************************************
+    // Getter y Setter para Base64
+    // *************************************************************
+    public String getImagenBase64() {
+        return imagenBase64;
+    }
+
+    public void setImagenBase64(String imagenBase64) {
+        this.imagenBase64 = imagenBase64;
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+// IMPORTACIÓN ELIMINADA: import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,35 +28,37 @@ public class ProductoController {
     }
 
     /**
-     * Endpoint para que un vendedor registre un nuevo producto, incluyendo la imagen.
-     * La petición DEBE ser de tipo multipart/form-data.
+     * Endpoint para que un vendedor registre un nuevo producto.
+     * La petición ahora DEBE ser de tipo application/json, incluyendo la imagen codificada en Base64.
      * URL: POST /api/productos
-     * @param dto Datos del producto a crear (parte JSON, usando @RequestPart). Se espera bajo la clave 'data'.
-     * @param imagenFile El archivo de la imagen a subir (parte binaria, usando @RequestPart). Se espera bajo la clave 'imagenFile'.
+     * @param dto Datos del producto a crear, incluyendo la imagen Base64 (recibida con @RequestBody).
      * @param authentication Objeto de autenticación para obtener el usuario autenticado.
      * @return El producto creado con estado "pendiente".
      */
     @PostMapping
     public ResponseEntity<Producto> crearProducto(
-            // 1. Usar @RequestPart para el DTO (JSON)
-            @Valid @RequestPart("data") ProductoCreacionDTO dto,
+            // *************************************************************
+            // CAMBIO CLAVE: Usamos @RequestBody para todo el DTO JSON
+            // *************************************************************
+            @Valid @RequestBody ProductoCreacionDTO dto,
 
-            // 2. Usar @RequestPart también para el archivo binario
-            // Esto asegura que Spring maneje correctamente la parte 'imagenFile' de la petición multipart.
-            @RequestPart("imagenFile") MultipartFile imagenFile,
-
+            // Ya no recibimos MultipartFile, la imagen está en dto.getImagenBase64()
             Authentication authentication) {
 
         // El correo del vendedor es su principal de autenticación
         String correoVendedor = authentication.getName();
 
         try {
-            // Llama al servicio, que maneja la subida de la imagen y el guardado en DB.
-            Producto nuevoProducto = productoServicio.crearProducto(dto, correoVendedor, imagenFile);
+            // Llama al servicio. El servicio ahora debe manejar la decodificación del Base64
+            // (dto.getImagenBase64()) y el guardado en DB.
+            // Necesitarás actualizar la firma de tu servicio para que ya no reciba MultipartFile.
+
+            // ASUMO que tu servicio necesita ser corregido, aquí llamamos a un nuevo método:
+            Producto nuevoProducto = productoServicio.crearProductoBase64(dto, correoVendedor);
             return new ResponseEntity<>(nuevoProducto, HttpStatus.CREATED);
         } catch (IOException e) {
-            // Error en la subida del archivo (ej. archivo vacío o fallo al escribir en disco)
-            System.err.println("Error al subir archivo: " + e.getMessage());
+            // Error en la subida del archivo (ej. fallo al escribir en disco)
+            System.err.println("Error al decodificar o guardar imagen Base64: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400 Bad Request
         } catch (NoSuchElementException e) {
             // Error de lógica (ej. Vendedor o Categoría no encontrados)
@@ -64,6 +66,9 @@ public class ProductoController {
         } catch (IllegalStateException e) {
             // Error de configuración (ej. Estado 'pendiente' no existe en DB)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500
+        } catch (IllegalArgumentException e) {
+            // Captura si el Base64 no es válido
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 

@@ -11,12 +11,13 @@ import com.jbrod.ecommerce_api.repositorios.productos.EstadoAprobacionProductoRe
 import com.jbrod.ecommerce_api.repositorios.productos.ProductoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import java.math.BigDecimal; // IMPORTANTE: Importación necesaria para las correcciones
+// REMOVIDO: import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Base64; // Importación necesaria para decodificar Base64
 
 /**
  * Servicio para la lógica de negocio de Productos.
@@ -46,42 +47,55 @@ public class ProductoService {
 
 
     /**
-     * Crea un nuevo producto, subiendo la imagen al sistema de archivos local y
-     * asignándole el estado 'pendiente'.
-     * @param dto Datos del producto.
+     * NOTA: EL MÉTODO ANTIGUO CON MultipartFile HA SIDO REEMPLAZADO O ELIMINADO.
+     * * Crea un nuevo producto, decodificando la imagen Base64, subiéndola al sistema
+     * de archivos y asignándole el estado 'pendiente'.
+     *
+     * @param dto Datos del producto, incluyendo la cadena Base64 de la imagen.
      * @param username Correo del usuario autenticado (vendedor).
-     * @param imagenFile Archivo de la imagen a subir.
      * @return Producto guardado.
+     * @throws IOException Si ocurre un error al guardar los bytes decodificados en disco.
+     * @throws IllegalArgumentException Si la cadena Base64 no es válida.
      */
     @Transactional
-    public Producto crearProducto(ProductoCreacionDTO dto, String username, MultipartFile imagenFile) throws IOException {
-        // 1. Subir la imagen y obtener su URL pública
-        // El AlmacenamientoArchivosService se encarga de guardar el archivo y devolver la URL.
-        String imagenUrl = almacenamientoArchivosService.uploadFile(imagenFile);
+    public Producto crearProductoBase64(ProductoCreacionDTO dto, String username) throws IOException, IllegalArgumentException {
 
-        // 2. Obtener la entidad de Usuario (vendedor)
+        // 1. Decodificar la imagen Base64 a bytes
+        String base64Image = dto.getImagenBase64();
+
+        // Opcional: Limpiar el prefijo si el frontend lo envía (ej: "data:image/png;base64,")
+        if (base64Image.startsWith("data:")) {
+            base64Image = base64Image.split(",")[1];
+        }
+
+        // NOTA: Base64.getDecoder().decode() lanzará IllegalArgumentException si la cadena no es válida.
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+
+        // 2. Subir los bytes decodificados y obtener su URL pública
+        // ESTO REQUIERE QUE AGREGUES UN NUEVO MÉTODO en AlmacenamientoArchivosService
+        // para manejar byte[] en lugar de MultipartFile.
+        String imagenUrl = almacenamientoArchivosService.uploadBytes(imageBytes);
+
+        // 3. Obtener la entidad de Usuario (vendedor)
         Usuario vendedor = usuarioServicio.obtenerUsuarioPorCorreo(username)
                 .orElseThrow(() -> new NoSuchElementException("Vendedor no encontrado: " + username));
 
-        // 3. Obtener el estado 'pendiente'
+        // 4. Obtener el estado 'pendiente'
         EstadoAprobacionProducto estadoPendiente = estadoAprobacionProductoRepository.findByNombre("pendiente")
                 .orElseThrow(() -> new IllegalStateException("Estado 'pendiente' no configurado en la base de datos."));
 
-        // 4. Obtener la Categoría
+        // 5. Obtener la Categoría
         Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada con ID: " + dto.getIdCategoria()));
 
-        // 5. Mapear DTO a Entidad Producto
+        // 6. Mapear DTO a Entidad Producto
         Producto nuevoProducto = new Producto();
         nuevoProducto.setNombre(dto.getNombre());
         nuevoProducto.setDescripcion(dto.getDescripcion());
 
-        // --- CORRECCIÓN 1: Convertir Double (del DTO) a BigDecimal (de la Entidad) ---
-        // Asumiendo que dto.getPrecio() devuelve Double.
         if (dto.getPrecio() != null) {
             nuevoProducto.setPrecio(BigDecimal.valueOf(dto.getPrecio()));
         } else {
-            // Opcional: manejar el caso donde el precio es nulo, aunque la DB lo requiere NOT NULL.
             throw new IllegalArgumentException("El precio del producto no puede ser nulo.");
         }
 
@@ -96,15 +110,15 @@ public class ProductoService {
         nuevoProducto.setCategoria(categoria);
         nuevoProducto.setEstado(estadoPendiente);
 
-        // --- CORRECCIÓN 2: Asignar BigDecimal.ZERO en lugar de 0.0 (Double) ---
         nuevoProducto.setPromedioCalificaciones(BigDecimal.ZERO);
 
         // Valores por defecto de la DB
         nuevoProducto.setCantidadCompras(0);
 
-        // 6. Guardar y retornar
+        // 7. Guardar y retornar
         return productoRepository.save(nuevoProducto);
     }
+
 
 
     /**
@@ -169,6 +183,4 @@ public class ProductoService {
 
         return productoRepository.save(producto);
     }
-
-    // Aquí irían otros métodos del servicio (crear, buscar por catálogo, etc.)
 }
