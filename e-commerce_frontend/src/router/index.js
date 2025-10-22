@@ -5,12 +5,20 @@ import { useAuthStore } from '@/stores/auth';
 import LoginView from '../views/LoginView.vue';
 import RegistroView from '../views/RegistroView.vue';
 
-// Importamos el Layout de Vendedor y las vistas
+
+
+
+
+// Usuario comun/vendedor
 import VendedorLayout from '@/layouts/VendedorLayout.vue';
-// Corregido: Importamos la vista específica del vendedor (CrearProductoView)
 import CrearProductoView from '@/views/comun/CrearProductoView.vue'; 
-// Importado: La vista del Marketplace que queremos como inicio
+
+
 import IndexView from '@/views/comun/IndexView.vue'; 
+
+
+import CarritoView from '@/views/comun/pedido/CarritoView.vue'; 
+import PagoView from '@/views/comun/pedido/PagoView.vue';
 
 // Función de ayuda para obtener el nombre del dashboard según el rol
 const getDashboardName = (rol) => {
@@ -95,6 +103,17 @@ const router = createRouter({
           path: 'inventario',
           name: 'inventarioVendedor',
           component: () => import('@/views/comun/InventarioView.vue'), 
+        },
+        // carrito
+        {
+          path: 'carrito', 
+          name: 'carrito', 
+          component: CarritoView,
+        },
+        {
+          path: 'pago', 
+          name: 'pago',
+          component: PagoView,
         },
       ]
     },

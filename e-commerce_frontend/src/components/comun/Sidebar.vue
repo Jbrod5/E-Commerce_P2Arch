@@ -1,49 +1,56 @@
 <template>
-  <nav class="d-flex flex-column p-3 bg-dark text-white vh-100 shadow-lg" style="width: 250px;">
+  <nav class="d-flex flex-column p-3 bg-dark text-white shadow-lg" style="width: 250px; min-height: 100vh;">
     
-    <!-- Título/Logo de la Aplicación -->
-    <router-link to="/" class="navbar-brand text-center text-primary fs-4 fw-bold mb-4 border-bottom pb-3">
+    <router-link to="/vendedor" class="navbar-brand text-center text-light fs-4 fw-bolder mb-4 border-bottom border-light-subtle pb-3">
       E-COMMERCE
     </router-link>
 
-    <!-- 1. CUADRO DE BÚSQUEDA (Placeholder) -->
     <div class="mb-4">
-      <input type="search" class="form-control form-control-sm" placeholder="Buscar productos..." aria-label="Search">
+      <input type="search" class="form-control form-control-sm bg-secondary border-0 text-white" placeholder="Buscar productos..." aria-label="Search">
     </div>
 
-    <!-- 2. ENLACES PRINCIPALES (Vendedor) -->
     <ul class="nav nav-pills flex-column mb-auto">
+      
       <li class="nav-item">
-        <!-- Botón solicitado: Mis Productos (Inventario) -->
-        <router-link to="/vendedor/inventario" class="nav-link text-white text-center mb-2" active-class="active">
-          <i class="bi bi-box-seam me-2"></i> Mis Productos
+        <router-link :to="{ name: 'carrito' }" class="nav-link text-white text-start mb-2 d-flex justify-content-between align-items-center" active-class="active">
+          <div><i class="bi bi-cart me-2"></i> Carrito</div>
+          
+          <span v-if="carritoStore.cantidadProductos > 0" class="badge bg-danger rounded-pill">
+            {{ carritoStore.cantidadProductos }}
+          </span>
         </router-link>
       </li>
-      <li>
-        <!-- Enlace para Crear Producto -->
-        <router-link to="/vendedor/crear-producto" class="nav-link text-white text-center mb-2" active-class="active">
-          <i class="bi bi-plus-circle me-2"></i> Crear Producto
-        </router-link>
-      </li>
+      
+      <div class="flex-grow-1"></div>
     </ul>
 
-    <!-- SEPARADOR -->
     <hr class="text-white-50">
 
-    <!-- 3. SECCIÓN DE PERFIL Y CIERRE DE SESIÓN (Sticky Bottom) -->
     <div class="mt-auto">
-        <!-- Información del Usuario -->
-        <div class="d-flex align-items-center mb-3">
-            <!-- Imagen de Carita (Placeholder con Bootstrap Icons) -->
-            <i class="bi bi-person-circle fs-3 me-2 text-info"></i>
-            
-            <!-- Nombre del Usuario -->
-            <span class="fw-bold text-truncate" :title="authStore.user?.correo || 'Usuario'">
-                {{ authStore.user?.nombre || 'Vendedor' }}
+        
+        <div class="d-flex flex-column align-items-start mb-3 border-bottom border-secondary pb-2">
+            <span class="text-secondary fw-normal small mb-1">
+                <i class="bi bi-person-fill me-1"></i> Vendedor:
+            </span>
+            <span class="fw-bold text-truncate text-info fs-6" :title="authStore.user?.nombre || 'Usuario'">
+                {{ authStore.user?.nombre || 'Cargando...' }} 
             </span>
         </div>
+        
+        <ul class="nav nav-pills flex-column mb-3">
+            <li class="nav-item">
+                <router-link to="/vendedor/inventario" class="nav-link text-white text-start mb-2" active-class="active">
+                    <i class="bi bi-box-seam me-2"></i> Mis Productos
+                </router-link>
+            </li>
+            
+            <li>
+                <router-link to="/vendedor/crear-producto" class="nav-link text-white text-start mb-2" active-class="active">
+                    <i class="bi bi-plus-circle me-2"></i> Crear Producto
+                </router-link>
+            </li>
+        </ul>
 
-        <!-- 4. Botón de Cerrar Sesión -->
         <button 
             @click="logout" 
             class="btn btn-outline-danger w-100 py-2 rounded-pill"
@@ -55,11 +62,14 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useCarritoStore } from '@/stores/carrito';
 import { useRouter } from 'vue-router';
 
 // Instancias de Pinia y Vue Router
 const authStore = useAuthStore();
+const carritoStore = useCarritoStore(); 
 const router = useRouter();
 
 /**
@@ -69,27 +79,30 @@ const logout = () => {
     authStore.logout();
     router.push('/');
 };
+
+onMounted(() => {
+    // Asegurarse de que la información del carrito esté precargada
+    carritoStore.cargarCarrito();
+});
 </script>
 
 <style scoped>
-/* Importamos los íconos de Bootstrap si no están en index.html */
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css");
-
-.bg-dark {
-    background-color: #212529 !important; /* Oscuro estándar de Bootstrap */
+/* Estilos basados en Bootstrap */
+nav {
+    position: sticky;
+    top: 0;
 }
 
-/* Estilo para el enlace activo */
+.bg-dark {
+    background-color: #212529 !important;
+}
+
 .nav-link.active {
-    background-color: #0d6efd !important; /* Azul primario de Bootstrap */
+    background-color: var(--bs-primary) !important;
     color: white !important;
 }
 
-.nav-link {
-    transition: background-color 0.2s;
-}
-
 .nav-link:hover {
-    background-color: #343a40; /* Un poco más claro al hacer hover */
+    background-color: #343a40; 
 }
 </style>

@@ -37,12 +37,9 @@ public class ProductoController {
      */
     @PostMapping
     public ResponseEntity<Producto> crearProducto(
-            // *************************************************************
-            // CAMBIO CLAVE: Usamos @RequestBody para todo el DTO JSON
-            // *************************************************************
+
             @Valid @RequestBody ProductoCreacionDTO dto,
 
-            // Ya no recibimos MultipartFile, la imagen está en dto.getImagenBase64()
             Authentication authentication) {
 
         // El correo del vendedor es su principal de autenticación

@@ -7,7 +7,7 @@ import java.math.BigDecimal; // IMPORTANTE: Nueva importación para manejo de de
 
 /**
  * Entidad Producto: Representa un artículo puesto en venta.
- * Mapeada fielmente a la tabla 'producto'.
+ * Mapeada la tabla 'producto'.
  */
 @Entity
 @Table(name = "producto")
@@ -18,7 +18,7 @@ public class Producto {
     @Column(name = "id_producto")
     private Long id;
 
-    // Relación con Usuario (id_vendedor) - CICLO ROTO: OK
+    // Relación con Usuario (id_vendedor) - CICLO ROTOOO
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_vendedor", nullable = false)
     @JsonBackReference
@@ -33,7 +33,7 @@ public class Producto {
     @Column(name = "imagen", nullable = true, columnDefinition = "TEXT")
     private String imagenUrl;
 
-    // --- CAMBIO CLAVE 1: Usar BigDecimal para precio ---
+    // --- CAMBIOOOOO Usar BigDecimal para precio ---
     @Column(name = "precio", nullable = false, columnDefinition = "NUMERIC(12, 2)")
     private BigDecimal precio;
 
@@ -43,13 +43,13 @@ public class Producto {
     @Column(name = "producto_nuevo", nullable = false)
     private Boolean esNuevo;
 
-    // Relación con Categoria (categoria) - ¡NUEVA CORRECCIÓN!
+    // Relación con Categoria (categoria)
     @ManyToOne
     @JoinColumn(name = "categoria", nullable = false)
-    @JsonBackReference("categoria-productos") // Rompe el ciclo Categoria <-> Producto
+    @JsonBackReference("categoria-productos") // Rompe el ciclo Categoria <-> Producto >:c
     private Categoria categoria;
 
-    // --- CAMBIO CLAVE 2: Usar BigDecimal para promedio_calificaciones ---
+    // --- CAMBIOOOOOO 2: Usar BigDecimal para promedio_calificaciones ---
     @Column(name = "promedio_calificaciones", columnDefinition = "NUMERIC(3, 2)")
     private BigDecimal promedioCalificaciones = BigDecimal.ZERO; // Inicialización con BigDecimal
 

@@ -116,6 +116,11 @@ public class SeguridadConfig {
 
                         // CORRECCIÓN CLAVE: Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador'
                         .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN")
+
+                        // Carrito debe ser accesible por el usuario comun :3
+                        .requestMatchers(HttpMethod.POST,  "/api/carrito/**").hasAnyAuthority("comun", "COMUN")
+
+
                         // **********************************************************************************
 
                         // 3. El resto de rutas requieren autenticación (el catch-all final)

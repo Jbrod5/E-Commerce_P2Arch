@@ -47,7 +47,6 @@ public class ProductoService {
 
 
     /**
-     * NOTA: EL MÉTODO ANTIGUO CON MultipartFile HA SIDO REEMPLAZADO O ELIMINADO.
      * * Crea un nuevo producto, decodificando la imagen Base64, subiéndola al sistema
      * de archivos y asignándole el estado 'pendiente'.
      *

@@ -47,9 +47,11 @@ export const useAuthStore = defineStore('auth', {
                     contrasena: contrasena,
                 });
                 
-                // Extraemos el token Y el rol del backend
-                const { token, rol } = response.data;
-                const userData = { correo, rol }; // Objeto a guardar
+
+                const { token, rol, nombre } = response.data;
+                
+
+                const userData = { correo, rol, nombre }; 
 
                 // 1. Guardar en el estado
                 this.token = token;
@@ -77,6 +79,10 @@ export const useAuthStore = defineStore('auth', {
             this.user = null;
             this.isAuthenticated = false;
             Cookies.remove('jwtToken');
+            Cookies.remove('user'); // Recomendado: remover la cookie de usuario también.
+            
+            // Eliminar el encabezado de Axios
+            delete api.defaults.headers.common['Authorization'];
         },
 
         async register(userData) {
@@ -92,8 +98,5 @@ export const useAuthStore = defineStore('auth', {
                 throw error; 
             }
         }
-
-
-
     },
 });

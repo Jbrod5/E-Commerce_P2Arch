@@ -46,7 +46,7 @@ public class UsuarioService implements UserDetailsService {
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
 
         // 1. Busca el usuario en la base de datos por el correo.
-        com.jbrod.ecommerce_api.modelos.Usuario usuario = usuarioRepository.findByCorreo(correo)
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
         // -------------------------------------------------------------------------
@@ -71,6 +71,14 @@ public class UsuarioService implements UserDetailsService {
                 .disabled(!usuario.getActivo())
                 .build();
     }
+
+
+    public Usuario obtenerPorCorreo(String correo) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
+        return usuario;
+    }
+
 
     // ... el resto de la clase UsuarioService se mantiene igual ...
     /**

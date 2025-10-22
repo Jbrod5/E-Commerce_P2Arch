@@ -70,8 +70,8 @@ public class AutenticacionController {
 
             // Opcional: Agregar el correo y rol
             respuesta.put("correo", userDetails.getUsername());
-            // Nota: Se asume que el rol es el primer (y único) authority
             respuesta.put("rol", userDetails.getAuthorities().iterator().next().getAuthority());
+            respuesta.put("nombre", usuarioService.obtenerPorCorreo(userDetails.getUsername()).getNombre());
 
 
             // 6. Retornar el token al cliente
