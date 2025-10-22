@@ -62,10 +62,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from '@/plugins/axios';
-import { useCarritoStore } from '@/stores/carrito'; // 🚨 Importamos el store del carrito
+import { useCarritoStore } from '@/stores/carrito'; // Importamos el store del carrito
 
 // --- Estado local y Stores ---
-const carritoStore = useCarritoStore(); // 🚨 Inicializamos el store
+const carritoStore = useCarritoStore(); // Inicializamos el store
 
 const productos = ref([]);
 const isLoading = ref(true);
@@ -75,7 +75,7 @@ const tipoMensaje = ref('');
 
 
 /**
- * 🚨 Función REAL para añadir al carrito.
+ * Función para añadir al carrito.
  */
 const manejarAgregarProducto = async (productoId) => {
     // Solo se agrega 1 unidad por defecto

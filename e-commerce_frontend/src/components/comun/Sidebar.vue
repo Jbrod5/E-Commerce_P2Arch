@@ -1,5 +1,5 @@
 <template>
-  <nav class="d-flex flex-column p-3 bg-dark text-white shadow-lg" style="width: 250px; min-height: 100vh;">
+  <nav class="d-flex flex-column p-3 bg-dark text-white shadow-lg vh-100 position-fixed" style="width: 250px;">
     
     <router-link to="/vendedor" class="navbar-brand text-center text-light fs-4 fw-bolder mb-4 border-bottom border-light-subtle pb-3">
       E-COMMERCE
@@ -87,11 +87,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Estilos basados en Bootstrap */
-nav {
-    position: sticky;
-    top: 0;
-}
 
 .bg-dark {
     background-color: #212529 !important;
