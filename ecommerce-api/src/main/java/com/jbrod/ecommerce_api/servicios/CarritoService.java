@@ -37,28 +37,28 @@ public class CarritoService {
     @Autowired
     private ProductoRepository productoRepository;
 
+    // Se eliminó la función privada 'crearNuevoCarrito' para integrar su lógica directamente.
+
     /**
      * Obtiene el carrito activo del usuario, o lo crea si no existe.
-     * @param usuarioId ID del usuario
+     * cuando se crea un nuevo carrito dentro del orElseGet.
+     * * @param usuarioId ID del usuario
      * @return CarritoResponseDto
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public CarritoResponseDto obtenerOCrearCarrito(Long usuarioId) {
         Carrito carrito = carritoRepository.findByUsuarioId(usuarioId)
-                .orElseGet(() -> crearNuevoCarrito(usuarioId));
+                .orElseGet(() -> {
+                    // Lógica de creación de un nuevo carrito integrada aquí
+                    Carrito nuevoCarrito = new Carrito();
+                    nuevoCarrito.setUsuarioId(usuarioId);
+                    return carritoRepository.save(nuevoCarrito); // INSERT permitido por @Transactional
+                });
 
         return mapearACarritoResponseDto(carrito);
     }
 
-    /**
-     * Lógica para la creación de un nuevo carrito.
-     */
-    private Carrito crearNuevoCarrito(Long usuarioId) {
-        Carrito nuevoCarrito = new Carrito();
-        nuevoCarrito.setUsuarioId(usuarioId);
-        // Se guarda sin items, se añaden después.
-        return carritoRepository.save(nuevoCarrito);
-    }
+    // El método privado 'crearNuevoCarrito' fue eliminado.
 
     /**
      * Agrega un producto al carrito o actualiza su cantidad.
@@ -68,8 +68,13 @@ public class CarritoService {
      */
     @Transactional
     public CarritoResponseDto agregarOActualizarProducto(Long usuarioId, CarritoItemDto itemDto) {
+        // y asegurar que si se necesita un nuevo carrito, se crea dentro de esta transacción de escritura.
         Carrito carrito = carritoRepository.findByUsuarioId(usuarioId)
-                .orElseGet(() -> crearNuevoCarrito(usuarioId)); // Crea si no existe
+                .orElseGet(() -> {
+                    Carrito nuevoCarrito = new Carrito();
+                    nuevoCarrito.setUsuarioId(usuarioId);
+                    return carritoRepository.save(nuevoCarrito); // Crea si no existe
+                });
 
         Producto producto = productoRepository.findById(itemDto.getProductoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Producto", itemDto.getProductoId()));
