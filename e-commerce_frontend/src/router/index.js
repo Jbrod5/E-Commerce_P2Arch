@@ -9,7 +9,7 @@ import RegistroView from '../views/RegistroView.vue';
 
 
 
-// Usuario comun/vendedor
+// Usuario comun/vendedor - - - - - - - - - -
 import VendedorLayout from '@/layouts/VendedorLayout.vue';
 import CrearProductoView from '@/views/comun/CrearProductoView.vue'; 
 import PerfilVendedorView from '@/views/comun/administracion/PerfilVendedorView.vue';
@@ -18,9 +18,11 @@ import GestionTarjetasView from '@/views/comun/administracion/GestionTarjetasVie
 
 import IndexView from '@/views/comun/IndexView.vue'; 
 
-
 import CarritoView from '@/views/comun/pedido/CarritoView.vue'; 
 import PagoView from '@/views/comun/pedido/PagoView.vue';
+
+import DetallePedidoView from '@/views/comun/pedido/DetallePedidoView.vue';
+import MisPedidosView from '@/views/comun/pedido/MisPedidosView.vue';
 
 // Función de ayuda para obtener el nombre del dashboard según el rol
 const getDashboardName = (rol) => {
@@ -141,6 +143,18 @@ const router = createRouter({
           name: 'gestionTarjetas',
           component: GestionTarjetasView,
         },
+        {
+        path: 'pedidos', 
+        name: 'misPedidos',
+        component: MisPedidosView,
+      },
+      {
+        // Ruta dinámica: espera un ID de pedido (ej: /vendedor/pedidos/123)
+        path: 'pedidos/:id', 
+        name: 'detallePedido',
+        component: DetallePedidoView,
+        props: true, // Permite pasar el ID como prop al componente DetallePedidoView
+      },
       ]
     },
 

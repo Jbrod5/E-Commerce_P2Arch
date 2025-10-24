@@ -1,7 +1,9 @@
 package com.jbrod.ecommerce_api.controladores;
 
 import com.jbrod.ecommerce_api.dto.pedido.CheckoutRequestDto;
+import com.jbrod.ecommerce_api.dto.pedido.PedidoDetalleDto;
 import com.jbrod.ecommerce_api.dto.pedido.PedidoResponseDto;
+import com.jbrod.ecommerce_api.dto.pedido.PedidoResumenDto;
 import com.jbrod.ecommerce_api.servicios.PedidoService;
 import com.jbrod.ecommerce_api.servicios.UsuarioService;
 import com.jbrod.ecommerce_api.utilidades.excepciones.RecursoNoEncontradoException;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -83,6 +86,68 @@ public class PedidoController {
         } catch (Exception e) {
             // Manejo de errores generales (incluyendo problemas de transacción/BD)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al procesar el pago: " + e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * Endpoint para obtener el resumen de todos los pedidos realizados por el usuario autenticado.
+     * URL: GET /api/pedidos
+     * @param principal Objeto de autenticación para obtener la identidad del usuario.
+     * @return Lista de PedidoResumenDto. // <--- ¡CAMBIO AQUÍ!
+     */
+    @GetMapping
+    public ResponseEntity<List<PedidoResumenDto>> obtenerPedidosUsuario(Principal principal) {
+        try {
+            // 1. Obtener el ID del usuario autenticado
+            Long usuarioId = obtenerUsuarioIdDePrincipal(principal);
+
+            // 2. Ejecutar la lógica para obtener todos los pedidos
+            // La llamada al servicio ahora es compatible con su tipo de retorno (PedidoResumenDto)
+            List<PedidoResumenDto> pedidos = pedidoService.obtenerPedidosPorUsuario(usuarioId);
+
+            // 3. Devolver la respuesta
+            return ResponseEntity.ok(pedidos);
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
+
+
+    /**
+     * Endpoint para obtener el detalle de un pedido específico.
+     * URL: GET /api/pedidos/{id}
+     * @param id ID del pedido a buscar (viene de la URL).
+     * @param principal Objeto de autenticación para obtener el ID del usuario.
+     * @return PedidoDetalleDto.
+     */
+    @GetMapping("/{id}") // MAPEA A /api/pedidos/{id}
+    public ResponseEntity<?> obtenerDetallePedido(
+            @PathVariable("id") Long id,
+            Principal principal) {
+        try {
+            // 1. Obtener el ID del usuario autenticado
+            Long usuarioId = obtenerUsuarioIdDePrincipal(principal);
+
+            // 2. Ejecutar la lógica para obtener el detalle (el service ya valida la propiedad)
+            PedidoDetalleDto detalle = pedidoService.obtenerDetallePedido(id, usuarioId);
+
+            // 3. Devolver la respuesta
+            return ResponseEntity.ok(detalle);
+
+        } catch (RecursoNoEncontradoException e) {
+            // Maneja el caso en que el ID no existe o no pertenece al usuario autenticado (seguridad)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            // Manejo de errores generales
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

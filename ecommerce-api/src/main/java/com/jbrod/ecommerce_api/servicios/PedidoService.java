@@ -1,6 +1,9 @@
 package com.jbrod.ecommerce_api.servicios;
 
 import com.jbrod.ecommerce_api.dto.pedido.CheckoutRequestDto;
+import com.jbrod.ecommerce_api.dto.pedido.ItemPedidoDto;
+import com.jbrod.ecommerce_api.dto.pedido.PedidoDetalleDto;
+import com.jbrod.ecommerce_api.dto.pedido.PedidoResumenDto;
 import com.jbrod.ecommerce_api.dto.pedido.PedidoResponseDto;
 import com.jbrod.ecommerce_api.modelos.carrito.Carrito;
 import com.jbrod.ecommerce_api.modelos.carrito.DetalleCarrito;
@@ -25,6 +28,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoService {
@@ -32,6 +36,7 @@ public class PedidoService {
     // 5% de comisión para la plataforma
     private static final BigDecimal COMISION_PLATAFORMA = new BigDecimal("0.05");
 
+    // ... (Inyección de dependencias existentes)
     @Autowired private CarritoRepository carritoRepository;
     @Autowired private DetalleCarritoRepository detalleCarritoRepository;
     @Autowired private ProductoRepository productoRepository;
@@ -41,7 +46,6 @@ public class PedidoService {
     @Autowired private TarjetasRepository tarjetasRepository;
     @Autowired private EstadoPedidoRepository estadoPedidoRepository;
     @Autowired private RecaudacionPlataformaRepository recaudacionPlataformaRepository;
-
 
     /**
      * Procesa la compra de un usuario: valida stock, crea el pedido, actualiza inventario
@@ -69,7 +73,7 @@ public class PedidoService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tarjeta", checkoutDto.getTarjetaId()));
 
         // Asume ID 1 es 'en curso' (según tu script SQL)
-        EstadoPedido estadoInicial = estadoPedidoRepository.findById(1L)
+        EstadoPedido estadoInicial = estadoPedidoRepository.findById(1)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Estado Pedido Inicial", 1L));
 
         // Calcular el monto total y validar stock final antes de proceder
@@ -163,5 +167,111 @@ public class PedidoService {
         responseDto.setFechaEntregaEstimada(pedidoGuardado.getFechaEntregaEstimada());
 
         return responseDto;
+    }
+
+
+
+
+
+
+
+
+
+    /**
+     * Obtiene la lista de pedidos de un usuario (Resumen).
+     * @param usuarioId ID del usuario.
+     * @return Lista de PedidoResumenDto.
+     */
+    @Transactional
+    public List<PedidoResumenDto> obtenerPedidosPorUsuario(Long usuarioId) {
+        // Usamos el método de seguridad que creamos en PedidoRepository
+        List<Pedido> pedidos = pedidoRepository.findByUsuarioIdOrderByFechaRealizacionDesc(usuarioId);
+
+        // Mapeamos las entidades a los DTOs de resumen
+        return pedidos.stream()
+                .map(this::mapearAResumen)
+                .collect(Collectors.toList());
+    }
+
+    private PedidoResumenDto mapearAResumen(Pedido pedido) {
+        PedidoResumenDto dto = new PedidoResumenDto();
+        dto.setIdPedido(pedido.getId());
+        dto.setMontoTotal(pedido.getMontoTotal());
+        // IMPORTANTE: Asume que Pedido tiene relación (getNombreEstado()) con EstadoPedido
+        dto.setEstadoNombre(pedido.getEstado().getNombre());
+        dto.setFechaRealizacion(pedido.getFechaRealizacion());
+        dto.setDireccion(pedido.getDireccion());
+        return dto;
+    }
+
+
+    // -----------------------------------------------------------------------------------
+    // NUEVO: OBTENER DETALLE DE PEDIDO
+    // -----------------------------------------------------------------------------------
+    /**
+     * Obtiene el detalle de un pedido específico, validando que pertenezca al usuario.
+     * @param pedidoId ID del pedido.
+     * @param usuarioId ID del usuario.
+     * @return PedidoDetalleDto con todos los datos.
+     */
+    @Transactional
+    public PedidoDetalleDto obtenerDetallePedido(Long pedidoId, Long usuarioId) {
+
+        // 1. BUSCAR PEDIDO Y VALIDAR PROPIEDAD (SEGURIDAD CRÍTICA)
+        Pedido pedido = pedidoRepository.findByIdAndUsuarioId(pedidoId, usuarioId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", pedidoId));
+
+        // 2. MAPEAR A DTO DE DETALLE
+        return mapearADetalle(pedido);
+    }
+
+    private PedidoDetalleDto mapearADetalle(Pedido pedido) {
+        PedidoDetalleDto detalleDto = new PedidoDetalleDto();
+
+        // Información básica y fechas
+        detalleDto.setIdPedido(pedido.getId());
+        detalleDto.setMontoTotal(pedido.getMontoTotal());
+        detalleDto.setEstadoNombre(pedido.getEstado().getNombre());
+        detalleDto.setFechaRealizacion(pedido.getFechaRealizacion());
+        detalleDto.setFechaEntregaEstimada(pedido.getFechaEntregaEstimada());
+        detalleDto.setFechaEntregaReal(pedido.getFechaEntregaReal());
+        detalleDto.setDireccion(pedido.getDireccion());
+
+        // 3. OBTENER PARTE VISIBLE DE LA TARJETA (JOIN IMPLÍCITO)
+        // La entidad Pedido tiene la referencia a la Tarjeta (tarjeta_usada)
+        Tarjetas tarjeta = tarjetasRepository.findById(pedido.getTarjetaUsada().getId())
+                .orElse(null);
+
+        if (tarjeta != null) {
+            detalleDto.setTarjetaParteVisible(tarjeta.getParteVisible());
+        } else {
+            detalleDto.setTarjetaParteVisible("Tarjeta Eliminada");
+        }
+
+        // 4. MAPEAR ITEMS DEL PEDIDO
+        // Asumo que la entidad Pedido tiene un getItems() que devuelve List<ListaProductoPedido>
+        List<ListaProductoPedido> items = pedido.getItems();
+
+
+        List<ItemPedidoDto> itemDtos = items.stream()
+                .map(this::mapearAItemDto)
+                .collect(Collectors.toList());
+
+        detalleDto.setItems(itemDtos);
+
+        return detalleDto;
+    }
+
+    private ItemPedidoDto mapearAItemDto(ListaProductoPedido item) {
+        ItemPedidoDto dto = new ItemPedidoDto();
+        dto.setIdProducto(item.getProducto().getId());
+        dto.setCantidad(item.getCantidad());
+        dto.setPrecioUnitario(item.getPrecioUnitario());
+        dto.setSubtotal(item.getSubtotal());
+
+        // Obtener el nombre del producto (JOIN a Producto)
+        dto.setNombreProducto(item.getProducto().getNombre());
+
+        return dto;
     }
 }

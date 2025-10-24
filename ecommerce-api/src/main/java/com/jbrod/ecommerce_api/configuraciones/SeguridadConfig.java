@@ -126,6 +126,7 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.POST,  "/api/carrito/**").hasAnyAuthority("comun", "COMUN")
                         // Pago debe ser accesible por usuario comun
                         .requestMatchers(HttpMethod.POST, "/api/pedidos/**").hasAnyAuthority("comun", "COMUN")
+                        .requestMatchers(HttpMethod.GET,  "/api/pedidos/**").hasAnyAuthority("comun", "COMUN")
                         // Tarjetas debe ser accesible por usuario comun
                         .requestMatchers(HttpMethod.POST, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")
                         .requestMatchers(HttpMethod.GET, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")

@@ -22,7 +22,9 @@
           <div class="card-body">
             <h5 class="card-title"><i class="bi bi-bag-check-fill me-2"></i> Mis Pedidos</h5>
             <p class="card-text text-muted">Consulta el historial completo de tus compras, seguimiento y estados de envío.</p>
-            <button class="btn btn-outline-secondary mt-2" disabled>Ver Historial (TO-DO)</button>
+            <router-link :to="{ name: 'misPedidos' }" class="btn btn-primary mt-2">
+              Ver historial de pedidos
+            </router-link>
           </div>
         </div>
       </div>
