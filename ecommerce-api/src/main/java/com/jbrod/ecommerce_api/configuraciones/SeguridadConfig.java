@@ -130,7 +130,9 @@ public class SeguridadConfig {
                         // Tarjetas debe ser accesible por usuario comun
                         .requestMatchers(HttpMethod.POST, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")
                         .requestMatchers(HttpMethod.GET, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")
-
+                        // Productos y resenas deben ser accesibles por comun
+                        .requestMatchers(HttpMethod.GET, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
+                        .requestMatchers(HttpMethod.POST, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
 
                         // **********************************************************************************
 

@@ -1,6 +1,8 @@
 package com.jbrod.ecommerce_api.controladores;
 
 import com.jbrod.ecommerce_api.dto.ProductoCreacionDTO;
+import com.jbrod.ecommerce_api.dto.producto.ProductoDetalleDto;
+import com.jbrod.ecommerce_api.dto.producto.ResenaRequestDto;
 import com.jbrod.ecommerce_api.modelos.productos.Producto;
 import com.jbrod.ecommerce_api.servicios.ProductoService;
 import jakarta.validation.Valid;
@@ -112,6 +114,64 @@ public class ProductoController {
         }
     }
 
+
+
+    // Reseñas y vista de producto:
+    /**
+     * Endpoint para obtener el detalle completo de un producto por su ID.
+     * Incluye información de vendedor y lista de reseñas.
+     * URL: GET /api/productos/{id}
+     * @param id ID del producto a buscar.
+     * @return ProductoDetalleDto.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerDetalleProducto(@PathVariable Long id) {
+        try {
+            // Llama al servicio para obtener el DTO completo
+            ProductoDetalleDto detalle = productoServicio.obtenerDetalleProducto(id);
+            return ResponseEntity.ok(detalle);
+        } catch (NoSuchElementException e) {
+            // Producto no encontrado o no aprobado (depende de la lógica del Service)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            // Por ejemplo, si el Service filtra por estado 'aprobado' y falla.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error al obtener detalle del producto: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    /**
+     * Endpoint para que un usuario registre o actualice una reseña para un producto.
+     * URL: POST /api/productos/{id}/resena
+     * @param id ID del producto a calificar.
+     * @param dto Datos de la reseña (calificación, comentario).
+     * @param authentication Objeto de autenticación para obtener el ID del usuario reseñista.
+     * @return 201 Created si es nueva, 200 OK si se actualiza.
+     */
+    @PostMapping("/{id}/resena")
+    public ResponseEntity<?> calificarProducto(
+            @PathVariable Long id,
+            @Valid @RequestBody ResenaRequestDto dto,
+            Authentication authentication) {
+
+        String correoUsuario = authentication.getName();
+
+        try {
+            // Llama al servicio para procesar la calificación (crear o actualizar)
+            productoServicio.calificarProducto(id, correoUsuario, dto);
+
+            // Devuelve éxito. No necesitamos devolver la entidad completa.
+            return ResponseEntity.ok("Reseña registrada/actualizada exitosamente. El promedio del producto ha sido recalculado.");
+
+        } catch (NoSuchElementException e) {
+            // Producto o Usuario no encontrado.
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error al registrar reseña: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 
 

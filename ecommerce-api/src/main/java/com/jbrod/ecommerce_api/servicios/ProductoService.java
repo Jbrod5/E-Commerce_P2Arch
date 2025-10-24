@@ -2,10 +2,12 @@ package com.jbrod.ecommerce_api.servicios;
 
 import com.jbrod.ecommerce_api.dto.EstadoProductoDTO;
 import com.jbrod.ecommerce_api.dto.ProductoCreacionDTO;
+import com.jbrod.ecommerce_api.dto.producto.ProductoDetalleDto;
+import com.jbrod.ecommerce_api.dto.producto.ResenaDto;
+import com.jbrod.ecommerce_api.dto.producto.ResenaRequestDto;
 import com.jbrod.ecommerce_api.modelos.Usuario;
-import com.jbrod.ecommerce_api.modelos.productos.Categoria;
-import com.jbrod.ecommerce_api.modelos.productos.EstadoAprobacionProducto;
-import com.jbrod.ecommerce_api.modelos.productos.Producto;
+import com.jbrod.ecommerce_api.modelos.productos.*;
+import com.jbrod.ecommerce_api.repositorios.productos.CalificacionProductoRepository;
 import com.jbrod.ecommerce_api.repositorios.productos.CategoriaRepository;
 import com.jbrod.ecommerce_api.repositorios.productos.EstadoAprobacionProductoRepository;
 import com.jbrod.ecommerce_api.repositorios.productos.ProductoRepository;
@@ -15,9 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Base64; // Importación necesaria para decodificar Base64
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Servicio para la lógica de negocio de Productos.
@@ -32,17 +38,21 @@ public class ProductoService {
     private final UsuarioService usuarioServicio;
     // INYECTAMOS el servicio de manejo de archivos
     private final AlmacenamientoArchivosService almacenamientoArchivosService;
+    //Inyeccion repositorio CalificacionProducto
+    private final CalificacionProductoRepository calificacionProductoRepository;
 
     public ProductoService(ProductoRepository productoRepository,
                            EstadoAprobacionProductoRepository estadoAprobacionProductoRepositorio,
                            CategoriaRepository categoriaRepository,
                            UsuarioService usuarioServicio,
-                           AlmacenamientoArchivosService almacenamientoArchivosService) {
+                           AlmacenamientoArchivosService almacenamientoArchivosService,
+                           CalificacionProductoRepository calificacionProductoRepository) {
         this.productoRepository = productoRepository;
         this.estadoAprobacionProductoRepository = estadoAprobacionProductoRepositorio;
         this.categoriaRepository = categoriaRepository;
         this.usuarioServicio = usuarioServicio;
         this.almacenamientoArchivosService = almacenamientoArchivosService; // Asignación
+        this.calificacionProductoRepository = calificacionProductoRepository;
     }
 
 
@@ -182,4 +192,151 @@ public class ProductoService {
 
         return productoRepository.save(producto);
     }
+
+
+
+    // RESEÑASSS
+    /**
+     * Obtiene el detalle completo de un producto, incluyendo la información del vendedor
+     * y la lista de calificaciones/reseñas.
+     * @param idProducto ID del producto.
+     * @return ProductoDetalleDto con toda la información.
+     */
+    @Transactional(readOnly = true)
+    public ProductoDetalleDto obtenerDetalleProducto(Long idProducto) {
+
+        // 1. Buscar el producto por ID
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con ID: " + idProducto));
+
+        // **OPCIONAL PERO RECOMENDADO:** Filtrar solo por productos 'aprobados'
+        if (!"aprobado".equalsIgnoreCase(producto.getEstado().getNombre())) {
+            throw new IllegalArgumentException("El producto no está aprobado para la venta.");
+        }
+
+        // 2. Buscar todas las calificaciones y reseñas
+        List<CalificacionProducto> calificaciones = calificacionProductoRepository.findByIdProducto(idProducto);
+
+        // 3. Mapear reseñas a DTOs
+        List<ResenaDto> resenasDto = calificaciones.stream()
+                .map(this::mapearAResenaDto)
+                .collect(Collectors.toList());
+
+        // 4. Mapear el producto a DTO de detalle
+        ProductoDetalleDto detalleDto = mapearADetalleDto(producto);
+
+        // 5. Asignar reseñas y contar
+        detalleDto.setResenas(resenasDto);
+        detalleDto.setCantidadResenas(resenasDto.size());
+
+        return detalleDto;
+    }
+
+    /** Mapea CalificacionProducto a ResenaDto. */
+    private ResenaDto mapearAResenaDto(CalificacionProducto calificacion) {
+        ResenaDto dto = new ResenaDto();
+        dto.setCalificacion(calificacion.getCalificacion());
+        dto.setComentario(calificacion.getComentario());
+        dto.setFecha(calificacion.getFecha());
+        // Se asume que la relación Usuario se cargó (FetchType.EAGER)
+        dto.setNombreUsuario(calificacion.getUsuario().getNombre());
+        return dto;
+    }
+
+    /** Mapea Producto a ProductoDetalleDto. */
+    private ProductoDetalleDto mapearADetalleDto(Producto producto) {
+        ProductoDetalleDto dto = new ProductoDetalleDto();
+        dto.setId(producto.getId());
+        dto.setNombre(producto.getNombre());
+        dto.setDescripcion(producto.getDescripcion());
+        dto.setImagenUrl(producto.getImagenUrl());
+        dto.setPrecio(producto.getPrecio());
+        dto.setStock(producto.getStock());
+        dto.setEsNuevo(producto.getEsNuevo());
+        dto.setPromedioCalificaciones(producto.getPromedioCalificaciones());
+
+        // Relaciones (asumimos que están cargadas o se cargan dentro de la transacción)
+        dto.setNombreVendedor(producto.getVendedor().getNombre());
+        dto.setNombreCategoria(producto.getCategoria().getNombre());
+
+        return dto;
+    }
+
+
+
+
+    // ProductoService.java (NUEVO MÉTODO)
+
+    /**
+     * Crea o actualiza la calificación de un usuario para un producto.
+     * @param idProducto ID del producto a calificar.
+     * @param username Correo del usuario autenticado (reseñista).
+     * @param dto Datos de la reseña (calificación y comentario).
+     * @return La nueva (o actualizada) CalificacionProducto.
+     */
+    @Transactional
+    public CalificacionProducto calificarProducto(Long idProducto, String username, ResenaRequestDto dto) {
+
+        // 1. Obtener Entidades
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con ID: " + idProducto));
+
+        Usuario usuario = usuarioServicio.obtenerUsuarioPorCorreo(username)
+                .orElseThrow(() -> new NoSuchElementException("Usuario autenticado no encontrado: " + username));
+
+        // 2. Verificar si ya existe una calificación del usuario para este producto
+        Optional<CalificacionProducto> calificacionExistente =
+                calificacionProductoRepository.findByIdProductoAndUsuario(idProducto, usuario);
+
+        // 3. Crear o Actualizar la Calificación
+        CalificacionProducto calificacion;
+        if (calificacionExistente.isPresent()) {
+            // Actualizar
+            calificacion = calificacionExistente.get();
+        } else {
+            // Crear Nueva
+            calificacion = new CalificacionProducto();
+            calificacion.setProducto(producto);
+            calificacion.setUsuario(usuario);
+            // Configurar la clave compuesta
+            calificacion.setId(new CalificacionProductoId(idProducto, usuario.getId()));
+        }
+
+        calificacion.setCalificacion(dto.getCalificacion());
+        calificacion.setComentario(dto.getComentario());
+        calificacion.setFecha(LocalDateTime.now()); // Actualiza la fecha
+
+        CalificacionProducto calificacionGuardada = calificacionProductoRepository.save(calificacion);
+
+        // 4. Recalcular y Actualizar el Promedio de Calificaciones del Producto
+        actualizarPromedioCalificaciones(producto);
+
+        return calificacionGuardada;
+    }
+
+    /** Método auxiliar para recalcular el promedio. */
+    @Transactional // Debe estar en la misma transacción o tener una propia
+    private void actualizarPromedioCalificaciones(Producto producto) {
+        // Obtenemos todas las calificaciones del producto
+        List<CalificacionProducto> todasLasCalificaciones = calificacionProductoRepository.findByIdProducto(producto.getId());
+
+        if (todasLasCalificaciones.isEmpty()) {
+            producto.setPromedioCalificaciones(BigDecimal.ZERO);
+            return;
+        }
+
+        // Calcular la suma total de las calificaciones
+        double sumaCalificaciones = todasLasCalificaciones.stream()
+                .mapToInt(CalificacionProducto::getCalificacion)
+                .sum();
+
+        // Calcular el nuevo promedio
+        BigDecimal nuevoPromedio = BigDecimal.valueOf(sumaCalificaciones)
+                .divide(BigDecimal.valueOf(todasLasCalificaciones.size()), 2, RoundingMode.HALF_UP);
+
+        // Actualizar el producto en la base de datos
+        producto.setPromedioCalificaciones(nuevoPromedio);
+        productoRepository.save(producto);
+    }
+
 }

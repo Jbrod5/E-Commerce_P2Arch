@@ -68,7 +68,7 @@
               <label for="imagenFile" class="form-label fw-bold">Seleccionar Imagen</label>
               <!-- Usamos @change para activar el handler de conversión a Base64 -->
               <input class="form-control" type="file" id="imagenFile" @change="handleFileUpload" required accept="image/*">
-              <div class="form-text">La imagen se convertirá a Base64 y se enviará en el JSON. Máx. 5MB.</div>
+              <div class="form-text">Máx. 5MB.</div>
             </div>
 
             <!-- Previsualización de la Imagen -->
