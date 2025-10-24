@@ -12,6 +12,8 @@ import RegistroView from '../views/RegistroView.vue';
 // Usuario comun/vendedor
 import VendedorLayout from '@/layouts/VendedorLayout.vue';
 import CrearProductoView from '@/views/comun/CrearProductoView.vue'; 
+import PerfilVendedorView from '@/views/comun/administracion/PerfilVendedorView.vue';
+import GestionTarjetasView from '@/views/comun/administracion/GestionTarjetasView.vue';
 
 
 import IndexView from '@/views/comun/IndexView.vue'; 
@@ -114,6 +116,30 @@ const router = createRouter({
           path: 'pago', 
           name: 'pago',
           component: PagoView,
+        },
+        // ----------------------------------------------------
+        // RUTAS DE PEDIDOS Y ADMINISTRACIÓN
+        {
+          path: 'carrito', 
+          name: 'carrito', 
+          component: CarritoView,
+        },
+        {
+          path: 'pago', 
+          name: 'pago',
+          component: PagoView,
+        },
+          //Perfil de Administración
+        {
+          path: 'perfil', 
+          name: 'perfilVendedor',
+          component: PerfilVendedorView,
+        },
+        // Gestión de Tarjetas
+        {
+          path: 'tarjetas', 
+          name: 'gestionTarjetas',
+          component: GestionTarjetasView,
         },
       ]
     },

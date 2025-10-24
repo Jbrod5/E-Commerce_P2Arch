@@ -122,7 +122,7 @@ const fetchMarketplaceProducts = async () => {
 
 onMounted(() => {
     fetchMarketplaceProducts();
-    // 🚨 Precarga el carrito para que el contador de la navbar esté listo
+    // Precarga el carrito para que el contador de la navbar esté listo
     carritoStore.cargarCarrito(); 
 });
 </script>

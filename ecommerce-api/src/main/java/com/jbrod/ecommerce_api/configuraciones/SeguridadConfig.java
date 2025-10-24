@@ -110,6 +110,9 @@ public class SeguridadConfig {
                         //recursos como imagenes
                         .requestMatchers("/imagenes/**").permitAll()
 
+
+
+
                         // 2. Rutas que requieren un rol específico
                         // CORRECCIÓN: Usar hasAuthority() para la cadena literal 'moderador'
                         .requestMatchers("/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
@@ -117,8 +120,15 @@ public class SeguridadConfig {
                         // CORRECCIÓN CLAVE: Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador'
                         .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN")
 
+
+
                         // Carrito debe ser accesible por el usuario comun :3
                         .requestMatchers(HttpMethod.POST,  "/api/carrito/**").hasAnyAuthority("comun", "COMUN")
+                        // Pago debe ser accesible por usuario comun
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos/**").hasAnyAuthority("comun", "COMUN")
+                        // Tarjetas debe ser accesible por usuario comun
+                        .requestMatchers(HttpMethod.POST, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")
+                        .requestMatchers(HttpMethod.GET, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")
 
 
                         // **********************************************************************************

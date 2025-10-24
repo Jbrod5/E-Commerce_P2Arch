@@ -79,7 +79,7 @@ export const useAuthStore = defineStore('auth', {
             this.user = null;
             this.isAuthenticated = false;
             Cookies.remove('jwtToken');
-            Cookies.remove('user'); // Recomendado: remover la cookie de usuario también.
+            Cookies.remove('user'); // remover la cookie de usuario también pq si no falla la wea esta >:c
             
             // Eliminar el encabezado de Axios
             delete api.defaults.headers.common['Authorization'];

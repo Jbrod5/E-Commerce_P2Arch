@@ -4,8 +4,8 @@ import { defineStore } from 'pinia';
 import api from '@/plugins/axios.js';
 
 
-
-
+// Función API para el checkout
+import { finalizarCompra } from '@/api/pedido'; 
 
 const ENDPOINT_CARRITO = '/carrito'; 
 
@@ -15,6 +15,7 @@ export const useCarritoStore = defineStore('carrito', {
         carrito: null, 
         cargando: false,
         error: null,
+        ultimoPedido: null, 
     }),
 
     getters: {
@@ -90,6 +91,37 @@ export const useCarritoStore = defineStore('carrito', {
             }
         },
         
-        // ... (Aquí iría la acción procesarPago en el futuro) :3
+        // ----------------------------------------------------
+        // NUEVA ACCIÓN: PROCESAR CHECKOUT / PEDIDO FINAL :33333
+        // ----------------------------------------------------
+        /**
+         * Llama al API para finalizar la compra (Checkout).
+         * @param {object} checkoutData - { tarjetaId: Long, direccion: string }
+         * @returns {object} PedidoResponseDto de la compra exitosa.
+         */
+        async procesarCheckout(checkoutData) {
+            this.cargando = true;
+            this.error = null;
+            this.ultimoPedido = null;
+            try {
+                // 1. Llamar al módulo API para ejecutar la transacción en el backend
+                const response = await finalizarCompra(checkoutData);
+                
+                // 2. Si es exitoso, actualizar el estado
+                this.ultimoPedido = response; 
+                
+                // 3. Vaciar el carrito en el estado local (El backend ya lo vació en la DB)
+                this.carrito = { items: [], montoTotal: 0 }; 
+                
+                return response;
+            } catch (err) {
+                // Capturar el mensaje de error del backend (stock insuficiente, tarjeta no válida, etc.)
+                const mensaje = err.response?.data || 'Error desconocido al procesar el pago.';
+                this.error = mensaje;
+                throw mensaje; // Propagar el error para que la vista lo maneje
+            } finally {
+                this.cargando = false;
+            }
+        },
     }
 });

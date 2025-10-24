@@ -23,8 +23,8 @@ public class JwtService {
     //private static final String CLAVE_SECRETA = "TRES_TRISTES_tigres_tragaban_trigo_en_un_trigalllllll:333333";
     private static final String SECRET_KEY = "VFJFU19UUklTVEVTX3RpZ3Jlc190cmFnYWJhbl90cmlnb19lbl91bl90cmlnYWxsbGxsbGw6MzMzMzMz";
 
-    // Tiempo de expiración del token (1 hora en milisegundos)
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+    // Tiempo de expiración del token (1 dia en milisegundos - mil milisegundos * 60 segundos * 60 minutos * 24 horas)
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
     /**
      * 1. Genera un JWT para un usuario.

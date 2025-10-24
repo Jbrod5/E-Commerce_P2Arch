@@ -110,7 +110,7 @@ CREATE TABLE estado_pedido (
     nombre_estado VARCHAR(50) NOT NULL
     -- en curso, entregado
 );
-INSERT INTO estado_pedido(nombre_estado) VALUES ('en curso'), ('entregado');
+INSERT INTO estado_pedido(nombre_estado) VALUES ('en curso'), ('enviado'), ('entregado');
 
 
 CREATE TABLE pedido (
@@ -119,6 +119,9 @@ CREATE TABLE pedido (
     monto_total NUMERIC(14,2) NOT NULL,
     tarjeta_usada INTEGER NOT NULL REFERENCES tarjetas(id_tarjeta),
     estado INTEGER DEFAULT 1 NOT NULL REFERENCES estado_pedido(id_estado_pedido), -- DEFAULT 1 = en curso
+
+    direccion TEXT NOT NULL,
+    
     fecha_realizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_entrega_estimada TIMESTAMP NOT NULL,
     fecha_entrega_real TIMESTAMP -- NULL: hasta que se entregue el pedido

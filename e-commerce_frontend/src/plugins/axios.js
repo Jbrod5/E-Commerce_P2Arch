@@ -32,9 +32,18 @@ api.interceptors.response.use(response => {
 }, error => {
     // Si el backend responde 401, aquí podrías forzar el logout o redirigir
     if (error.response && error.response.status === 401) {
-        console.error("Token expirado o no autorizado. ¡Implementar logout y redirección aquí!");
+        console.error("Token jwt expirado o no autorizado.");
         // Ejemplo de redirección manual si el 401 no es el login
         // window.location.href = '/login'; 
+
+        //Eliminar las cookies de la sesion
+        Cookies.remove('jwtToken');
+        Cookies.remove('user');
+
+        // Redirige a la página de login (la URL raíz '/')
+        window.location.href = '/'; 
+        
+        return Promise.reject("Token expirado: Redirigiendo a login.");
     }
     return Promise.reject(error);
 });
