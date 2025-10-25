@@ -46,7 +46,9 @@
           <div class="card-body">
             <h5 class="card-title"><i class="bi bi-graph-up me-2"></i> Mis Ventas</h5>
             <p class="card-text text-muted">Accede al registro de tus ventas, comisiones y ganancias como vendedor.</p>
-            <button class="btn btn-outline-secondary mt-2" disabled>Ver Reporte (TO-DO)</button>
+            <router-link :to="{ name: 'MisVentas' }" class="btn btn-primary mt-2">
+              Ver historial de ventas
+            </router-link>
           </div>
         </div>
       </div>
