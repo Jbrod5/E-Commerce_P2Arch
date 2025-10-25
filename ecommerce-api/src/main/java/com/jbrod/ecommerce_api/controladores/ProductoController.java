@@ -125,7 +125,7 @@ public class ProductoController {
      * @return ProductoDetalleDto.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerDetalleProducto(@PathVariable Long id) {
+    public ResponseEntity<?> obtenerDetalleProducto(@PathVariable("id") Long id) {
         try {
             // Llama al servicio para obtener el DTO completo
             ProductoDetalleDto detalle = productoServicio.obtenerDetalleProducto(id);
@@ -151,7 +151,7 @@ public class ProductoController {
      */
     @PostMapping("/{id}/resena")
     public ResponseEntity<?> calificarProducto(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ResenaRequestDto dto,
             Authentication authentication) {
 
