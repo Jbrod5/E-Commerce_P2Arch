@@ -114,10 +114,10 @@ public class SeguridadConfig {
 
 
                         // 2. Rutas que requieren un rol específico
-                        // CORRECCIÓN: Usar hasAuthority() para la cadena literal 'moderador'
+                        //  Usar hasAuthority() para la cadena literal 'moderador'
                         .requestMatchers("/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
 
-                        // CORRECCIÓN CLAVE: Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador'
+                        // Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador'
                         .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN")
 
 
@@ -133,6 +133,13 @@ public class SeguridadConfig {
                         // Productos y resenas deben ser accesibles por comun
                         .requestMatchers(HttpMethod.GET, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
                         .requestMatchers(HttpMethod.POST, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
+
+
+                        //Accesibles por todos pero logueados
+                        // Rutas de Notificaciones get y post
+                        .requestMatchers(HttpMethod.GET, "/api/notificaciones/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "modarador", "MODERADOR", "logistica", "LOGISTICA")
+                        .requestMatchers(HttpMethod.POST, "/api/notificaciones/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "modarador", "MODERADOR", "logistica", "LOGISTICA")
+
 
                         // **********************************************************************************
 

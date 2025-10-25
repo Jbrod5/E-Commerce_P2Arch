@@ -176,7 +176,8 @@ CREATE TABLE notificacion (
     usuario INTEGER NOT NULL REFERENCES usuario(id_usuario),
     titulo VARCHAR(200) NOT NULL,
     cuerpo_de_la_notificacion TEXT NOT NULL,
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    leida BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 

@@ -23,6 +23,7 @@ import PagoView from '@/views/comun/pedido/PagoView.vue';
 
 import DetallePedidoView from '@/views/comun/pedido/DetallePedidoView.vue';
 import MisPedidosView from '@/views/comun/pedido/MisPedidosView.vue';
+import NotificacionesView from '@/views/comun/administracion/NotificacionesView.vue';
 
 // Función de ayuda para obtener el nombre del dashboard según el rol
 const getDashboardName = (rol) => {
@@ -162,6 +163,11 @@ const router = createRouter({
           component: DetallePedidoView,
           props: true, // Permite pasar el ID como prop al componente DetallePedidoView
         },
+        {
+          path: '/notificaciones', 
+          name: 'Notificaciones',
+          component: NotificacionesView
+        }
       ]
     },
 

@@ -34,7 +34,9 @@
           <div class="card-body">
             <h5 class="card-title"><i class="bi bi-bell-fill me-2"></i> Notificaciones</h5>
             <p class="card-text text-muted">Revisa las alertas de la plataforma, aprobaciones de productos y mensajes importantes.</p>
-            <button class="btn btn-outline-secondary mt-2" disabled>Ver Notificaciones (TO-DO)</button>
+            <router-link :to="{ name: 'Notificaciones' }" class="btn btn-primary mt-2">
+              Ver notificaciones
+            </router-link>
           </div>
         </div>
       </div>
