@@ -1,5 +1,6 @@
-package com.jbrod.ecommerce_api.modelos.pedidos;
+package com.jbrod.ecommerce_api.modelos.ingresos;
 
+import com.jbrod.ecommerce_api.modelos.pedidos.Pedido;
 import com.jbrod.ecommerce_api.modelos.productos.Producto; // Asumiendo la entidad Producto
 import jakarta.persistence.*;
 import java.math.BigDecimal;

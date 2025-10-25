@@ -133,6 +133,9 @@ public class SeguridadConfig {
                         // Productos y resenas deben ser accesibles por comun
                         .requestMatchers(HttpMethod.GET, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
                         .requestMatchers(HttpMethod.POST, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
+                        //El vendedor debe tener acceso a sus propios ingresos
+                        .requestMatchers(HttpMethod.GET, "/api/ingresos/vendedor/**")
+                        .hasAnyAuthority("comun", "COMUN", "administrador", "ADMINISTRADOR")
 
 
                         //Accesibles por todos pero logueados
