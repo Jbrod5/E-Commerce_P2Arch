@@ -57,7 +57,11 @@ const router = createRouter({
       component: RegistroView,
       meta: { requiresGuest: true }
     },
-
+    {
+      path: '/config',
+      name: 'Config',
+      component: () => import('@/views/ConfigView.vue'),
+    },
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - POR ROL - - - - - - - - - - - - - - - - - - - - - - - - - 
 

@@ -46,6 +46,11 @@
         <router-link to="/register" class="d-block text-center mt-3 text-muted">
           ¿No tienes cuenta? Regístrate aquí.
         </router-link>
+        <br><br>
+        <router-link to="/config" class="d-block text-center mt-3 text-muted">
+          ¿Cambio la URL de ngrok? >:c <br>
+          Puedes cambiarla aquí :3
+        </router-link>
       </form>
     </div>
   </div>
