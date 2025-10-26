@@ -3,6 +3,7 @@ package com.jbrod.ecommerce_api.controladores;
 
 import com.jbrod.ecommerce_api.dto.solicitudes.DecisionModeracionDto;
 import com.jbrod.ecommerce_api.dto.solicitudes.SolicitudPendienteDto;
+import com.jbrod.ecommerce_api.dto.suspension.SuspensionDTO;
 import com.jbrod.ecommerce_api.dto.suspension.SuspensionPeticionDto;
 import com.jbrod.ecommerce_api.dto.usuario.UsuarioVendedorDto;
 import com.jbrod.ecommerce_api.modelos.moderador.Suspension;
@@ -12,6 +13,7 @@ import com.jbrod.ecommerce_api.servicios.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,6 +122,21 @@ public class ModeradorController {
     public ResponseEntity<List<UsuarioVendedorDto>> obtenerVendedores() {
         List<UsuarioVendedorDto> vendedores = moderadorService.obtenerUsuariosVendedores();
         return ResponseEntity.ok(vendedores);
+    }
+
+    /**
+     * Endpoint para obtener el historial de sanciones de un usuario.
+     */
+    @GetMapping("/sanciones/historial/{idUsuario}")
+    public ResponseEntity<List<SuspensionDTO>> getHistorialSanciones(@PathVariable("idUsuario") Long idUsuario) {
+
+        List<SuspensionDTO> historial = moderadorService.obtenerHistorialSanciones(idUsuario);
+
+        if (historial.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(historial);
     }
 
 }

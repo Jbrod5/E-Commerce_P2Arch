@@ -1,6 +1,7 @@
 package com.jbrod.ecommerce_api.servicios;
 
 
+import com.jbrod.ecommerce_api.dto.suspension.SuspensionDTO;
 import com.jbrod.ecommerce_api.dto.suspension.SuspensionPeticionDto;
 import com.jbrod.ecommerce_api.dto.usuario.UsuarioVendedorDto;
 import com.jbrod.ecommerce_api.modelos.Usuario;
@@ -86,6 +87,22 @@ public class ModeradorService {
                 .map(UsuarioVendedorDto::new) // Usamos el constructor de mapeo del DTO
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Obtiene el historial de suspensiones para un usuario.
+     */
+    @Transactional(readOnly = true)
+    public List<SuspensionDTO> obtenerHistorialSanciones(Long idUsuario) {
+
+        List<Suspension> historial = suspensionRepository
+                .obtenerHistorialSuspensionesPorUsuario(idUsuario);
+
+        // Mapea la lista de entidades a la lista de DTOs
+        return historial.stream()
+                .map(SuspensionDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
     // NOTA: Aquí podrías agregar un método 'obtenerHistorialSanciones()' para el administrador
     // y un 'levantarSuspension()' para reactivar al usuario después de la fecha de fin.

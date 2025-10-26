@@ -63,6 +63,17 @@ const ModeradorAPI = {
     sancionarUsuario(suspensionData) {
         return axios.post(`${BASE_URL_MODERADOR}/sancionar`, suspensionData);
     },
+
+    /**
+     * Obtiene el historial de suspensiones para un usuario específico.
+     * GET /api/moderador/sanciones/historial/{idUsuario}
+     *
+     * @param {number} idUsuario - ID del usuario a consultar.
+     * @returns {Promise<axios.Response>} Lista de SuspensionDTO.
+     */
+    obtenerHistorialSanciones(idUsuario) {
+        return axios.get(`${BASE_URL_MODERADOR}/sanciones/historial/${idUsuario}`);
+    },
 };
 
 export default ModeradorAPI;

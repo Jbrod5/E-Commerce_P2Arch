@@ -145,7 +145,8 @@ public class SeguridadConfig {
 
                         // 2. Rutas que requieren un rol específico
                         //  Usar hasAuthority() para la cadena literal 'moderador'
-                        .requestMatchers("/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
 
                         // Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador', moderador
                         .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "moderador", "MODERADOR")

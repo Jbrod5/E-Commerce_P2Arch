@@ -18,7 +18,7 @@ public class SuspensionDTO {
         this.motivo = suspension.getMotivoSuspension();
         this.fechaSuspension = suspension.getFechaSuspension();
         this.fechaFin = suspension.getFechaFin();
-        this.activa = suspension.isActiva();
+        this.activa = suspension.getActiva();
 
         // Mapeo seguro del moderador
         if (suspension.getModerador() != null) {
