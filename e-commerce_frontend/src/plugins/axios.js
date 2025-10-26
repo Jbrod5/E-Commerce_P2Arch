@@ -5,11 +5,12 @@ import Cookies from 'js-cookie';
 const api = axios.create({
     // La URL base para la mayoría los tus endpoints 
     //baseURL: 'http://localhost:8080/api', 
-    baseURL: ' https://semiobliviously-voluptuous-charlee.ngrok-free.dev',
+    baseURL: 'https://semiobliviously-voluptuous-charlee.ngrok-free.dev',
 
 
     headers: {
         // 'Content-Type': 'application/json', 
+        'ngrok-skip-browser-warning': 'true',
     },
 });
 

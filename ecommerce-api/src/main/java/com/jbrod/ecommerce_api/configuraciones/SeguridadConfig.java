@@ -70,12 +70,30 @@ public class SeguridadConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 1. Agrega los orígenes permitidos
+        //configuration.setAllowedOrigins(Arrays.asList(
+        //        "http://localhost:5173",                     // Para desarrollo local
+        //        "https://e-commercegt.netlify.app",          // dominio de netlify :3
+        //        "https://*.ngrok-free.app",                  // Ngrok si termina en .app xd
+        //        "https://*.ngrok-free.dev"                   // Ngrok si termina en .dev xd
+        //));
+        //Mejor permitir todo :'ccccc
+        //configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+
+        // Para producción y desarrollo
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:5173",                     // Para desarrollo local
-                "https://e-commercegt.netlify.app",          // dominio de netlify :3
-                "https://*.ngrok-free.app",                  // Ngrok si termina en .app xd
-                "https://*.ngrok-free.dev"                   // Ngrok si termina en .dev xd
+                "http://localhost:5173",
+                "https://e-commercegt.netlify.app",
+                "https://semiobliviously-voluptuous-charlee.ngrok-free.dev" // dominio actual xddd
         ));
+
+        // Pattern para cualquier subdominio de ngrok
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://*.ngrok-free.dev",
+                "https://*.ngrok-free.app"
+        ));
+
+
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
@@ -113,7 +131,7 @@ public class SeguridadConfig {
                         // 1. Acceso público
                         //para autenticación (LOGIN, REGISTRO)
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()                        //recursos como imagenes
+                        //.requestMatchers("/auth/**").permitAll()                        //recursos como imagenes
                         .requestMatchers("/imagenes/**").permitAll()
 
 
