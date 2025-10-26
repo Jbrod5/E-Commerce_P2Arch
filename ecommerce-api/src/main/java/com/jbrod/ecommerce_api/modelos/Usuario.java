@@ -1,5 +1,6 @@
 package com.jbrod.ecommerce_api.modelos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jbrod.ecommerce_api.modelos.productos.Producto;
 import jakarta.persistence.*;
@@ -45,6 +46,7 @@ public class Usuario {
     // --- Relación con Productos (Un Usuario puede tener Muchos Productos a la venta) ---
     @OneToMany(mappedBy = "vendedor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference // Indica que esta es la referencia 'manager' o principal del ciclo bidireccional
+    @JsonIgnore
     private List<Producto> productosVendidos;
 
     // --- Constructores ---

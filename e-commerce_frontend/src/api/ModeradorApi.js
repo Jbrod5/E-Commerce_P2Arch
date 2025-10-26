@@ -1,19 +1,23 @@
 import axios from '@/plugins/axios'
 
-const BASE_URL = '/moderador/productos';
+// La base ahora es '/moderador' para incluir productos y gestión de sanciones
+const BASE_URL_MODERADOR = '/moderador';
+const PRODUCTOS_URL = `${BASE_URL_MODERADOR}/productos`;
 
 /**
  * Módulo de funciones para interactuar con los endpoints del Moderador.
  */
 const ModeradorAPI = {
 
+    // --- FUNCIONALIDADES DE GESTIÓN DE PRODUCTOS ---
+    
     /**
      * Obtiene todas las solicitudes de productos que están en estado 'pendiente'.
      * GET /api/moderador/productos/pendientes
      * @returns {Promise<axios.Response>} Lista de SolicitudPendienteDto.
      */
     obtenerSolicitudesPendientes() {
-        return axios.get(`${BASE_URL}/pendientes`);
+        return axios.get(`${PRODUCTOS_URL}/pendientes`);
     },
 
     /**
@@ -29,12 +33,36 @@ const ModeradorAPI = {
         // Construye el DecisionModeracionDto
         const dto = {
             aprobado: aprobado,
-            comentario: comentario // Spring Boot recibirá null si no se proporciona
+            comentario: comentario
         };
 
-        return axios.post(`${BASE_URL}/${idProducto}/revisar`, dto);
+        return axios.post(`${PRODUCTOS_URL}/${idProducto}/revisar`, dto);
     },
 
+    // --- GESTIÓN DE SANCIONES ---
+    
+    /**
+     * Obtiene la lista de usuarios con rol 'comun' (vendedores).
+     * GET /api/moderador/vendedores
+     * @returns {Promise<axios.Response>} Lista de UsuarioVendedorDto.
+     */
+    obtenerUsuariosVendedores() {
+        return axios.get(`${BASE_URL_MODERADOR}/vendedores`);
+    },
+
+    /**
+     * Sanciona a un usuario común (vendedor) por un periodo de tiempo.
+     * POST /api/moderador/sancionar
+     *
+     * @param {Object} suspensionData - Datos de la sanción.
+     * @param {number} suspensionData.idUsuarioASuspender - ID del usuario a sancionar.
+     * @param {string} suspensionData.motivo - Motivo de la sanción.
+     * @param {string} suspensionData.fechaFin - Fecha y hora de finalización (formato ISO 8601).
+     * @returns {Promise<axios.Response>} La Suspensión creada.
+     */
+    sancionarUsuario(suspensionData) {
+        return axios.post(`${BASE_URL_MODERADOR}/sancionar`, suspensionData);
+    },
 };
 
 export default ModeradorAPI;

@@ -90,6 +90,11 @@ const router = createRouter({
           path: 'sanciones',
           name: 'gestion-sanciones', // Nombre más específico
           component: ()=>import('../views/moderador/SancionesView.vue')
+        },
+        {
+          path: 'gestion-sanciones',
+          name: 'gestionSanciones', 
+          component: ()=>import('../views/moderador/GestionarSancionesView.vue')
         }
       ]
     },

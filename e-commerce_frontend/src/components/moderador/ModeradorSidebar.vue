@@ -48,7 +48,7 @@
 
         <li>
           <router-link
-            :to="{ name: 'gestion-sanciones' }"
+            :to="{ name: 'gestionSanciones' }"
             class="nav-link text-white text-start mb-2"
             active-class="active"
           >

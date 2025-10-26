@@ -4,6 +4,7 @@ import com.jbrod.ecommerce_api.modelos.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional; // Necesario para manejar la posibilidad de que no se encuentre el usuario
 
 /**
@@ -22,5 +23,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      * @return Un Optional que contiene el Usuario si existe, o vacío si no.
      */
     Optional<Usuario> findByCorreo(String correo);
+
+
+    /**
+     * Busca todos los usuarios que tienen un Rol específico (usando el ID del Rol).
+     * @param rolId ID del rol (ej: 1 para 'comun').
+     * @return Lista de usuarios con ese rol.
+     */
+    List<Usuario> findByRolId(Integer rolId);
 
 }
