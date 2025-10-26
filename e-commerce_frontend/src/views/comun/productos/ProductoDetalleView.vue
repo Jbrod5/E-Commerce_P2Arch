@@ -127,7 +127,7 @@ onMounted(() => {
         <div v-else-if="producto" class="card shadow-lg p-md-5 p-3">
             <div class="row g-4">
                 <div class="col-md-5">
-                    <img :src="producto.imagenUrl" class="img-fluid rounded-3 product-image" :alt="producto.nombre">
+                    <img v-ngrok-img="producto.imagenUrl"  class="img-fluid rounded-3 product-image" :alt="producto.nombre">
                 </div>
 
                 <div class="col-md-7">

@@ -34,7 +34,7 @@
             <td>
               <!-- Muestra la imagen, usando la URL que generamos en Spring Boot (e.g., http://localhost:8080/imagenes/productos/...) -->
               <img 
-                :src="producto.imagenUrl" 
+                v-ngrok-img="producto.imagenUrl" 
                 alt="Miniatura" 
                 class="img-thumbnail" 
                 style="width: 50px; height: 50px; object-fit: cover;"

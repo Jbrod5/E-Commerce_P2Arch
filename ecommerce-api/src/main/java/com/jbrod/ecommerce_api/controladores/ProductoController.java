@@ -4,6 +4,7 @@ import com.jbrod.ecommerce_api.dto.ProductoCreacionDTO;
 import com.jbrod.ecommerce_api.dto.producto.ProductoDetalleDto;
 import com.jbrod.ecommerce_api.dto.producto.ResenaRequestDto;
 import com.jbrod.ecommerce_api.modelos.productos.Producto;
+import com.jbrod.ecommerce_api.servicios.ConfiguracionGlobalService;
 import com.jbrod.ecommerce_api.servicios.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,12 @@ import java.util.NoSuchElementException;
 public class ProductoController {
 
     private final ProductoService productoServicio;
+    private final ConfiguracionGlobalService configuracionGlobalService;
 
-    public ProductoController(ProductoService productoServicio) {
+    public ProductoController(ProductoService productoServicio,
+                              ConfiguracionGlobalService configuracionGlobalService) {
         this.productoServicio = productoServicio;
+        this.configuracionGlobalService = configuracionGlobalService;
     }
 
     /**
@@ -73,7 +77,7 @@ public class ProductoController {
 
 
     /**
-     * NUEVO ENDPOINT: Obtiene la lista de productos disponibles en el Marketplace.
+     * Obtiene la lista de productos disponibles en el Marketplace.
      * Corresponde a la llamada GET /api/productos que espera IndexView.vue.
      * Es accesible para todos los usuarios autenticados.
      * URL: GET /api/productos
@@ -83,6 +87,9 @@ public class ProductoController {
     public ResponseEntity<List<Producto>> obtenerCatalogoProductos() {
         try {
             List<Producto> productos = productoServicio.obtenerProductosMarketplace();
+            for(Producto producto: productos){
+                producto.setImagenUrl(configuracionGlobalService.convertirUrlImagen(producto.getImagenUrl()));
+            }
             return ResponseEntity.ok(productos);
         } catch (IllegalStateException e) {
             // Este catch maneja si el estado 'aprobado' no existe en la DB (problema de configuración)
@@ -106,6 +113,9 @@ public class ProductoController {
 
             // Llama al servicio para obtener la lista de productos de ese usuario
             List<Producto> productos = productoServicio.obtenerProductosPorVendedor(correoUsuario);
+            for(Producto producto: productos){
+                producto.setImagenUrl(configuracionGlobalService.convertirUrlImagen(producto.getImagenUrl()));
+            }
 
             return ResponseEntity.ok(productos);
         } catch (NoSuchElementException e) {

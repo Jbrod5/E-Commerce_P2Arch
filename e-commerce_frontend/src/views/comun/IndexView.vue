@@ -24,7 +24,8 @@
             >
               
               <img 
-                :src="producto.imagenUrl || 'https://placehold.co/400x200/4c4c4c/ffffff?text=Sin+Imagen'" 
+                v-ngrok-img="producto.imagenUrl || 'https://placehold.co/400x200/4c4c4c/ffffff?text=Sin+Imagen'" 
+                
                 class="card-img-top object-fit-cover" 
                 alt="Imagen del producto" 
                 style="height: 200px;"

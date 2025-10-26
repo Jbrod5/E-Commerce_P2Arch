@@ -7,6 +7,9 @@ import App from './App.vue'
 import router from './router'
 import { useAuthStore } from '@/stores/auth';
 
+
+import ngrokImage from './directives/ngrokImages';
+
 const app = createApp(App)
 
 
@@ -17,5 +20,8 @@ authStore.initialize();
 
 
 app.use(router)
+
+
+app.directive('ngrok-img', ngrokImage);
 
 app.mount('#app')
