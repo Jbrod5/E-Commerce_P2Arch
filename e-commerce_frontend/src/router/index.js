@@ -25,6 +25,7 @@ import DetallePedidoView from '@/views/comun/pedido/DetallePedidoView.vue';
 import MisPedidosView from '@/views/comun/pedido/MisPedidosView.vue';
 import NotificacionesView from '@/views/comun/administracion/NotificacionesView.vue';
 import VentasHistorialView from '@/views/comun/ventas/VentasHistorialView.vue';
+import ModeradorLayout from '@/layouts/ModeradorLayout.vue';
 
 // Función de ayuda para obtener el nombre del dashboard según el rol
 const getDashboardName = (rol) => {
@@ -75,9 +76,22 @@ const router = createRouter({
     // Moderador
     {
       path: '/moderador',
-      name: 'moderador-index',
-      component: () => import('../views/moderador/IndexView.vue'),
-      meta: { requiresAuth: true, roles: ['ROLE_MODERADOR'] }
+      name: 'moderador-dashboard', // Nombre genérico para el dashboard del moderador
+      component: ModeradorLayout,
+      meta: { requiresAuth: true, roles: ['ROLE_MODERADOR'] },
+      children:[
+        {
+          // RUTA POR DEFECTO: /moderador
+          path: '', 
+          name: 'moderador-index', // Este nombre se usará en getDashboardName
+          component: ()=>import('../views/moderador/SolicitudesProductoView.vue')
+        }, 
+        {
+          path: 'sanciones',
+          name: 'gestion-sanciones', // Nombre más específico
+          component: ()=>import('../views/moderador/SancionesView.vue')
+        }
+      ]
     },
     // Logística
     {

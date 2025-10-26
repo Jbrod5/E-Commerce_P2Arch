@@ -147,8 +147,8 @@ public class SeguridadConfig {
                         //  Usar hasAuthority() para la cadena literal 'moderador'
                         .requestMatchers("/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
 
-                        // Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador'
-                        .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN")
+                        // Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador', moderador
+                        .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "moderador", "MODERADOR")
 
 
 
@@ -161,17 +161,25 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.POST, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")
                         .requestMatchers(HttpMethod.GET, "api/tarjetas/**").hasAnyAuthority("comun", "COMUN")
                         // Productos y resenas deben ser accesibles por comun
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**").hasAnyAuthority("comun", "COMUN")
+                        .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "COMUN")
+
                         .requestMatchers(HttpMethod.GET, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
                         .requestMatchers(HttpMethod.POST, "/api/productos/{id}").hasAnyAuthority("comun", "COMUN")
                         //El vendedor debe tener acceso a sus propios ingresos
-                        .requestMatchers(HttpMethod.GET, "/api/ingresos/vendedor/**")
-                        .hasAnyAuthority("comun", "COMUN", "administrador", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/ingresos/vendedor/**").hasAnyAuthority("comun", "COMUN", "administrador", "ADMINISTRADOR")
 
 
                         //Accesibles por todos pero logueados
                         // Rutas de Notificaciones get y post
                         .requestMatchers(HttpMethod.GET, "/api/notificaciones/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "modarador", "MODERADOR", "logistica", "LOGISTICA")
                         .requestMatchers(HttpMethod.POST, "/api/notificaciones/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "modarador", "MODERADOR", "logistica", "LOGISTICA")
+
+
+                        //MODERADORRR
+                        .requestMatchers(HttpMethod.POST, "/api/moderador/productos/**").hasAnyAuthority("moderador", "MODERADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/moderador/productos/**").hasAnyAuthority("moderador", "MODERADOR")
+
 
 
                         // **********************************************************************************

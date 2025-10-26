@@ -92,11 +92,11 @@ VALUES
 (12, 'Camara de seguridad WiFi'         , 'Camara IP con vision nocturna y deteccion de movimiento'     , 'https://picsum.photos/id/74/4288/2848', 480.00, 8, TRUE, 1, 4.6, 14, 2), -- Tecnología
 (12, 'Soporte para laptop'              , 'Ajustable en altura y antideslizante'                        , 'https://picsum.photos/id/28/4928/3264' , 180.00, 18, TRUE, 2, 4.3, 9, 2), -- Hogar
 (12, 'Ventilador portatil USB'          , 'Ventilador silencioso recargable'                            , 'https://picsum.photos/id/0/5000/3333', 90.00, 25, TRUE, 2, 4.4, 11, 2), -- Hogar
-(12, 'Cable HDMI 4K'                    , 'Cable trenzado de 2 metros compatible con 4K'                , 'https://picsum.photos/id/34/3872/2592', 75.00, 40, TRUE, 1, 4.8, 30, 2), -- Tecnología
-(12, 'Mousepad RGB'                     , 'Alfombrilla con luces LED personalizables'                   , 'https://picsum.photos/id/37/2000/1333', 130.00, 15, TRUE, 5, 4.6, 8, 2), -- Decoración
-(12, 'Altavoz de escritorio'            , 'Altavoces estereo compactos con excelente sonido'            , 'https://picsum.photos/id/11/2500/1667', 220.00, 10, TRUE, 2, 4.5, 6, 2), -- Hogar
-(12, 'Disco SSD 500GB'                  , 'Unidad de estado solido con velocidad de lectura 550MB/s'    , 'https://picsum.photos/id/42/3456/2304', 520.00, 7, TRUE, 1, 4.9, 19, 2), -- Tecnología
-(12, 'Memoria USB 128GB'                , 'Pendrive de alta velocidad y diseno metalico'                , 'https://picsum.photos/id/27/3264/1836' , 150.00, 30, TRUE, 1, 4.7, 25, 2); -- Tecnología
+(12, 'Cable HDMI 4K'                    , 'Cable trenzado de 2 metros compatible con 4K'                , 'http://localhost:8080/imagenes/productos/333d.jpg', 75.00, 40, TRUE, 1, 4.8, 30, 2), -- Tecnología
+(12, 'Mousepad RGB'                     , 'Alfombrilla con luces LED personalizables'                   , 'http://localhost:8080/imagenes/productos/prod-89e6865f-a895-47a3-b0e3-48c5a5567b4a.png', 130.00, 15, TRUE, 5, 4.6, 8, 2), -- Decoración
+(12, 'Altavoz de escritorio'            , 'Altavoces estereo compactos con excelente sonido'            , 'http://localhost:8080/imagenes/productos/prod-f4563d31-a62c-48f9-98c1-f6d9218ae48a.png', 220.00, 10, TRUE, 2, 4.5, 6, 2), -- Hogar
+(12, 'Disco SSD 500GB'                  , 'Unidad de estado solido con velocidad de lectura 550MB/s'    , 'http://localhost:8080/imagenes/productos/prod-5514bf13-2535-4adb-9b57-a6b4ff9acc0d.png', 520.00, 7, TRUE, 1, 4.9, 19, 2), -- Tecnología
+(12, 'Memoria USB 128GB'                , 'Pendrive de alta velocidad y diseno metalico'                , 'http://localhost:8080/imagenes/productos/prod-e42f52f9-485e-4f85-8b52-968e3a7a08ea.png' , 150.00, 30, TRUE, 1, 4.7, 25, 2); -- Tecnología
 
 -- PRODUCTOS DE LUCIA FERNANDEZ (id_usuario = 13)
 INSERT INTO producto (id_vendedor, nombre_producto, descripcion, imagen, precio, stock, producto_nuevo, categoria, promedio_calificaciones, cantidad_compras, estado_aprobacion)

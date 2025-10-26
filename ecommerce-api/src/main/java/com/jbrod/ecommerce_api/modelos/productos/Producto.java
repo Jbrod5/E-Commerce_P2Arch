@@ -1,9 +1,12 @@
 package com.jbrod.ecommerce_api.modelos.productos;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jbrod.ecommerce_api.modelos.Usuario;
 import jakarta.persistence.*;
 import java.math.BigDecimal; // IMPORTANTE: Nueva importación para manejo de decimales
+import java.util.List;
 
 /**
  * Entidad Producto: Representa un artículo puesto en venta.
@@ -60,6 +63,13 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "estado_aprobacion", nullable = false)
     private EstadoAprobacionProducto estado;
+
+
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference // Maneja el ciclo de serialización si es necesario
+    @JsonIgnore
+    private List<SolicitudProducto> solicitudes;
 
     // --- Getters y Setters actualizados a BigDecimal ---
 
@@ -159,5 +169,14 @@ public class Producto {
 
     public void setEstado(EstadoAprobacionProducto estado) {
         this.estado = estado;
+    }
+
+
+    public List<SolicitudProducto> getSolicitudes() {
+        return solicitudes;
+    }
+
+    public void setSolicitudes(List<SolicitudProducto> solicitudes) {
+        this.solicitudes = solicitudes;
     }
 }

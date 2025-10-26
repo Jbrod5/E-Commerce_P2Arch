@@ -1,44 +1,67 @@
 package com.jbrod.ecommerce_api.controladores;
 
-import com.jbrod.ecommerce_api.dto.EstadoProductoDTO;
+
+import com.jbrod.ecommerce_api.dto.solicitudes.DecisionModeracionDto;
+import com.jbrod.ecommerce_api.dto.solicitudes.SolicitudPendienteDto;
 import com.jbrod.ecommerce_api.modelos.productos.Producto;
 import com.jbrod.ecommerce_api.servicios.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize; // Importación necesaria para protección a nivel de método
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
- * Controlador para acciones de Moderación (especialmente la aprobación de productos).
- * Requiere el rol MODERADOR para todos sus endpoints.
+ * Controlador REST para manejar las operaciones específicas del rol MODERADOR.
+ * Requiere el prefijo /api/moderador.
  */
 @RestController
-@RequestMapping("/api/moderador")
+@RequestMapping("/api/moderador/productos")
 public class ModeradorController {
 
-    private final ProductoService productoServicio;
+    private final ProductoService productoService;
 
-    public ModeradorController(ProductoService productoServicio) {
-        this.productoServicio = productoServicio;
+    public ModeradorController(ProductoService productoService) {
+        this.productoService = productoService;
     }
 
     /**
-     * Endpoint para cambiar el estado de aprobación de un producto (APROBADO, RECHAZADO).
-     * Requiere que el usuario autenticado tenga el Rol 'MODERADOR'.
-     * URL: PUT /api/moderador/productos/{id}/estado
+     * Obtiene el listado de todos los productos en estado 'pendiente' junto
+     * con la información relevante del vendedor.
+     * GET /api/moderador/productos/pendientes
+     * @return Lista de DTOs de solicitudes pendientes para revisión.
      */
-    @PutMapping("/productos/{id}/estado")
-    @PreAuthorize("hasRole('MODERADOR')") // Restricción de acceso: Solo MODERADOR
-    public ResponseEntity<Producto> actualizarEstadoProducto(
-            @PathVariable Long id,
-            @Valid @RequestBody EstadoProductoDTO dto) {
-
-        Producto productoActualizado = productoServicio.actualizarEstadoProducto(id, dto);
-        return ResponseEntity.ok(productoActualizado);
+    @GetMapping("/pendientes")
+    public ResponseEntity<List<SolicitudPendienteDto>> obtenerSolicitudesPendientes() {
+        System.out.println("Se solicitaron productos pendientes");
+        List<SolicitudPendienteDto> pendientes = productoService.obtenerSolicitudesPendientes();
+        return ResponseEntity.ok(pendientes);
     }
 
-    // Otros métodos útiles para el moderador (ej: listar productos pendientes)
-    // @GetMapping("/productos/pendientes")
-    // @PreAuthorize("hasRole('MODERADOR')")
-    // ...
+    /**
+     * Revisa un producto pendiente, aprobándolo o rechazándolo, y registra la acción
+     * en la tabla de solicitudes.
+     * POST /api/moderador/productos/{idProducto}/revisar
+     * * El DTO DecisionModeracionDto debe contener:
+     * - 'aprobado': boolean (true para aprobar, false para rechazar).
+     * - 'comentario': string (opcional, usado para rechazo).
+     * * @param idProducto ID del producto a revisar.
+     * @param dto DTO con la decisión y el comentario.
+     * @param authentication Datos del usuario moderador autenticado.
+     * @return Producto actualizado (aprobado o rechazado).
+     */
+    @PostMapping("/{idProducto}/revisar")
+    public ResponseEntity<Producto> revisarProducto(
+            @PathVariable("idProducto") Long idProducto,
+            @Valid @RequestBody DecisionModeracionDto dto,
+            Authentication authentication) {
+
+        String username = authentication.getName(); // Correo del moderador (username)
+
+        // Llamada al servicio unificado
+        Producto productoActualizado = productoService.revisarProducto(idProducto, dto, username);
+
+        return ResponseEntity.ok(productoActualizado);
+    }
 }

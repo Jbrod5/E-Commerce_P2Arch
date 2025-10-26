@@ -20,7 +20,9 @@ public class AlmacenamientoArchivosService {
 
     // Directorio base donde se guardarán las imágenes (debe coincidir con WebConfig + subdirectorio)
     // El subdirectorio 'productos' ayuda a organizar las imágenes.
-    private static final String UPLOAD_DIR = "src/main/resources/static/imagenes/productos";
+    //private static final String UPLOAD_DIR = "src/main/resources/static/imagenes/productos";
+    private static final String UPLOAD_DIR = "uploads/productos"; // ruta física
+
 
     // URL base que Spring mapeará para acceder al archivo
     private static final String BASE_URL = "http://localhost:8080/imagenes/productos/";

@@ -5,12 +5,12 @@ import com.jbrod.ecommerce_api.dto.ProductoCreacionDTO;
 import com.jbrod.ecommerce_api.dto.producto.ProductoDetalleDto;
 import com.jbrod.ecommerce_api.dto.producto.ResenaDto;
 import com.jbrod.ecommerce_api.dto.producto.ResenaRequestDto;
+import com.jbrod.ecommerce_api.dto.solicitudes.ComentarioRechazoDto;
+import com.jbrod.ecommerce_api.dto.solicitudes.DecisionModeracionDto;
+import com.jbrod.ecommerce_api.dto.solicitudes.SolicitudPendienteDto;
 import com.jbrod.ecommerce_api.modelos.Usuario;
 import com.jbrod.ecommerce_api.modelos.productos.*;
-import com.jbrod.ecommerce_api.repositorios.productos.CalificacionProductoRepository;
-import com.jbrod.ecommerce_api.repositorios.productos.CategoriaRepository;
-import com.jbrod.ecommerce_api.repositorios.productos.EstadoAprobacionProductoRepository;
-import com.jbrod.ecommerce_api.repositorios.productos.ProductoRepository;
+import com.jbrod.ecommerce_api.repositorios.productos.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 // REMOVIDO: import org.springframework.web.multipart.MultipartFile;
@@ -40,9 +40,11 @@ public class ProductoService {
     private final AlmacenamientoArchivosService almacenamientoArchivosService;
     //Inyeccion repositorio CalificacionProducto
     private final CalificacionProductoRepository calificacionProductoRepository;
+    private final SolicitudProductoRepository solicitudProductoRepository;
 
 
-    private ConfiguracionGlobalService configuracionGlobalService;
+    private final ConfiguracionGlobalService configuracionGlobalService;
+    private final NotificacionService notificacionService;
 
     public ProductoService(ProductoRepository productoRepository,
                            EstadoAprobacionProductoRepository estadoAprobacionProductoRepositorio,
@@ -50,7 +52,9 @@ public class ProductoService {
                            UsuarioService usuarioServicio,
                            AlmacenamientoArchivosService almacenamientoArchivosService,
                            CalificacionProductoRepository calificacionProductoRepository,
-                           ConfiguracionGlobalService configuracionGlobalService) {
+                           ConfiguracionGlobalService configuracionGlobalService,
+                           SolicitudProductoRepository solicitudProductoRepository,
+                           NotificacionService notificacionService) {
         this.productoRepository = productoRepository;
         this.estadoAprobacionProductoRepository = estadoAprobacionProductoRepositorio;
         this.categoriaRepository = categoriaRepository;
@@ -59,49 +63,43 @@ public class ProductoService {
         this.calificacionProductoRepository = calificacionProductoRepository;
 
         this.configuracionGlobalService = configuracionGlobalService;
+        this.solicitudProductoRepository = solicitudProductoRepository;
+        this.notificacionService = notificacionService;
     }
 
 
     /**
      * * Crea un nuevo producto, decodificando la imagen Base64, subiéndola al sistema
-     * de archivos y asignándole el estado 'pendiente'.
+     * de archivos, asignándole el estado 'pendiente' y registrando la solicitud.
      *
      * @param dto Datos del producto, incluyendo la cadena Base64 de la imagen.
      * @param username Correo del usuario autenticado (vendedor).
      * @return Producto guardado.
-     * @throws IOException Si ocurre un error al guardar los bytes decodificados en disco.
-     * @throws IllegalArgumentException Si la cadena Base64 no es válida.
      */
     @Transactional
     public Producto crearProductoBase64(ProductoCreacionDTO dto, String username) throws IOException, IllegalArgumentException {
 
-        // 1. Decodificar la imagen Base64 a bytes
+        // 1. Decodificar la imagen Base64 y obtener la URL (lógica ya existente)
         String base64Image = dto.getImagenBase64();
 
-        // Opcional: Limpiar el prefijo si el frontend lo envía (ej: "data:image/png;base64,")
         if (base64Image.startsWith("data:")) {
             base64Image = base64Image.split(",")[1];
         }
 
-        // NOTA: Base64.getDecoder().decode() lanzará IllegalArgumentException si la cadena no es válida.
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-
-        // 2. Subir los bytes decodificados y obtener su URL pública
         String imagenUrl = almacenamientoArchivosService.uploadBytes(imageBytes);
 
-        // 3. Obtener la entidad de Usuario (vendedor)
+        // 2. Obtener entidades
         Usuario vendedor = usuarioServicio.obtenerUsuarioPorCorreo(username)
                 .orElseThrow(() -> new NoSuchElementException("Vendedor no encontrado: " + username));
 
-        // 4. Obtener el estado 'pendiente'
         EstadoAprobacionProducto estadoPendiente = estadoAprobacionProductoRepository.findByNombre("pendiente")
                 .orElseThrow(() -> new IllegalStateException("Estado 'pendiente' no configurado en la base de datos."));
 
-        // 5. Obtener la Categoría
         Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada con ID: " + dto.getIdCategoria()));
 
-        // 6. Mapear DTO a Entidad Producto
+        // 3. Mapear DTO a Entidad Producto (lógica ya existente)
         Producto nuevoProducto = new Producto();
         nuevoProducto.setNombre(dto.getNombre());
         nuevoProducto.setDescripcion(dto.getDescripcion());
@@ -114,23 +112,127 @@ public class ProductoService {
 
         nuevoProducto.setStock(dto.getStock());
         nuevoProducto.setEsNuevo(dto.getEsNuevo());
-
-        // ASIGNACIÓN CRUCIAL: Se usa la URL obtenida del servicio de almacenamiento
         nuevoProducto.setImagenUrl(imagenUrl);
-
-        // Asignación de relaciones manejadas por el backend
         nuevoProducto.setVendedor(vendedor);
         nuevoProducto.setCategoria(categoria);
         nuevoProducto.setEstado(estadoPendiente);
-
         nuevoProducto.setPromedioCalificaciones(BigDecimal.ZERO);
-
-        // Valores por defecto de la DB
         nuevoProducto.setCantidadCompras(0);
 
-        // 7. Guardar y retornar
-        return productoRepository.save(nuevoProducto);
+        // 4. Guardar Producto
+        Producto productoGuardado = productoRepository.save(nuevoProducto);
+
+        // 5. REGISTRAR SOLICITUD DE PRODUCTO (
+        SolicitudProducto nuevaSolicitud = new SolicitudProducto();
+        nuevaSolicitud.setProducto(productoGuardado);
+        // El moderador, fecha_revision, aprobado y comentario_moderador quedan NULL
+        solicitudProductoRepository.save(nuevaSolicitud);
+
+        //GENERAR NOTIFICACION AAA
+        notificacionService.generarNotificacion(
+            //Correo, titulo, cuerpo
+                username, "En espera de aprobacion: " + dto.getNombre(),
+                "Su producto " +  dto.getNombre() + " se guardó correctemente y está en espera para ser aprobado por un moderador.\nEl estado de su producto es: PENDIENTE."
+        );
+
+        return productoGuardado;
     }
+
+
+
+
+
+
+    /**
+     * Obtiene todos los productos que están en estado 'pendiente'.
+     * @return Lista de DTOs con la información de la solicitud.
+     */
+    @Transactional(readOnly = true)
+    public List<SolicitudPendienteDto> obtenerSolicitudesPendientes() {
+        // Asumimos que el producto repository puede buscar por el nombre del estado
+        List<Producto> productosPendientes = productoRepository.findByEstadoNombre("pendiente");
+
+        // Mapear la lista de Producto a la lista de SolicitudPendienteDto
+        return productosPendientes.stream()
+                .map(producto -> {
+                    // Se utiliza el servicio de configuración para transformar la URL
+                    String urlConvertida = configuracionGlobalService.convertirUrlImagen(producto.getImagenUrl());
+                    SolicitudPendienteDto dto = SolicitudPendienteDto.fromEntity(producto);
+                    dto.setImagenUrl(urlConvertida); // Sobreescribe con la URL convertida
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Lógica unificada para que un Moderador apruebe o rechace un producto.
+     * @param idProducto ID del producto a revisar.
+     * @param dto DTO con la decisión (aprobado: true/false) y el comentario.
+     * @param username Correo del moderador autenticado.
+     * @return Producto actualizado.
+     */
+    @Transactional
+    public Producto revisarProducto(Long idProducto, DecisionModeracionDto dto, String username) {
+        // --- 1. Definir el estado y el comentario final ---
+        final boolean esAprobacion = dto.isAprobado();
+        final String nombreNuevoEstado = esAprobacion ? "aprobado" : "rechazado";
+
+        String comentarioFinal = dto.getComentario() != null && !dto.getComentario().isBlank()
+                ? dto.getComentario()
+                : (esAprobacion ? "Aprobado por el moderador." : "Rechazado sin comentario específico.");
+
+        // --- 2. Buscar entidades (Lógica Común) ---
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con ID: " + idProducto));
+
+        Usuario moderador = usuarioServicio.obtenerUsuarioPorCorreo(username)
+                .orElseThrow(() -> new NoSuchElementException("Moderador no encontrado."));
+
+        EstadoAprobacionProducto nuevoEstado = estadoAprobacionProductoRepository.findByNombre(nombreNuevoEstado)
+                .orElseThrow(() -> new IllegalStateException("Estado '" + nombreNuevoEstado + "' no configurado."));
+
+        // --- 3. Validar estado (Lógica Común) ---
+        if (!"pendiente".equalsIgnoreCase(producto.getEstado().getNombre())) {
+            throw new IllegalStateException("El producto no está en estado 'pendiente' para ser revisado.");
+        }
+
+        // --- 4. Actualizar Producto ---
+        producto.setEstado(nuevoEstado);
+        Producto productoActualizado = productoRepository.save(producto);
+
+        // --- 5. Actualizar SolicitudProducto (Buscamos la solicitud pendiente) ---
+        SolicitudProducto solicitud = productoActualizado.getSolicitudes().stream()
+                .filter(s -> s.getAprobado() == null) // La que aún no tiene decisión
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No se encontró solicitud pendiente asociada al producto."));
+
+        solicitud.setModerador(moderador);
+        solicitud.setFechaRevision(LocalDateTime.now());
+        solicitud.setAprobado(esAprobacion);
+        solicitud.setComentarioModerador(comentarioFinal);
+
+        solicitudProductoRepository.save(solicitud);
+
+        //GENERAR NOTIFICACION AAA
+        notificacionService.generarNotificacion(
+                //Correo, titulo, cuerpo
+                producto.getVendedor().getCorreo(),
+                "Deliberación " + producto.getNombre() + ": "  + nombreNuevoEstado,
+                "El moderador " + moderador.getNombre() + " ha evaluado su producto y lo ha " + nombreNuevoEstado + ".\n"
+                + "La nota del moderador es la siguiente: \n"
+                + dto.getComentario()
+        );
+
+
+        return productoActualizado;
+    }
+
+
+
+
+
+
+
 
 
 

@@ -19,4 +19,10 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     // Método para obtener productos que están APROBADOS y tienen stock > 0 (para el catálogo principal)
     List<Producto> findByEstadoAndStockGreaterThan(EstadoAprobacionProducto estado, Integer stock);
+
+    /**
+     * Método de búsqueda para obtener productos con estado de aprobación coincide con el nombre dado.
+     * Útil para buscar todos los productos 'pendiente' o 'aprobado' :33.
+     */
+    List<Producto> findByEstadoNombre(String nombreEstado);
 }

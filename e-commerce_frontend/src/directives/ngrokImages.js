@@ -1,4 +1,3 @@
-// src/directives/ngrokImage.js
 import api from '@/plugins/axios.js';
 
 export default {
