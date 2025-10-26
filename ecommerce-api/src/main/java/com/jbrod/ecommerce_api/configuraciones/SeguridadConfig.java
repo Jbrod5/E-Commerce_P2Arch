@@ -113,7 +113,7 @@ public class SeguridadConfig {
                         // 1. Acceso público
                         //para autenticación (LOGIN, REGISTRO)
                         .requestMatchers("/api/auth/**").permitAll()
-                        //recursos como imagenes
+                        .requestMatchers("/auth/**").permitAll()                        //recursos como imagenes
                         .requestMatchers("/imagenes/**").permitAll()
 
 
