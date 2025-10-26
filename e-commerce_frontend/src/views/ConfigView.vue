@@ -72,6 +72,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { actualizarBaseURL, obtenerBaseURL } from '@/plugins/axios.js';
+import api from '@/plugins/axios.js';
 
 const nuevaURL = ref('');
 const urlActual = ref('');
@@ -80,26 +81,40 @@ const mensajeClase = ref('');
 
 const cargarURLActual = () => {
   urlActual.value = obtenerBaseURL();
-  nuevaURL.value = urlActual.value;
+  nuevaURL.value = urlActual.value.replace('/api', ''); // Quitar /api para mostrar solo el dominio
 };
 
-const guardarURL = () => {
+const guardarURL = async () => {
   if (!nuevaURL.value) {
     mostrarMensaje('Por favor ingresa una URL válida', 'alert-danger');
     return;
   }
 
-  // Asegurarse de que la URL termine en /api
-  let url = nuevaURL.value.trim();
-  if (!url.endsWith('/api')) {
-    url += '/api';
+  let urlBase = nuevaURL.value.trim();
+  
+  // Quitar /api si el usuario lo puso
+  if (urlBase.endsWith('/api')) {
+    urlBase = urlBase.substring(0, urlBase.length - 4);
+  }
+  
+  // Quitar / final si existe
+  if (urlBase.endsWith('/')) {
+    urlBase = urlBase.substring(0, urlBase.length - 1);
   }
 
-  // Guardar la nueva URL
-  actualizarBaseURL(url);
-  urlActual.value = url;
-  
-  mostrarMensaje('Configuración guardada exitosamente. Recarga la página si es necesario.', 'alert-success');
+  try {
+    // 1. Actualizar en el frontend
+    actualizarBaseURL(urlBase + '/api');
+    urlActual.value = urlBase + '/api';
+    
+    // 2. Sincronizar con el backend
+    await api.post('/config/backend-url', { url: urlBase });
+    
+    mostrarMensaje('Configuración guardada y sincronizada con el servidor', 'alert-success');
+  } catch (error) {
+    console.error('Error al sincronizar con el backend:', error);
+    mostrarMensaje('URL guardada localmente, pero falló la sincronización con el servidor', 'alert-warning');
+  }
 };
 
 const restaurarPorDefecto = () => {

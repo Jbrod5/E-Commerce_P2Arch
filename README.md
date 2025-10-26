@@ -58,3 +58,6 @@ para ejecutar el servidor vite para Vue.
 ```sh
 ngrok http 8080
 ```
+
+# Pruebas
+DESABILITAR ADBLOCK para permitir mostrar imagnes correctamente 

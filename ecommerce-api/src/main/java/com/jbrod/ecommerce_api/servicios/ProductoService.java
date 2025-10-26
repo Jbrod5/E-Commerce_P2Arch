@@ -41,18 +41,24 @@ public class ProductoService {
     //Inyeccion repositorio CalificacionProducto
     private final CalificacionProductoRepository calificacionProductoRepository;
 
+
+    private ConfiguracionGlobalService configuracionGlobalService;
+
     public ProductoService(ProductoRepository productoRepository,
                            EstadoAprobacionProductoRepository estadoAprobacionProductoRepositorio,
                            CategoriaRepository categoriaRepository,
                            UsuarioService usuarioServicio,
                            AlmacenamientoArchivosService almacenamientoArchivosService,
-                           CalificacionProductoRepository calificacionProductoRepository) {
+                           CalificacionProductoRepository calificacionProductoRepository,
+                           ConfiguracionGlobalService configuracionGlobalService) {
         this.productoRepository = productoRepository;
         this.estadoAprobacionProductoRepository = estadoAprobacionProductoRepositorio;
         this.categoriaRepository = categoriaRepository;
         this.usuarioServicio = usuarioServicio;
         this.almacenamientoArchivosService = almacenamientoArchivosService; // Asignación
         this.calificacionProductoRepository = calificacionProductoRepository;
+
+        this.configuracionGlobalService = configuracionGlobalService;
     }
 
 
@@ -81,8 +87,6 @@ public class ProductoService {
         byte[] imageBytes = Base64.getDecoder().decode(base64Image);
 
         // 2. Subir los bytes decodificados y obtener su URL pública
-        // ESTO REQUIERE QUE AGREGUES UN NUEVO MÉTODO en AlmacenamientoArchivosService
-        // para manejar byte[] en lugar de MultipartFile.
         String imagenUrl = almacenamientoArchivosService.uploadBytes(imageBytes);
 
         // 3. Obtener la entidad de Usuario (vendedor)
@@ -249,13 +253,13 @@ public class ProductoService {
         dto.setId(producto.getId());
         dto.setNombre(producto.getNombre());
         dto.setDescripcion(producto.getDescripcion());
-        dto.setImagenUrl(producto.getImagenUrl());
+        dto.setImagenUrl(configuracionGlobalService.convertirUrlImagen(producto.getImagenUrl()));
         dto.setPrecio(producto.getPrecio());
         dto.setStock(producto.getStock());
         dto.setEsNuevo(producto.getEsNuevo());
         dto.setPromedioCalificaciones(producto.getPromedioCalificaciones());
 
-        // Relaciones (asumimos que están cargadas o se cargan dentro de la transacción)
+        // Relaciones
         dto.setNombreVendedor(producto.getVendedor().getNombre());
         dto.setNombreCategoria(producto.getCategoria().getNombre());
 
@@ -265,7 +269,7 @@ public class ProductoService {
 
 
 
-    // ProductoService.java (NUEVO MÉTODO)
+
 
     /**
      * Crea o actualiza la calificación de un usuario para un producto.

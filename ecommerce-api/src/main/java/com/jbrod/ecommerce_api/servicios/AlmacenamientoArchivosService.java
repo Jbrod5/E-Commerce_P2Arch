@@ -23,7 +23,10 @@ public class AlmacenamientoArchivosService {
     private static final String UPLOAD_DIR = "src/main/resources/static/imagenes/productos";
 
     // URL base que Spring mapeará para acceder al archivo
-    private static final String BASE_URL_MOCK = "http://localhost:8080/imagenes/productos/";
+    private static final String BASE_URL = "http://localhost:8080/imagenes/productos/";
+
+
+    private static final String RUTA_RELATIVA_BASE = "/imagenes/productos/";
 
     /**
      * Sube el archivo físicamente a la carpeta local y genera una URL de acceso.
@@ -59,7 +62,7 @@ public class AlmacenamientoArchivosService {
         file.transferTo(filePath.toFile());
 
         // 4. Devolver la URL de acceso público
-        return BASE_URL_MOCK + uniqueFilename;
+        return RUTA_RELATIVA_BASE + uniqueFilename;
     }
 
     /**
@@ -84,10 +87,10 @@ public class AlmacenamientoArchivosService {
         }
 
         // 2. Generar un nombre de archivo único y ASUMIR una extensión.
-        // NOTA: Si necesitas una detección de extensión más precisa, tendrías que
+        // Esto no detecta el tipo de archivos exactamente xd, tendría que
         // examinar los primeros bytes del array (magic number) o requerir el mimetype
         // en el DTO del producto. Asumimos .png por simplicidad.
-        String extension = ".png"; // Asumimos PNG o puedes usar .jpg si es más común para tu caso.
+        String extension = ".png"; // Asumimos PNG o  usar .jpg??
         String uniqueFilename = "prod-" + UUID.randomUUID().toString() + extension;
 
         // 3. Crear el path final y guardar el archivo
@@ -97,6 +100,7 @@ public class AlmacenamientoArchivosService {
         Files.write(filePath, bytes);
 
         // 4. Devolver la URL de acceso público
-        return BASE_URL_MOCK + uniqueFilename;
+        //return RUTA_RELATIVA_BASE + uniqueFilename;
+        return BASE_URL + uniqueFilename;
     }
 }

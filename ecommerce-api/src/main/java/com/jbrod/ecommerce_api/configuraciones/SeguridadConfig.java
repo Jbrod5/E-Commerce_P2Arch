@@ -133,10 +133,12 @@ public class SeguridadConfig {
                 // 3. Define las reglas de autorización
                 .authorizeHttpRequests(auth -> auth
                         // 1. Acceso público
-                        //para autenticación (LOGIN, REGISTRO)
-                        .requestMatchers("/api/auth/**").permitAll()
                         //.requestMatchers("/auth/**").permitAll()                        //recursos como imagenes
                         .requestMatchers("/imagenes/**").permitAll()
+                        .requestMatchers("/api/config/**").permitAll()
+                        //para autenticación (LOGIN, REGISTRO)
+                        .requestMatchers("/api/auth/**").permitAll()
+
 
 
 
