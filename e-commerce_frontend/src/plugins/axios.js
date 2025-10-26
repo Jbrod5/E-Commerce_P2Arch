@@ -3,9 +3,10 @@ import Cookies from 'js-cookie';
 
 // 1. Crear una instancia base de Axios
 const api = axios.create({
-    // La URL base para la mayoría de tus endpoints (ej. /api/productos)
-    baseURL: 'http://localhost:8080/api', 
-    
+    // La URL base para la mayoría los tus endpoints 
+    //baseURL: 'http://localhost:8080/api', 
+    baseURL: ' https://semiobliviously-voluptuous-charlee.ngrok-free.dev',
+
 
     headers: {
         // 'Content-Type': 'application/json', 
