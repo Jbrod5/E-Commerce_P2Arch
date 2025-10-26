@@ -5,8 +5,8 @@ import Cookies from 'js-cookie';
 import api from '@/plugins/axios.js'; 
 
 // Definimos la URL base para el endpoint de login, relativo a la baseURL de 'api'
-const LOGIN_ENDPOINT = '/api/auth/login';
-const REGISTER_ENDPOINT = '/api/auth/register'
+const LOGIN_ENDPOINT = '/auth/login';
+const REGISTER_ENDPOINT = '/auth/register'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
