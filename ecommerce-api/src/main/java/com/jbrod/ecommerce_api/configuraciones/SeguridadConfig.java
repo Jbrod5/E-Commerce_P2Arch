@@ -69,7 +69,13 @@ public class SeguridadConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        // 1. Agrega los orígenes permitidos
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",                     // Para desarrollo local
+                "https://e-commercegt.netlify.app",          // dominio de netlify :3
+                "https://*.ngrok-free.app",                  // Ngrok si termina en .app xd
+                "https://*.ngrok-free.dev"                   // Ngrok si termina en .dev xd
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);

@@ -49,3 +49,12 @@ Para instalar las dependencias faltantes y luego ejecutar:
 npm run dev
 ``` 
 para ejecutar el servidor vite para Vue.
+
+# Despligue
+## Conexión del backend con ngrok
+1. Ejecutar el servidor hecho con spring
+
+2. Conectar con Ngrok ejecutando:
+```sh
+ngrok http 8080
+```
