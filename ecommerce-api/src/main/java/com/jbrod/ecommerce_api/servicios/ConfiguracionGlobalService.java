@@ -9,6 +9,12 @@ public class ConfiguracionGlobalService {
     // URL base por defecto
     private String urlBaseBackend = "http://localhost:8080";
 
+    //correo
+    private String correoRemitente = "";
+    private String contrasenaAplicacion = "";
+
+
+
     /**
      * Obtiene la URL base actual del backend
      */
@@ -54,5 +60,25 @@ public class ConfiguracionGlobalService {
         // Si no tiene ningún patrón conocido, devolverla tal cual
         System.out.println("se convirtio la url de una imagen por esta ruta: " + urlImagenBD);
         return urlImagenBD;
+    }
+
+
+
+    // CORREOOOO
+
+    public String getCorreoRemitente() {
+        return correoRemitente;
+    }
+
+    public void setCorreoRemitente(String correoRemitente) {
+        this.correoRemitente = correoRemitente;
+    }
+
+    public String getContrasenaAplicacion() {
+        return contrasenaAplicacion;
+    }
+
+    public void setContrasenaAplicacion(String contrasenaAplicacion) {
+        this.contrasenaAplicacion = contrasenaAplicacion;
     }
 }

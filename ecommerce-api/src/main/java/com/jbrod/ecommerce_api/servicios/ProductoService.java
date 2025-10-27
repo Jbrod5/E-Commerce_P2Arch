@@ -132,7 +132,7 @@ public class ProductoService {
         notificacionService.generarNotificacion(
             //Correo, titulo, cuerpo
                 username, "En espera de aprobacion: " + dto.getNombre(),
-                "Su producto " +  dto.getNombre() + " se guardó correctemente y está en espera para ser aprobado por un moderador.\nEl estado de su producto es: PENDIENTE."
+                "Su producto " +  dto.getNombre() + " se guardó correctemente y está en espera para ser aprobado por un moderador.\n\nEl estado de su producto es: PENDIENTE.\n\n E-CommerceGT"
         );
 
         return productoGuardado;
@@ -181,7 +181,7 @@ public class ProductoService {
                 ? dto.getComentario()
                 : (esAprobacion ? "Aprobado por el moderador." : "Rechazado sin comentario específico.");
 
-        // --- 2. Buscar entidades (Lógica Común) ---
+        // --- 2. Buscar entidades  ---
         Producto producto = productoRepository.findById(idProducto)
                 .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con ID: " + idProducto));
 
@@ -217,10 +217,11 @@ public class ProductoService {
         notificacionService.generarNotificacion(
                 //Correo, titulo, cuerpo
                 producto.getVendedor().getCorreo(),
-                "Deliberación " + producto.getNombre() + ": "  + nombreNuevoEstado,
-                "El moderador " + moderador.getNombre() + " ha evaluado su producto y lo ha " + nombreNuevoEstado + ".\n"
-                + "La nota del moderador es la siguiente: \n"
+                "Deliberación sobre " + producto.getNombre() + ": "  + nombreNuevoEstado,
+                "Estimado usuario, el moderador " + moderador.getNombre() + " ha evaluado su producto "+ producto.getNombre() + " y lo ha " + nombreNuevoEstado + " para su venta en nuestra plataforma.\n\n"
+                + "El comentario de deliberación sobre el producto es el siguiente: \n"
                 + dto.getComentario()
+                + "\n\n E-CommerceGT"
         );
 
 

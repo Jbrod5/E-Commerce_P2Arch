@@ -6,9 +6,11 @@ import com.jbrod.ecommerce_api.dto.solicitudes.SolicitudPendienteDto;
 import com.jbrod.ecommerce_api.dto.suspension.SuspensionDTO;
 import com.jbrod.ecommerce_api.dto.suspension.SuspensionPeticionDto;
 import com.jbrod.ecommerce_api.dto.usuario.UsuarioVendedorDto;
+import com.jbrod.ecommerce_api.modelos.Usuario;
 import com.jbrod.ecommerce_api.modelos.moderador.Suspension;
 import com.jbrod.ecommerce_api.modelos.productos.Producto;
 import com.jbrod.ecommerce_api.servicios.ModeradorService;
+import com.jbrod.ecommerce_api.servicios.NotificacionService;
 import com.jbrod.ecommerce_api.servicios.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,12 +33,14 @@ public class ModeradorController {
 
     private final ProductoService productoService;
     private final ModeradorService moderadorService;
+    private final NotificacionService notificacionService;
 
 
 
-    public ModeradorController(ProductoService productoService, ModeradorService moderadorService) {
+    public ModeradorController(ProductoService productoService, ModeradorService moderadorService, NotificacionService notificacionService) {
         this.productoService = productoService;
         this.moderadorService = moderadorService;
+        this.notificacionService = notificacionService;
     }
 
     /**
@@ -101,6 +105,23 @@ public class ModeradorController {
             String correoModerador = authentication.getName(); // Correo del moderador
 
             Suspension suspensionCreada = moderadorService.sancionarUsuario(dto, correoModerador);
+            Usuario suspendido = suspensionCreada.getUsuarioSancionado();
+            Usuario moderador = suspensionCreada.getModerador();
+
+            //Enviar notificacion sobre suspension
+            notificacionService.generarNotificacion(suspendido.getCorreo(),
+                                                    "Suspensión de cuenta: E-CommerceGT",
+                                                   "Estimado " + suspendido.getNombre() + "\n\n" +
+                                                           "Su cuenta ha sido suspendida de la plataforma E-CommerceGT porque el moderador " + moderador.getNombre() + " con correo " + moderador.getCorreo() + " ha considerado necesario el cierre temporal de su cuenta para mantener la integridad de nuestra plataforma.\n" +
+                                                           "El motivo de la suspensión realizada es el siguiente: \n"+ suspensionCreada.getMotivoSuspension() + "\n"+
+                                                           "Los detalles son los siguientes: \n\n"+
+                                                           "Fecha de inicio de la suspensión: "+suspensionCreada.getFechaSuspension() + "\n" +
+                                                           "Fecha de fin de la suspensión: " + suspensionCreada.getFechaFin() + "\n\n"+
+
+
+                                                           "Reafirmamos nuestro compromiso con nuestros usuarios para mantener una plataforma segura y apta para todos.");
+
+
 
             return ResponseEntity.status(HttpStatus.CREATED).body(suspensionCreada);
 

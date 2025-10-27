@@ -18,11 +18,13 @@ public class NotificacionService {
 
     private final NotificacionRepository notificacionRepository;
     private final UsuarioService usuarioService;
+    private final EmailService emailService;
 
     // Solo se inyecta NotificacionRepository y UsuarioService
-    public NotificacionService(NotificacionRepository notificacionRepository, UsuarioService usuarioService) {
+    public NotificacionService(NotificacionRepository notificacionRepository, UsuarioService usuarioService, EmailService emailService) {
         this.notificacionRepository = notificacionRepository;
         this.usuarioService = usuarioService;
+        this.emailService = emailService;
     }
 
     /**
@@ -41,6 +43,13 @@ public class NotificacionService {
                 .orElseThrow(() -> new NoSuchElementException("Usuario con correo " + correoDestinatario + " no encontrado."));
 
         Notificacion notificacion = new Notificacion(usuario, titulo, cuerpo);
+        try{
+            emailService.enviarCorreo(correoDestinatario, titulo, cuerpo);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
         return notificacionRepository.save(notificacion);
     }
 

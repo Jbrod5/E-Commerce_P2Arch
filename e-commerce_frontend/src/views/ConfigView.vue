@@ -1,150 +1,184 @@
 <template>
-  <div class="container py-4">
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="h3 mb-0">
-        <i class="bi bi-gear-fill me-2"></i>
+  <div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="w-100" style="max-width: 900px;">
+      <h5 class="text-dark mb-4 text-center">
+        <i class="bi bi-gear me-2"></i>
         Configuración
-      </h1>
-    </div>
+      </h5>
 
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        
-        <h5 class="card-title mb-3">URL del Backend</h5>
-        <p class="text-muted small mb-4">
-          Configura la URL del servidor backend. Esta configuración se guarda localmente en tu navegador.
-        </p>
+      <div class="row justify-content-center">
+        <!-- Configuración Backend -->
+        <div class="col-lg-5 mb-4">
+          <div class="card h-100">
+            <div class="card-header bg-light text-center">
+              <h6 class="card-title mb-0">
+                <i class="bi bi-server me-2"></i>
+                URL del Backend
+              </h6>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3">
+                <label class="form-label">URL Base del API</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="nuevaURL"
+                  placeholder="https://tu-servidor.ngrok-free.dev/api"
+                />
+              </div>
 
-        <div class="mb-3">
-          <label for="backendUrl" class="form-label fw-semibold">URL Base del API</label>
-          <input 
-            type="text" 
-            class="form-control" 
-            id="backendUrl"
-            v-model="nuevaURL"
-            placeholder="https://tu-tunel.ngrok-free.dev/api"
-          />
-          <div class="form-text">
-            Ejemplo: <code>https://semiobliviously-voluptuous-charlee.ngrok-free.dev/api</code>
+              <div class="d-flex gap-2 mb-3">
+                <button
+                  @click="guardarURL"
+                  class="btn btn-primary flex-fill"
+                  :disabled="!nuevaURL || nuevaURL === urlActual"
+                >
+                  <i class="bi bi-check-lg me-2"></i>
+                  Guardar
+                </button>
+                <button 
+                  @click="restaurarPorDefecto" 
+                  class="btn btn-outline-secondary"
+                >
+                  <i class="bi bi-arrow-clockwise"></i>
+                </button>
+              </div>
+
+              <div v-if="mensaje" :class="['alert mb-3 text-center', mensajeClase]">
+                <small class="fw-bold">{{ mensaje }}</small>
+              </div>
+
+              <div class="border rounded p-2 bg-light mt-auto">
+                <small class="text-muted d-block">URL actual en uso:</small>
+                <code class="text-dark">{{ urlActual }}</code>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="d-flex gap-2">
-          <button 
-            @click="guardarURL" 
-            class="btn btn-primary"
-            :disabled="!nuevaURL || nuevaURL === urlActual"
-          >
-            <i class="bi bi-save me-2"></i>
-            Guardar Configuración
-          </button>
-          
-          <button 
-            @click="restaurarPorDefecto" 
-            class="btn btn-outline-secondary"
-          >
-            <i class="bi bi-arrow-counterclockwise me-2"></i>
-            Restaurar por Defecto
-          </button>
+        <!-- Configuración Correo -->
+        <div class="col-lg-5 mb-4">
+          <div class="card h-100">
+            <div class="card-header bg-light text-center">
+              <h6 class="card-title mb-0">
+                <i class="bi bi-envelope me-2"></i>
+                Configuración de Correo
+              </h6>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <div class="mb-3">
+                <label class="form-label">Correo Remitente</label>
+                <input
+                  type="email"
+                  class="form-control mb-2"
+                  v-model="correo"
+                  placeholder="tucorreo@zohomail.com"
+                />
+                
+                <label class="form-label">Contraseña de Aplicación</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  v-model="contrasena"
+                  placeholder="Ingresa tu contraseña de aplicación"
+                />
+              </div>
+
+              <button 
+                @click="guardarCorreo" 
+                class="btn btn-primary w-100 mt-auto"
+                :disabled="!correo || !contrasena"
+              >
+                <i class="bi bi-envelope-check me-2"></i>
+                Guardar Configuración
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div v-if="mensaje" :class="['alert mt-3 mb-0', mensajeClase]" role="alert">
-          {{ mensaje }}
-        </div>
-
-        <hr class="my-4">
-
-        <div class="alert alert-info mb-0">
-          <h6 class="alert-heading">
-            <i class="bi bi-info-circle me-2"></i>
-            URL Actual en uso:
-          </h6>
-          <code class="d-block mt-2">{{ urlActual }}</code>
-        </div>
-
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { actualizarBaseURL, obtenerBaseURL } from '@/plugins/axios.js';
-import api from '@/plugins/axios.js';
+import { ref, onMounted } from "vue";
+import { actualizarBaseURL, obtenerBaseURL } from "@/plugins/axios.js";
+import api from "@/plugins/axios.js";
 
-const nuevaURL = ref('');
-const urlActual = ref('');
-const mensaje = ref('');
-const mensajeClase = ref('');
+const nuevaURL = ref("");
+const urlActual = ref("");
+const mensaje = ref("");
+const mensajeClase = ref("");
+const correo = ref('');
+const contrasena = ref('');
 
 const cargarURLActual = () => {
   urlActual.value = obtenerBaseURL();
-  nuevaURL.value = urlActual.value.replace('/api', ''); // Quitar /api para mostrar solo el dominio
+  nuevaURL.value = urlActual.value.replace("/api", "");
 };
 
 const guardarURL = async () => {
   if (!nuevaURL.value) {
-    mostrarMensaje('Por favor ingresa una URL válida', 'alert-danger');
+    mostrarMensaje("Por favor ingresa una URL válida", "alert-danger");
     return;
   }
 
   let urlBase = nuevaURL.value.trim();
-  
-  // Quitar /api si el usuario lo puso
-  if (urlBase.endsWith('/api')) {
+
+  if (urlBase.endsWith("/api")) {
     urlBase = urlBase.substring(0, urlBase.length - 4);
   }
-  
-  // Quitar / final si existe
-  if (urlBase.endsWith('/')) {
+
+  if (urlBase.endsWith("/")) {
     urlBase = urlBase.substring(0, urlBase.length - 1);
   }
 
   try {
-    // 1. Actualizar en el frontend
-    actualizarBaseURL(urlBase + '/api');
-    urlActual.value = urlBase + '/api';
-    
-    // 2. Sincronizar con el backend
-    await api.post('/config/backend-url', { url: urlBase });
-    
-    mostrarMensaje('Configuración guardada y sincronizada con el servidor', 'alert-success');
+    actualizarBaseURL(urlBase + "/api");
+    urlActual.value = urlBase + "/api";
+    await api.post("/config/backend-url", { url: urlBase });
+    mostrarMensaje("Configuración guardada correctamente", "alert-success");
   } catch (error) {
-    console.error('Error al sincronizar con el backend:', error);
-    mostrarMensaje('URL guardada localmente, pero falló la sincronización con el servidor', 'alert-warning');
+    console.error("Error:", error);
+    mostrarMensaje("Error al sincronizar con el servidor", "alert-warning");
   }
 };
 
 const restaurarPorDefecto = () => {
-  const urlPorDefecto = 'http://localhost:8080/api';
+  const urlPorDefecto = "http://localhost:8080/api";
   actualizarBaseURL(urlPorDefecto);
   nuevaURL.value = urlPorDefecto;
   urlActual.value = urlPorDefecto;
-  
-  mostrarMensaje('Configuración restaurada a valores por defecto', 'alert-success');
+  mostrarMensaje("🔄 Configuración restaurada por defecto", "alert-success");
 };
 
 const mostrarMensaje = (texto, clase) => {
   mensaje.value = texto;
   mensajeClase.value = clase;
-  
   setTimeout(() => {
-    mensaje.value = '';
+    mensaje.value = "";
   }, 5000);
+};
+
+const guardarCorreo = async () => {
+  if (!correo.value || !contrasena.value) {
+    mostrarMensaje("Completa ambos campos", "alert-danger");
+    return;
+  }
+
+  try {
+    await api.post('/config/correo', { 
+      correo: correo.value, 
+      contrasena: contrasena.value 
+    });
+    mostrarMensaje('Configuración de correo guardada', 'alert-success');
+  } catch (error) {
+    console.error(error);
+    mostrarMensaje('Error al guardar la configuración', 'alert-danger');
+  }
 };
 
 onMounted(() => {
   cargarURLActual();
 });
 </script>
-
-<style scoped>
-code {
-  background-color: #f8f9fa;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  color: #d63384;
-}
-</style>

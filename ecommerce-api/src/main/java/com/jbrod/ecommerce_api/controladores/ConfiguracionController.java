@@ -50,4 +50,40 @@ public class ConfiguracionController {
         respuesta.put("url", configuracionGlobalService.getUrlBaseBackend());
         return ResponseEntity.ok(respuesta);
     }
+
+
+
+
+
+    // Configuracion correoooo
+
+
+    @PostMapping("/correo")
+    public ResponseEntity<Map<String, String>> actualizarConfiguracionCorreo(@RequestBody Map<String, String> payload) {
+        String correo = payload.get("correo");
+        String contrasena = payload.get("contrasena");
+
+        if (correo == null || correo.isEmpty() || contrasena == null || contrasena.isEmpty()) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "El correo y la contraseña no pueden estar vacíos.");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        configuracionGlobalService.setCorreoRemitente(correo);
+        configuracionGlobalService.setContrasenaAplicacion(contrasena);
+
+        Map<String, String> respuesta = new HashMap<>();
+        respuesta.put("mensaje", "Configuración de correo actualizada exitosamente.");
+        respuesta.put("correoActual", correo);
+
+        return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/correo")
+    public ResponseEntity<Map<String, String>> obtenerConfiguracionCorreo() {
+        Map<String, String> respuesta = new HashMap<>();
+        respuesta.put("correo", configuracionGlobalService.getCorreoRemitente());
+        respuesta.put("contrasena", configuracionGlobalService.getContrasenaAplicacion());
+        return ResponseEntity.ok(respuesta);
+    }
 }
