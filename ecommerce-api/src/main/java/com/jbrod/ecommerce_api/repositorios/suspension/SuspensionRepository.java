@@ -34,4 +34,15 @@ public interface SuspensionRepository extends JpaRepository<Suspension, Long> {
      */
     @Query("SELECT s FROM Suspension s WHERE s.usuarioSancionado.id = :idUsuario ORDER BY s.fechaSuspension DESC")
     List<Suspension> obtenerHistorialSuspensionesPorUsuario(@Param("idUsuario") Long idUsuario);
+
+
+    /**
+     * Devuelve todas las suspenciones usando FETCH JOIN para cargar EAGERLY el usuario sancionado
+     * y el moderador dentro de la misma consulta/sesión.
+     */
+    @Query("SELECT s FROM Suspension s " +
+            "JOIN FETCH s.usuarioSancionado " +
+            "JOIN FETCH s.moderador " +
+            "ORDER BY s.fechaSuspension DESC")
+    List<Suspension> findAllWithUsuariosEagerly();
 }

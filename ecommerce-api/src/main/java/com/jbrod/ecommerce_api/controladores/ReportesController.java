@@ -1,9 +1,8 @@
 package com.jbrod.ecommerce_api.controladores;
 
-import com.jbrod.ecommerce_api.dto.reportes.ClienteGananciaProyeccion;
-import com.jbrod.ecommerce_api.dto.reportes.ClientePedidoProyeccion;
-import com.jbrod.ecommerce_api.dto.reportes.ProductoVendidoDto;
-import com.jbrod.ecommerce_api.dto.reportes.VendedorMasVentasProyeccion;
+import com.jbrod.ecommerce_api.dto.reportes.*;
+import com.jbrod.ecommerce_api.dto.suspension.SuspensionHistorialDto;
+import com.jbrod.ecommerce_api.dto.usuario.NotificacionHistorialDto;
 import com.jbrod.ecommerce_api.servicios.ReportesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -102,5 +101,53 @@ public class ReportesController {
         }
 
         return ResponseEntity.ok(reporte);
+    }
+
+    /**
+     * Endpoint para obtener el Top 10 de vendedores (clientes) con más productos a la venta.
+     * GET /api/reportes/top-vendedores-productos
+     */
+    @GetMapping("/top-vendedores-productos")
+    public ResponseEntity<List<VendedorProductosProyeccion>> obtenerTop10VendedoresConMasProductos() {
+
+        List<VendedorProductosProyeccion> reporte = reportesService.obtenerTop10VendedoresConMasProductos();
+
+        if (reporte.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(reporte);
+    }
+
+    /**
+     * Endpoint para obtener el historial completo de sanciones.
+     * GET /api/reportes/historial-sanciones
+     */
+    @GetMapping("/historial-sanciones")
+    public ResponseEntity<List<SuspensionHistorialDto>> obtenerHistorialSuspensiones() {
+
+        List<SuspensionHistorialDto> historial = reportesService.obtenerHistorialSuspensiones();
+
+        if (historial.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(historial);
+    }
+
+    /**
+     * Endpoint para obtener el historial completo de notificaciones.
+     * GET /api/reportes/historial-notificaciones
+     */
+    @GetMapping("/historial-notificaciones")
+    public ResponseEntity<List<NotificacionHistorialDto>> obtenerHistorialNotificaciones() {
+
+        List<NotificacionHistorialDto> historial = reportesService.obtenerHistorialNotificaciones();
+
+        if (historial.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(historial);
     }
 }

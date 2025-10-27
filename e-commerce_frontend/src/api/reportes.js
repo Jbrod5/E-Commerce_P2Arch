@@ -35,7 +35,6 @@ export default {
     /**
      * Obtiene el Top 5 de vendedores por unidades vendidas.
      * @returns {Promise<Array<{nombreVendedor: string, totalUnidadesVendidas: number}>>}
-     * NOTA: Este es el método que FALTABA y que estaba causando el error.
      */
     obtenerTop5Vendedores(fechaInicio, fechaFin) { 
         return api.get(`${REPORTES_URL}/top-vendedores`, {
@@ -58,4 +57,30 @@ export default {
             }
         });
     },
+
+
+    /**
+     * Obtiene el Top 10 de vendedores por número de productos listados (actuales).
+     */
+    obtenerTop10VendedoresConMasProductos() {
+        return api.get(`${REPORTES_URL}/top-vendedores-productos`);
+
+    },
+
+    /**
+     * Obtiene el historial completo de suspensiones (sanciones).
+     */
+    obtenerHistorialSuspensiones() {
+        return api.get(`${REPORTES_URL}/historial-sanciones`);
+
+    },
+
+    /**
+     * Obtiene el historial completo de notificaciones.
+     */
+    obtenerHistorialNotificaciones() {
+        return api.get(`${REPORTES_URL}/historial-notificaciones`);
+
+    },
+
 };
