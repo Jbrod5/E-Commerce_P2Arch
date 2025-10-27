@@ -20,7 +20,7 @@
                             :key="item.productoId" 
                             class="list-group-item d-flex align-items-center mb-3 p-3 shadow-sm rounded-3"
                         >
-                            <!-- ✅ CAMBIO AQUÍ: Agregar v-ngrok-img y onerror -->
+
                             <img 
                                 v-ngrok-img="item.imagenUrl" 
                                 alt="Producto" 

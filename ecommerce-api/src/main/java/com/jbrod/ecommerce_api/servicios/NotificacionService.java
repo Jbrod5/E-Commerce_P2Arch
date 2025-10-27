@@ -44,6 +44,7 @@ public class NotificacionService {
 
         Notificacion notificacion = new Notificacion(usuario, titulo, cuerpo);
         try{
+            //Enviar por correo (o al menos intentarlo xd)
             emailService.enviarCorreo(correoDestinatario, titulo, cuerpo);
         }catch (Exception e){
             e.printStackTrace();

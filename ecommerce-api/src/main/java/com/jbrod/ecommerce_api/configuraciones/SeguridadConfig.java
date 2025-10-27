@@ -94,7 +94,7 @@ public class SeguridadConfig {
 
 
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
         //configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "ngrok-skip-browser-warning"));
         // Mejor permitir todods los headers :c
@@ -155,8 +155,15 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.GET, "/api/reportes/**").hasAnyAuthority("administrador", "ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST, "/api/reportes/**").hasAnyAuthority("administrador", "ADMINISTRADOR")
 
+
+
+                        .requestMatchers(HttpMethod.POST, "/api/logistica/**").hasAnyAuthority("logistica", "LOGISTICA")
+                        .requestMatchers(HttpMethod.GET, "/api/logistica/**").hasAnyAuthority("logistica", "LOGISTICA")
+                        .requestMatchers(HttpMethod.PATCH, "/api/logistica/**").hasAnyAuthority("logistica", "LOGISTICA")
+
                         // Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador', moderador
                         .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "moderador", "MODERADOR")
+
 
 
 

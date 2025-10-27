@@ -114,8 +114,15 @@ const router = createRouter({
     {
       path: '/logistica',
       name: 'logistica-index',
-      component: () => import('../views/logistica/IndexView.vue'),
-      meta: { requiresAuth: true, roles: ['ROLE_LOGISTICA'] }
+      component: () => import('../layouts/LogisticaLayout.vue'),
+      meta: { requiresAuth: true, roles: ['ROLE_LOGISTICA'] },
+      children:[
+        {
+          path: '',
+          name: 'logistica-gestion-pedidos', 
+          component: () => import('../views/logistica/GestionPedidosView.vue')
+        }
+      ]
     },
 
     // RUTA DE VENDEDOR/COMÚN - USA EL LAYOUT CONTENEDOR

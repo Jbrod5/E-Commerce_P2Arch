@@ -29,6 +29,27 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
 
     /**
+     * Consulta para Logística: Obtiene todos los pedidos en estado 'en curso' (1) o 'enviado' (2).
+     * Excluye los 'entregados' (3).
+     */
+    List<Pedido> findByEstadoIdNotOrderByFechaRealizacionAsc(Integer idEstadoExcluir);
+
+
+
+
+    /**
+     * Consulta para Logística: Obtiene todos los pedidos pendientes de entrega.
+     * Se usa FETCH JOIN para cargar el objeto 'estado' de forma EAGER
+     * dentro de la consulta, previniendo la 'LazyInitializationException'.
+     */
+    @Query("SELECT p FROM Pedido p JOIN FETCH p.estado e WHERE e.id <> :idEstadoExcluir ORDER BY p.fechaRealizacion ASC")
+    List<Pedido> findPedidosGestionLogisticaWithEstado(Integer idEstadoExcluir);
+
+
+
+
+
+    /**
      * Reporte Top 5 clientes (compradores) que más ganancias (monto total de pedidos) generan.
      * Calcula el monto total y la ganancia de la plataforma (5%).
      */
