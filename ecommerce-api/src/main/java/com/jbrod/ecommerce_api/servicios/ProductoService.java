@@ -445,4 +445,12 @@ public class ProductoService {
         productoRepository.save(producto);
     }
 
+
+    /**
+     * Obtiene todas las categorías disponibles en la base de datos.
+     */
+    public List<Categoria> obtenerCategorias() {
+        return categoriaRepository.findAll();
+    }
+
 }

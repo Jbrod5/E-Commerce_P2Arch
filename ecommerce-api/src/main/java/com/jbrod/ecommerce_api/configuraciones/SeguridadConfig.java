@@ -138,6 +138,8 @@ public class SeguridadConfig {
                         .requestMatchers("/api/config/**").permitAll()
                         //para autenticación (LOGIN, REGISTRO)
                         .requestMatchers("/api/auth/**").permitAll()
+                        //utilidades
+                        .requestMatchers("/api/utilidades/**").permitAll()
 
 
 
