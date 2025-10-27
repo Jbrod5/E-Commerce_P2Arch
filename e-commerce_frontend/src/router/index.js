@@ -70,8 +70,15 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin-index',
-      component: () => import('../views/administrador/IndexView.vue'),
-      meta: { requiresAuth: true, roles: ['ROLE_ADMINISTRADOR'] }
+      component: () => import('../layouts/AdministradorLayout.vue'),
+      meta: { requiresAuth: true, roles: ['ROLE_ADMINISTRADOR'] }, 
+      children:[
+        {
+          path:'gestion-empleados',
+          name: 'admin-gestion-empleados',
+          component: ()=> import('../views/administrador/GestionEmpleadosView.vue')
+        },
+      ]
     },
     // Moderador
     {

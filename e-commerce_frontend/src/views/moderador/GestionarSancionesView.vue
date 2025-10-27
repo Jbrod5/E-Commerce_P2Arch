@@ -179,7 +179,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import ModeradorAPI from '@/api/ModeradorApi';
+import ModeradorAPI from '@/api/moderador';
 
 // Estados
 const vendedores = ref([]);

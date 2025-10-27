@@ -150,6 +150,9 @@ public class SeguridadConfig {
                         .requestMatchers(HttpMethod.GET, "/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
                         .requestMatchers(HttpMethod.POST, "/api/moderador/**").hasAnyAuthority("moderador", "MODERADOR")
 
+                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyAuthority("administrador", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/admin/**").hasAnyAuthority("administrador", "ADMINISTRADOR")
+
                         // Usar hasAnyAuthority() para las cadenas literales 'comun' y 'administrador', moderador
                         .requestMatchers(HttpMethod.POST, "/api/productos/**").hasAnyAuthority("comun", "administrador", "ADMINISTRADOR", "COMUN", "moderador", "MODERADOR")
 

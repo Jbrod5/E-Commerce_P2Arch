@@ -32,4 +32,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      */
     List<Usuario> findByRolId(Integer rolId);
 
+
+    // Dentro de UsuarioRepository.java
+    List<Usuario> findByRolIdIn(List<Integer> rolIds);
+
 }

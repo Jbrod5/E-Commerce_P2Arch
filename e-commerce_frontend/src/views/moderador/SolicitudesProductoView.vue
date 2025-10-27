@@ -137,7 +137,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import ModeradorAPI from '@/api/ModeradorApi';
+import ModeradorAPI from '@/api/moderador';
 import { useModeradorStore } from "@/stores/moderador"; 
 import { useAuthStore } from "@/stores/auth";
 

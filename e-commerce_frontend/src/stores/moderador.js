@@ -1,7 +1,7 @@
 // src/stores/moderador.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import ModeradorAPI from '@/api/ModeradorApi';
+import ModeradorAPI from '@/api/moderador';
 
 export const useModeradorStore = defineStore('moderador', () => {
     // Estado
