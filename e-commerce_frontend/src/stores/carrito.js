@@ -91,9 +91,9 @@ export const useCarritoStore = defineStore('carrito', {
             }
         },
         
-        // ----------------------------------------------------
-        // NUEVA ACCIÓN: PROCESAR CHECKOUT / PEDIDO FINAL :33333
-        // ----------------------------------------------------
+
+        
+        //  PROCESAR CHECKOUT / PEDIDO FINAL :33333
         /**
          * Llama al API para finalizar la compra (Checkout).
          * @param {object} checkoutData - { tarjetaId: Long, direccion: string }

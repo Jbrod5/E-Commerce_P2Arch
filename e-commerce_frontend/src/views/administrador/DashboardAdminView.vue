@@ -313,8 +313,6 @@ onMounted(() => {
 
 <style scoped>
 /* Estilos adicionales para que los colores de texto personalizados (no estándar de Bootstrap) se vean bien */
-/* Nota: Si tienes un archivo CSS global donde están definidos estos colores, puedes omitir este <style> */
-/* Si no tienes un archivo global, necesitarás definir los colores o usar los colores estándar de Bootstrap */
 .text-indigo-700 { color: #4338ca !important; } /* Equivalente aproximado a un tono de indigo */
 .text-orange-700 { color: #c0631c !important; } /* Equivalente aproximado a un tono de naranja oscuro */
 .text-blue-700 { color: #1d4ed8 !important; } /* Equivalente aproximado a un tono de azul oscuro */

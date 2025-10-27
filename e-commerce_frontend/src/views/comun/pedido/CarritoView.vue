@@ -20,7 +20,14 @@
                             :key="item.productoId" 
                             class="list-group-item d-flex align-items-center mb-3 p-3 shadow-sm rounded-3"
                         >
-                            <img :src="item.imagenUrl || 'https://placehold.co/80x80?text=Prod'" alt="Producto" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                            <!-- ✅ CAMBIO AQUÍ: Agregar v-ngrok-img y onerror -->
+                            <img 
+                                v-ngrok-img="item.imagenUrl" 
+                                alt="Producto" 
+                                class="rounded me-3" 
+                                style="width: 80px; height: 80px; object-fit: cover;"
+                                onerror="this.onerror=null; this.src='https://placehold.co/80x80?text=Prod';"
+                            >
                             <div class="flex-grow-1">
                                 <h5 class="mb-1">{{ item.nombreProducto }}</h5>
                                 <p class="mb-1 text-muted small">Precio: Q{{ item.precioUnitario.toFixed(2) }}</p>

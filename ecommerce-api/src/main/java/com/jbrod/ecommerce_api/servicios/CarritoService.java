@@ -37,7 +37,6 @@ public class CarritoService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    // Se eliminó la función privada 'crearNuevoCarrito' para integrar su lógica directamente.
 
     /**
      * Obtiene el carrito activo del usuario, o lo crea si no existe.
@@ -58,7 +57,6 @@ public class CarritoService {
         return mapearACarritoResponseDto(carrito);
     }
 
-    // El método privado 'crearNuevoCarrito' fue eliminado.
 
     /**
      * Agrega un producto al carrito o actualiza su cantidad.
@@ -79,7 +77,7 @@ public class CarritoService {
         Producto producto = productoRepository.findById(itemDto.getProductoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Producto", itemDto.getProductoId()));
 
-        // **Validaciones importantes:** Stock y Aprobación
+        // Validaciones importantes: Stock y Aprobación
         if (producto.getStock() < itemDto.getCantidad()) {
             throw new IllegalArgumentException("La cantidad solicitada (" + itemDto.getCantidad() + ") excede el stock disponible (" + producto.getStock() + ").");
         }
@@ -187,6 +185,9 @@ public class CarritoService {
         dto.setProductoId(detalle.getProducto().getId());
         dto.setNombreProducto(detalle.getProducto().getNombre());
         dto.setCantidad(detalle.getCantidad());
+        // EXTRAER Y ESTABLECER LA URL DE LA IMAGEN DESDE EL PRODUCTO :'ccc
+        dto.setImagenUrl(detalle.getProducto().getImagenUrl());
+
         // Usar el precio congelado en el detalle
         dto.setPrecioUnitario(detalle.getPrecioUnitario().setScale(2, RoundingMode.HALF_UP));
 

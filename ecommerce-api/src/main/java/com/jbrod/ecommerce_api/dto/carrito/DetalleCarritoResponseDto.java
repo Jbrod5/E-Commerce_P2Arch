@@ -12,6 +12,7 @@ public class DetalleCarritoResponseDto {
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotal; // Cantidad * PrecioUnitario
+    private String imagenUrl;
 
     // Getters y Setters
 
@@ -29,4 +30,12 @@ public class DetalleCarritoResponseDto {
 
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
 }

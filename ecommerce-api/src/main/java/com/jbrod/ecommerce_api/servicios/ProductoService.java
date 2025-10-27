@@ -316,7 +316,7 @@ public class ProductoService {
         Producto producto = productoRepository.findById(idProducto)
                 .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con ID: " + idProducto));
 
-        // **OPCIONAL PERO RECOMENDADO:** Filtrar solo por productos 'aprobados'
+        // Filtrar solo por productos 'aprobados'
         if (!"aprobado".equalsIgnoreCase(producto.getEstado().getNombre())) {
             throw new IllegalArgumentException("El producto no está aprobado para la venta.");
         }
@@ -345,7 +345,7 @@ public class ProductoService {
         dto.setCalificacion(calificacion.getCalificacion());
         dto.setComentario(calificacion.getComentario());
         dto.setFecha(calificacion.getFecha());
-        // Se asume que la relación Usuario se cargó (FetchType.EAGER)
+        // Se asume que la relación Usuario se cargó
         dto.setNombreUsuario(calificacion.getUsuario().getNombre());
         return dto;
     }
