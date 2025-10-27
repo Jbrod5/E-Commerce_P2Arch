@@ -1,6 +1,6 @@
 <template>
     <div class="container py-4">
-        <h1 class="mb-5 border-bottom pb-2 text-secondary">Mi Carrito de Compras 🛒</h1>
+        <h1 class="mb-5 border-bottom pb-2 text-secondary">Mi Carrito de Compras</h1>
 
         <div v-if="carritoStore.cargando" class="alert alert-info text-center">
             <span class="spinner-border spinner-border-sm me-2"></span> Cargando carrito...

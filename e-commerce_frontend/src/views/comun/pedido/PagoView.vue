@@ -9,7 +9,7 @@
     </div>
 
     <div v-else-if="carritoStore.ultimoPedido" class="confirmacion-card card p-4 shadow-sm">
-        <h3 class="text-success text-center mb-4">¡Pedido Realizado con Éxito! 🎉</h3>
+        <h3 class="text-success text-center mb-4">¡Pedido Realizado con Éxito!</h3>
         <p><strong>Pedido #ID:</strong> {{ carritoStore.ultimoPedido.idPedido }}</p>
         <p><strong>Monto Total:</strong> {{ formatCurrency(carritoStore.ultimoPedido.montoTotal) }}</p>
         <p><strong>Dirección de Envío:</strong> {{ carritoStore.ultimoPedido.direccion }}</p>
@@ -102,7 +102,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useCarritoStore } from '@/stores/carrito';
-// 🚨 ¡IMPORTACIÓN ARREGLADA! Ahora usamos el módulo correcto: tarjetas.js
+//  Ahora usamos el módulo correcto: tarjetas.js
 import { obtenerTarjetasUsuario } from '@/api/tarjetas'; 
 import { useRouter } from 'vue-router';
 
@@ -143,7 +143,7 @@ const loadData = async () => {
     
     // 2. Cargar Tarjetas
     try {
-        // 🚨 Llamada al nuevo módulo API de tarjetas
+        // Llamada al nuevo módulo API de tarjetas
         tarjetasDisponibles.value = await obtenerTarjetasUsuario();
         if (tarjetasDisponibles.value.length > 0) {
             // Seleccionar la primera por defecto

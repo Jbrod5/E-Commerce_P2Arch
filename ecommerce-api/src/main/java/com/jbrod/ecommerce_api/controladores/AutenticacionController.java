@@ -36,7 +36,7 @@ public class AutenticacionController {
     private JwtService jwtService;
 
     @Autowired
-    private UsuarioService usuarioService; // <-- NUEVO: Inyectamos el servicio de usuario
+    private UsuarioService usuarioService;
 
     // --------------------------------------------------------------------------
     // --- ENDPOINT DE LOGIN ---

@@ -4,6 +4,9 @@ import com.jbrod.ecommerce_api.modelos.carrito.Carrito;
 import com.jbrod.ecommerce_api.modelos.carrito.DetalleCarrito;
 import com.jbrod.ecommerce_api.modelos.carrito.DetalleCarritoId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +28,10 @@ public interface DetalleCarritoRepository extends JpaRepository<DetalleCarrito, 
      * es bueno tener la funcionalidad de "Borrar Carrito").
      */
     void deleteByCarrito(Carrito carrito);
+
+
+    @Modifying
+    @Query("DELETE FROM DetalleCarrito d WHERE d.carrito.id = :carritoId")
+    void deleteByCarritoId(@Param("carritoId") Long carritoId);
+
 }

@@ -95,7 +95,7 @@ public class PedidoController {
      * Endpoint para obtener el resumen de todos los pedidos realizados por el usuario autenticado.
      * URL: GET /api/pedidos
      * @param principal Objeto de autenticación para obtener la identidad del usuario.
-     * @return Lista de PedidoResumenDto. // <--- ¡CAMBIO AQUÍ!
+     * @return Lista de PedidoResumenDto.
      */
     @GetMapping
     public ResponseEntity<List<PedidoResumenDto>> obtenerPedidosUsuario(Principal principal) {

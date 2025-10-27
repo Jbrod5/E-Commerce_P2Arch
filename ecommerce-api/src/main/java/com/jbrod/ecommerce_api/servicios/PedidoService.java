@@ -73,7 +73,7 @@ public class PedidoService {
         Tarjetas tarjetaUsada = tarjetasRepository.findById(checkoutDto.getTarjetaId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tarjeta", checkoutDto.getTarjetaId()));
 
-        // Asume ID 1 es 'en curso' (según tu script SQL)
+        // ID 1 es EM CURSO
         EstadoPedido estadoInicial = estadoPedidoRepository.findById(1)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Estado Pedido Inicial", 1L));
 
@@ -157,7 +157,7 @@ public class PedidoService {
         // --- 4. LIMPIEZA ---
 
         // Eliminar todos los detalles del carrito. El carrito queda vacío pero la entidad existe.
-        detalleCarritoRepository.deleteByCarrito(carrito);
+        detalleCarritoRepository.deleteByCarritoId(carrito.getIdCarrito());
 
         // --- 5. DEVOLVER RESPUESTA ---
 
