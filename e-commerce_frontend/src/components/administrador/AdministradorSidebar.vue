@@ -33,7 +33,7 @@
         <!-- Dashboard / Reportes -->
         <li class="nav-item">
           <router-link
-            :to="{ name: 'admin-index' }"
+            :to="{ name: 'admin-dashboard' }"
             class="nav-link text-white text-start mb-2"
             active-class="active"
           >

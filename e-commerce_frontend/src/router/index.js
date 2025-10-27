@@ -74,6 +74,11 @@ const router = createRouter({
       meta: { requiresAuth: true, roles: ['ROLE_ADMINISTRADOR'] }, 
       children:[
         {
+          path:'',
+          name: 'admin-dashboard',
+          component: ()=> import('../views/administrador/DashboardAdminView.vue')
+        },
+        {
           path:'gestion-empleados',
           name: 'admin-gestion-empleados',
           component: ()=> import('../views/administrador/GestionEmpleadosView.vue')
