@@ -23,10 +23,13 @@ public class ModeradorService {
     private final UsuarioRepository usuarioRepository;
     private final SuspensionRepository suspensionRepository;
 
+    private final NotificacionService notificacionService;
+
     @Autowired
-    public ModeradorService(UsuarioRepository usuarioRepository, SuspensionRepository suspensionRepository) {
+    public ModeradorService(UsuarioRepository usuarioRepository, SuspensionRepository suspensionRepository, NotificacionService notificacionService) {
         this.usuarioRepository = usuarioRepository;
         this.suspensionRepository = suspensionRepository;
+        this.notificacionService = notificacionService;
     }
 
     /**
@@ -48,7 +51,7 @@ public class ModeradorService {
                 .orElseThrow(() -> new NoSuchElementException("Usuario a sancionar no encontrado con ID: " + dto.getIdUsuarioASuspender()));
 
         // 3. Validar: Solo se puede sancionar a usuarios COMUNES (vendedores)
-        // Asumiendo que el rol 'comun' tiene ID = 1 o nombre = 'comun'
+        // rol 'comun' tiene ID = 1 o nombre = 'comun'
         if (!"comun".equalsIgnoreCase(usuarioASancionar.getRol().getNombre())) {
             throw new RuntimeException("No se pueden sancionar usuarios que no sean de tipo 'comun' (vendedor).");
         }
@@ -104,6 +107,60 @@ public class ModeradorService {
     }
 
 
-    // NOTA: Aquí podrías agregar un método 'obtenerHistorialSanciones()' para el administrador
-    // y un 'levantarSuspension()' para reactivar al usuario después de la fecha de fin.
+
+    /**
+     * Levanta la suspensión activa de un usuario, lo reactiva y marca la suspensión como inactiva.
+     * Si la suspensión es por tiempo, este método se usaría para levantarla antes de la fecha de fin.
+     * @param idUsuario ID del usuario al que se le levantará la sanción.
+     * @param correoModerador Correo del moderador que ejecuta la acción (para registro/validación).
+     * @throws NoSuchElementException Si el usuario no existe o no tiene una suspensión activa.
+     */
+    @Transactional
+    public void levantarSuspension(Long idUsuario, String correoModerador) {
+        System.out.println("Se intentara levantar la sancion del usuario: " + idUsuario);
+        // 1. Obtener el Moderador (quien ejecuta la acción) - Opcional para logs, pero buena práctica
+        Usuario moderador = usuarioRepository.findByCorreo(correoModerador)
+                .orElseThrow(() -> new NoSuchElementException("Moderador autenticado no encontrado."));
+
+        // 2. Obtener el Usuario a Reactivar
+        Usuario usuarioAActivar = usuarioRepository.findById(idUsuario.intValue())
+                .orElseThrow(() -> new NoSuchElementException("Usuario a reactivar no encontrado con ID: " + idUsuario));
+
+        // 3. Validar si está inactivo por suspensión
+        if (usuarioAActivar.getActivo()) {
+            // Se puede considerar un caso de éxito si ya está activo
+            return;
+            // O lanzar una excepción si se espera que esté sancionado:
+        }else{
+            //para evitar problemas mejor reactivar xd
+            usuarioAActivar.setActivo(true);
+            usuarioRepository.save(usuarioAActivar);
+        }
+
+        // 4. Buscar la Suspensión ACTIVA del usuario (debe haber solo una si alguien no toco la base de datos >:c)
+        Suspension suspensionActiva = suspensionRepository.findByUsuarioSancionadoIdAndActivaTrue(idUsuario)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró una suspensión activa para el usuario con ID: " + idUsuario));
+
+
+        // 5. Marcar la suspensión como inactiva (finalizada)
+        suspensionActiva.setActiva(false);
+        // Opcional: Actualizar la fecha de fin a la fecha actual si se levanta antes del tiempo
+        if (suspensionActiva.getFechaFin().isAfter(LocalDateTime.now())) {
+            suspensionActiva.setFechaFin(LocalDateTime.now());
+        }
+        suspensionRepository.save(suspensionActiva);
+
+
+        // 7. Notificar al usuario
+        notificacionService.generarNotificacion(usuarioAActivar.getCorreo(),
+                "Reactivacvion de cuenta de cuenta: E-CommerceGT",
+                "Estimado " + usuarioAActivar.getNombre() + "\n\n" +
+                        "Su cuenta ha sido reactivada en la plataforma E-CommerceGT porque el moderador " + moderador.getNombre() + " con correo " + moderador.getCorreo() + " lo ha considerado oportuno.\n" +
+                        "Ya puede seguir disfrutando de nuestro servicio siempre y cuando se respeten nuestras condiciones de uso.\n\n"+
+
+
+                        "Reafirmamos nuestro compromiso con nuestros usuarios para mantener una plataforma segura y apta para todos.");
+
+
+    }
 }

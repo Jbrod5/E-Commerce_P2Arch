@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SuspensionRepository extends JpaRepository<Suspension, Long> {
@@ -34,6 +35,15 @@ public interface SuspensionRepository extends JpaRepository<Suspension, Long> {
      */
     @Query("SELECT s FROM Suspension s WHERE s.usuarioSancionado.id = :idUsuario ORDER BY s.fechaSuspension DESC")
     List<Suspension> obtenerHistorialSuspensionesPorUsuario(@Param("idUsuario") Long idUsuario);
+
+    /**
+     * Busca la única suspensión activa (activa = true) para un usuario específico.
+     * Spring Data JPA lo traduce automáticamente:
+     * - `UsuarioSancionadoId`: Propiedad de la entidad 'Suspension' seguida del ID del usuario FK.
+     * - `AndActivaTrue`: Condición booleana de la suspensión.
+     * Devuelve un Optional porque puede no haber ninguna activa.
+     */
+    Optional<Suspension> findByUsuarioSancionadoIdAndActivaTrue(Long idUsuario);
 
 
     /**

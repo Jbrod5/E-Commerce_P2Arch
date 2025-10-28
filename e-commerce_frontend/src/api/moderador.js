@@ -74,6 +74,16 @@ const ModeradorAPI = {
     obtenerHistorialSanciones(idUsuario) {
         return axios.get(`${BASE_URL_MODERADOR}/sanciones/historial/${idUsuario}`);
     },
+
+
+    /**
+     * Llama al endpoint para levantar la sanción de un usuario por su ID.
+     * POST /api/moderador/levantar-sancion/{idUsuario}
+     * @param {number} idUsuario ID del usuario a reactivar.
+     */
+    levantarSancion: (idUsuario) => {
+        return axios.post(`${BASE_URL_MODERADOR}/levantar-sancion/${idUsuario}`);
+    }
 };
 
 export default ModeradorAPI;

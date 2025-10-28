@@ -85,6 +85,41 @@ public class ModeradorController {
 
 
 
+    /**
+     * Levanta la sanción activa de un usuario (vendedor), reactivando su cuenta.
+     * POST /api/moderador/levantar-sancion/{idUsuario}
+     * @param idUsuario ID del usuario a reactivar.
+     * @param authentication Datos del usuario moderador autenticado.
+     * @return Respuesta de éxito (200 OK) o error.
+     */
+    @PostMapping("/levantar-sancion/{idUsuario}")
+    public ResponseEntity<?> levantarSancion(
+            @PathVariable("idUsuario") Long idUsuario,
+            Authentication authentication) {
+
+        System.out.println("Se intentara levantar la suspension del usuario: " + idUsuario);
+        try {
+
+            String correoModerador = authentication.getName(); // Correo del moderador
+
+            moderadorService.levantarSuspension(idUsuario, correoModerador);
+
+
+            return ResponseEntity.ok(Map.of("mensaje", "Sanción levantada. El usuario ha sido reactivado."));
+
+        } catch (NoSuchElementException e) {
+            // Usuario no encontrado o no tiene una suspensión activa.
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            // Error de lógica interna
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
+
 
 
 

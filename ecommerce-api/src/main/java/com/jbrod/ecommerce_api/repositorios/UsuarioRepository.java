@@ -17,12 +17,21 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     /**
      * Busca un usuario por su correo electrónico.
-     * Este método es vital para la autenticación (login).
+     * Util para implementacion del login.
      *
      * @param correo El correo electrónico del usuario.
      * @return Un Optional que contiene el Usuario si existe, o vacío si no.
      */
     Optional<Usuario> findByCorreo(String correo);
+
+
+    /**
+     * Busca un usuario por su id.
+     *
+     * @param id El correo electrónico del usuario.
+     * @return Un Optional que contiene el Usuario si existe, o vacío si no.
+     */
+    Optional<Usuario> findById(Integer id);
 
 
     /**
