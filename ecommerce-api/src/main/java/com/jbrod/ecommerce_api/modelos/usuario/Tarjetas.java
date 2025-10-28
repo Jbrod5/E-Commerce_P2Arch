@@ -7,8 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "tarjetas")
@@ -19,10 +17,6 @@ public class Tarjetas {
     @Column(name = "id_tarjeta")
     private Long id;
 
-    // Nota: Aunque la DB guarda el número completo, en un entorno real
-    // esto debe ser un token de una pasarela de pago (Stripe, PayPal, etc.)
-    // NUNCA almacenar números de tarjeta directamente. Lo mantendremos para
-    // simular el flujo de la BD, pero con un warning.
     @Column(name = "numero_tarjeta", nullable = false, unique = true, length = 50)
     private String numeroTarjeta;
 

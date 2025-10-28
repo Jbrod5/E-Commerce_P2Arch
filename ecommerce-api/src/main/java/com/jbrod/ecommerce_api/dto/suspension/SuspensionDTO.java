@@ -9,7 +9,7 @@ public class SuspensionDTO {
     private String motivo;
     private LocalDateTime fechaSuspension;
     private LocalDateTime fechaFin;
-    private String nombreModerador; // Para saber quién la aplicó
+    private String nombreModerador;
     private boolean activa;
 
     // Constructor que acepta la entidad Suspension y mapea los campos

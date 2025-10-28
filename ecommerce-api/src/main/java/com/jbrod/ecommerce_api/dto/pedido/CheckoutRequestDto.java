@@ -11,7 +11,6 @@ public class CheckoutRequestDto {
     @NotBlank(message = "La dirección de envío es obligatoria.")
     private String direccion;
 
-    // Puedes añadir otros campos si los necesitas (ej: fecha de entrega deseada)
 
     public Long getTarjetaId() {
         return tarjetaId;

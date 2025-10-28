@@ -36,14 +36,13 @@ public class Suspension {
     @Column(name = "activa", nullable = false)
     private Boolean activa;
 
-    // Constructores, Getters y Setters...
 
     public Suspension() {
         this.fechaSuspension = LocalDateTime.now();
         this.activa = true;
     }
 
-    // Constructor para la lógica de negocio
+
     public Suspension(Usuario usuarioSancionado, Usuario moderador, String motivoSuspension, LocalDateTime fechaFin) {
         this.usuarioSancionado = usuarioSancionado;
         this.moderador = moderador;

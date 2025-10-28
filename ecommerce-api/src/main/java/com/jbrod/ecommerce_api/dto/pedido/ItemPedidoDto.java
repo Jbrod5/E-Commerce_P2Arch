@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 public class ItemPedidoDto {
     private Long idProducto;
-    private String nombreProducto; // Necesitas un JOIN para obtener esto
+    private String nombreProducto;
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotal;

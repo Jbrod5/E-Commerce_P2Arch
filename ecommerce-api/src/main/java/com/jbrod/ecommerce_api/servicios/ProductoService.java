@@ -36,9 +36,11 @@ public class ProductoService {
     private final EstadoAprobacionProductoRepository estadoAprobacionProductoRepository;
     private final CategoriaRepository categoriaRepository;
     private final UsuarioService usuarioServicio;
-    // INYECTAMOS el servicio de manejo de archivos
+
     private final AlmacenamientoArchivosService almacenamientoArchivosService;
-    //Inyeccion repositorio CalificacionProducto
+
+
+
     private final CalificacionProductoRepository calificacionProductoRepository;
     private final SolicitudProductoRepository solicitudProductoRepository;
 
@@ -59,7 +61,7 @@ public class ProductoService {
         this.estadoAprobacionProductoRepository = estadoAprobacionProductoRepositorio;
         this.categoriaRepository = categoriaRepository;
         this.usuarioServicio = usuarioServicio;
-        this.almacenamientoArchivosService = almacenamientoArchivosService; // Asignación
+        this.almacenamientoArchivosService = almacenamientoArchivosService;
         this.calificacionProductoRepository = calificacionProductoRepository;
 
         this.configuracionGlobalService = configuracionGlobalService;
@@ -69,8 +71,7 @@ public class ProductoService {
 
 
     /**
-     * * Crea un nuevo producto, decodificando la imagen Base64, subiéndola al sistema
-     * de archivos, asignándole el estado 'pendiente' y registrando la solicitud.
+     * * Crea un nuevo producto, decodificando la imagen Base64, guardandola en la pecerda, asignándole el estado 'pendiente' y registrando la solicitud.
      *
      * @param dto Datos del producto, incluyendo la cadena Base64 de la imagen.
      * @param username Correo del usuario autenticado (vendedor).
@@ -79,7 +80,7 @@ public class ProductoService {
     @Transactional
     public Producto crearProductoBase64(ProductoCreacionDTO dto, String username) throws IOException, IllegalArgumentException {
 
-        // 1. Decodificar la imagen Base64 y obtener la URL (lógica ya existente)
+        // 1. Decodificar la imagen Base64 y obtener la URL
         String base64Image = dto.getImagenBase64();
 
         if (base64Image.startsWith("data:")) {
@@ -99,7 +100,7 @@ public class ProductoService {
         Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new NoSuchElementException("Categoría no encontrada con ID: " + dto.getIdCategoria()));
 
-        // 3. Mapear DTO a Entidad Producto (lógica ya existente)
+        // 3. Mapear DTO a Entidad Producto
         Producto nuevoProducto = new Producto();
         nuevoProducto.setNombre(dto.getNombre());
         nuevoProducto.setDescripcion(dto.getDescripcion());
@@ -122,7 +123,7 @@ public class ProductoService {
         // 4. Guardar Producto
         Producto productoGuardado = productoRepository.save(nuevoProducto);
 
-        // 5. REGISTRAR SOLICITUD DE PRODUCTO (
+        // 5. REGISTRAR SOLICITUD DE PRODUCTO
         SolicitudProducto nuevaSolicitud = new SolicitudProducto();
         nuevaSolicitud.setProducto(productoGuardado);
         // El moderador, fecha_revision, aprobado y comentario_moderador quedan NULL
@@ -149,7 +150,7 @@ public class ProductoService {
      */
     @Transactional(readOnly = true)
     public List<SolicitudPendienteDto> obtenerSolicitudesPendientes() {
-        // Asumimos que el producto repository puede buscar por el nombre del estado
+        // buscar por el nombre pendiente xd
         List<Producto> productosPendientes = productoRepository.findByEstadoNombre("pendiente");
 
         // Mapear la lista de Producto a la lista de SolicitudPendienteDto
@@ -158,7 +159,7 @@ public class ProductoService {
                     // Se utiliza el servicio de configuración para transformar la URL
                     String urlConvertida = configuracionGlobalService.convertirUrlImagen(producto.getImagenUrl());
                     SolicitudPendienteDto dto = SolicitudPendienteDto.fromEntity(producto);
-                    dto.setImagenUrl(urlConvertida); // Sobreescribe con la URL convertida
+                    dto.setImagenUrl(urlConvertida); // Sobreescribe con la URL convertida xd
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -173,7 +174,7 @@ public class ProductoService {
      */
     @Transactional
     public Producto revisarProducto(Long idProducto, DecisionModeracionDto dto, String username) {
-        // --- 1. Definir el estado y el comentario final ---
+        // 1. Definir el estado y el comentario final
         final boolean esAprobacion = dto.isAprobado();
         final String nombreNuevoEstado = esAprobacion ? "aprobado" : "rechazado";
 
@@ -181,7 +182,7 @@ public class ProductoService {
                 ? dto.getComentario()
                 : (esAprobacion ? "Aprobado por el moderador." : "Rechazado sin comentario específico.");
 
-        // --- 2. Buscar entidades  ---
+        // 2. Buscar entidades
         Producto producto = productoRepository.findById(idProducto)
                 .orElseThrow(() -> new NoSuchElementException("Producto no encontrado con ID: " + idProducto));
 
@@ -191,18 +192,18 @@ public class ProductoService {
         EstadoAprobacionProducto nuevoEstado = estadoAprobacionProductoRepository.findByNombre(nombreNuevoEstado)
                 .orElseThrow(() -> new IllegalStateException("Estado '" + nombreNuevoEstado + "' no configurado."));
 
-        // --- 3. Validar estado (Lógica Común) ---
+        // 3. Validar estado
         if (!"pendiente".equalsIgnoreCase(producto.getEstado().getNombre())) {
             throw new IllegalStateException("El producto no está en estado 'pendiente' para ser revisado.");
         }
 
-        // --- 4. Actualizar Producto ---
+        // 4. Actualizar Producto
         producto.setEstado(nuevoEstado);
         Producto productoActualizado = productoRepository.save(producto);
 
-        // --- 5. Actualizar SolicitudProducto (Buscamos la solicitud pendiente) ---
+        // 5. Actualizar SolicitudProducto (buscar la solicitud pendiente)
         SolicitudProducto solicitud = productoActualizado.getSolicitudes().stream()
-                .filter(s -> s.getAprobado() == null) // La que aún no tiene decisión
+                .filter(s -> s.getAprobado() == null) // La que todavia no tiene decisionnnn
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No se encontró solicitud pendiente asociada al producto."));
 
@@ -256,7 +257,7 @@ public class ProductoService {
 
     /**
      * Obtiene todos los productos subidos por un vendedor específico.
-     * Esta vista es para "Mi Inventario" del vendedor, por lo que no filtra por estado.
+     * Esta vista es para Inventario del vendedor, por lo que no filtra por estado.
      * @param username Correo del vendedor autenticado.
      * @return Lista de productos del vendedor.
      */
@@ -266,7 +267,7 @@ public class ProductoService {
         Usuario vendedor = usuarioServicio.obtenerUsuarioPorCorreo(username)
                 .orElseThrow(() -> new NoSuchElementException("Vendedor no encontrado con correo: " + username));
 
-        // 2. Usar el método del repositorio que usa la entidad Usuario
+        // 2. Usar el metodo del repositorio que usa la entidad Usuario
         return productoRepository.findByVendedor(vendedor);
     }
 
@@ -339,7 +340,7 @@ public class ProductoService {
         return detalleDto;
     }
 
-    /** Mapea CalificacionProducto a ResenaDto. */
+    // Mapea CalificacionProducto a ResenaDto
     private ResenaDto mapearAResenaDto(CalificacionProducto calificacion) {
         ResenaDto dto = new ResenaDto();
         dto.setCalificacion(calificacion.getCalificacion());
@@ -350,7 +351,7 @@ public class ProductoService {
         return dto;
     }
 
-    /** Mapea Producto a ProductoDetalleDto. */
+    //Mapea Producto a ProductoDetalleDto.
     private ProductoDetalleDto mapearADetalleDto(Producto producto) {
         ProductoDetalleDto dto = new ProductoDetalleDto();
         dto.setId(producto.getId());
@@ -391,11 +392,11 @@ public class ProductoService {
         Usuario usuario = usuarioServicio.obtenerUsuarioPorCorreo(username)
                 .orElseThrow(() -> new NoSuchElementException("Usuario autenticado no encontrado: " + username));
 
-        // 2. Verificar si ya existe una calificación del usuario para este producto
+        // 2. Verificar si ya existe una calificacion del usuario para este producto
         Optional<CalificacionProducto> calificacionExistente =
                 calificacionProductoRepository.findByIdProductoAndUsuario(idProducto, usuario);
 
-        // 3. Crear o Actualizar la Calificación
+        // 3. Crear o Actualizar la Calificacion
         CalificacionProducto calificacion;
         if (calificacionExistente.isPresent()) {
             // Actualizar
@@ -415,14 +416,14 @@ public class ProductoService {
 
         CalificacionProducto calificacionGuardada = calificacionProductoRepository.save(calificacion);
 
-        // 4. Recalcular y Actualizar el Promedio de Calificaciones del Producto
+        // 4. Recalcular y Actualizar el promedio de calificaciones del producto
         actualizarPromedioCalificaciones(producto);
 
         return calificacionGuardada;
     }
 
-    /** Método auxiliar para recalcular el promedio. */
-    @Transactional // Debe estar en la misma transacción o tener una propia
+    //Metodo auxiliar para recalcular el promedio
+    @Transactional
     private void actualizarPromedioCalificaciones(Producto producto) {
         // Obtenemos todas las calificaciones del producto
         List<CalificacionProducto> todasLasCalificaciones = calificacionProductoRepository.findByIdProducto(producto.getId());

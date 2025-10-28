@@ -12,6 +12,6 @@ import java.util.Optional;
 @Repository
 public interface EstadoAprobacionProductoRepository extends JpaRepository<EstadoAprobacionProducto, Integer> {
 
-    // Permite buscar un estado por su nombre (ej: "pendiente", "aprobado").
+    // Permite buscar un estado por su nombre , como  "pendiente", "aprobado".
     Optional<EstadoAprobacionProducto> findByNombre(String nombre);
 }

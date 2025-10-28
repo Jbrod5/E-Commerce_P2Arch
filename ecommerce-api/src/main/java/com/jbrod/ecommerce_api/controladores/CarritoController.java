@@ -15,13 +15,13 @@ import java.util.NoSuchElementException;
 
 /**
  * Controlador REST para la gestión del carrito de compras.
- * NOTA: Se asume que el usuario está autenticado y su ID se obtiene de 'Principal'.
+ * Se asume que el usuario está autenticado y su ID se obtiene de 'Principal'.
  */
 @RestController
 @RequestMapping("/api/carrito")
 public class CarritoController {
 
-    // Usar inyección de constructor (dependencias finales) es la mejor práctica
+
     private final CarritoService carritoService;
     private final UsuarioService usuarioService; // Dependencia necesaria para obtener el ID
 
@@ -39,24 +39,24 @@ public class CarritoController {
     /**
      * Obtiene el ID Long del usuario a partir del objeto Principal (el token JWT validado).
      * @param principal Objeto que contiene la identidad del usuario (correo).
-     * @return Long ID del usuario en la base de datos (Nota: Se convierte a Long si es necesario).
+     * @return Long ID del usuario en la base de datos.
      * @throws NoSuchElementException Si el usuario autenticado por el token no existe en la DB.
      */
     private Long obtenerUsuarioIdDePrincipal(Principal principal) {
-        // 1. El 'name' del Principal es el correo electrónico del usuario autenticado.
+        // 1. El name del Principal es el correo electrónico del usuario autenticado :3
         String correoUsuario = principal.getName();
 
-        // 2. Buscar la entidad Usuario y obtener su ID.
+        // 2. Buscar la entidad Usuario y obtener su ID
         Long usuarioId = usuarioService.obtenerUsuarioPorCorreo(correoUsuario)
-                .map(u -> u.getId().longValue()) //
+                .map(u -> u.getId().longValue())
                 .orElseThrow(() -> new NoSuchElementException("Usuario autenticado no encontrado en DB con correo: " + correoUsuario));
 
         return usuarioId;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    //  ENDPOINT: Obtener Carrito
-    // -----------------------------------------------------------------------------------------------------------------
+
+    //  ENDPOINT: Obtener Carrito --------------------------------------------------------------------------------------
+
 
     /**
      * Obtiene el carrito activo del usuario autenticado.
@@ -68,14 +68,13 @@ public class CarritoController {
             CarritoResponseDto carrito = carritoService.obtenerOCrearCarrito(usuarioId);
             return ResponseEntity.ok(carrito);
         } catch (NoSuchElementException e) {
-            // Si el usuario del token no existe, se devuelve 404 (o 403/401, dependiendo de la política de seguridad)
+            // Si el usuario del token no existe, se devuelve 404
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+
     //  ENDPOINT: Agregar/Actualizar Producto
-    // -----------------------------------------------------------------------------------------------------------------
 
     /**
      * Agrega un producto al carrito o actualiza su cantidad.
@@ -100,9 +99,9 @@ public class CarritoController {
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    //  ENDPOINT: Eliminar Producto
-    // -----------------------------------------------------------------------------------------------------------------
+
+
+    //  ENDPOINT: Eliminar Producto ------------------------------------------------------------------------------------
 
     /**
      * Elimina un producto específico del carrito.
@@ -118,14 +117,13 @@ public class CarritoController {
             CarritoResponseDto carritoActualizado = carritoService.eliminarProducto(usuarioId, productoId);
             return new ResponseEntity<>(carritoActualizado, HttpStatus.OK);
         } catch (NoSuchElementException | RecursoNoEncontradoException e) {
-            // Si el usuario no existe o el producto no está en el carrito
+            // Si el usuario no existe o el producto no está en el carrito >:c
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    //  ENDPOINT: Borrar Carrito (Vaciar)
-    // -----------------------------------------------------------------------------------------------------------------
+
+    //  ENDPOINT: Borrar Carrito (Vaciar) ------------------------------------------------------------------------------
 
     /**
      * Borra todos los artículos del carrito.

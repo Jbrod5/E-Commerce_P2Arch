@@ -38,7 +38,6 @@ public class ListaProductoPedidoId implements Serializable {
         this.productoId = productoId;
     }
 
-    // Debes implementar equals y hashCode para claves compuestas
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

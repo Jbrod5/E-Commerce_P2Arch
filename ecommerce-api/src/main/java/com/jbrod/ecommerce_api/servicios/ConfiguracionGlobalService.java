@@ -48,7 +48,7 @@ public class ConfiguracionGlobalService {
             return urlBaseBackend + urlImagenBD;
         }
 
-        // Si tiene localhost u otra URL antigua, reemplazarla
+        // Si tiene localhost u otra URL anterior configurada, reemplazarla :3
         // Buscar /imagenes/ y tomar todo desde ahí
         int indiceImagenes = urlImagenBD.indexOf("/imagenes/");
         if (indiceImagenes != -1) {

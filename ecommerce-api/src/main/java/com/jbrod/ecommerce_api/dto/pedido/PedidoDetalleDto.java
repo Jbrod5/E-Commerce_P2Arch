@@ -16,7 +16,7 @@ public class PedidoDetalleDto {
 
     // Dirección y Tarjeta
     private String direccion;
-    private String tarjetaParteVisible; // Necesitas un JOIN a Tarjetas para obtener esto
+    private String tarjetaParteVisible;
 
     // Lista de Productos (Items)
     private List<ItemPedidoDto> items;

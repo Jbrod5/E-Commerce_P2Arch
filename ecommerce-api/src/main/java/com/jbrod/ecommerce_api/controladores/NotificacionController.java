@@ -23,7 +23,7 @@ public class NotificacionController {
     }
 
     /**
-     * Obtiene una lista concisa de todas las notificaciones del usuario autenticado.
+     * Obtiene una lista de todas las notificaciones del usuario autenticado.
      * URL: GET /api/notificaciones
      * @param authentication Objeto de autenticación para obtener el correo del usuario.
      * @return Lista de NotificacionListDTO.
@@ -35,13 +35,13 @@ public class NotificacionController {
             List<NotificacionListDTO> notificaciones = notificacionService.obtenerNotificacionesPorUsuario(correoUsuario);
             return ResponseEntity.ok(notificaciones);
         } catch (NoSuchElementException e) {
-            // Usuario autenticado no encontrado (casi imposible con Spring Security bien configurado)
+            // Usuario autenticado no encontrado
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     /**
-     * Obtiene el número de notificaciones no leídas (para el icono de campana).
+     * Obtiene el número de notificaciones no leídas (para el icono de campana :3).
      * URL: GET /api/notificaciones/no-leidas/count
      * @param authentication Objeto de autenticación.
      * @return El número de notificaciones no leídas.
@@ -56,6 +56,7 @@ public class NotificacionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0L);
         }
     }
+
 
     /**
      * Obtiene el detalle de una notificación y la marca como leída.

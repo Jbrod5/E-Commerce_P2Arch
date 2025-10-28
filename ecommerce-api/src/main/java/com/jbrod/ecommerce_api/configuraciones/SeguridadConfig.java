@@ -39,9 +39,9 @@ public class SeguridadConfig {
     @Lazy
     private JwtFiltroAutenticacion jwtAuthFiltro;
 
-    // ----------------------------------------------------------------------
-    // --- BEANS DE SEGURIDAD ---
-    // ----------------------------------------------------------------------
+
+    // --- BEANS DE SEGURIDAD ------------------------------------------------------------------------
+
 
     /**
      * Define el codificador de contraseñas.
@@ -63,13 +63,12 @@ public class SeguridadConfig {
         return authProvider;
     }
 
-    // ----------------------------------------------------------------------
-    // --- CONFIGURACIÓN CORS ---
-    // ----------------------------------------------------------------------
+    // --- CONFIGURACIÓN CORS -------------------------------------------------------------------------
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 1. Agrega los orígenes permitidos
+        // 1. Agregar los origenes permitidos
         //configuration.setAllowedOrigins(Arrays.asList(
         //        "http://localhost:5173",                     // Para desarrollo local
         //        "https://e-commercegt.netlify.app",          // dominio de netlify :3
@@ -114,9 +113,9 @@ public class SeguridadConfig {
         return config.getAuthenticationManager();
     }
 
-    // ----------------------------------------------------------------------
-    // --- SECURITY FILTER CHAIN ---
-    // ----------------------------------------------------------------------
+
+    // --- SECURITY FILTER CHAIN --------------------------------------------------------------------
+
 
     /**
      * Configuración del filtro de seguridad HTTP. Define las reglas de acceso.
@@ -203,15 +202,15 @@ public class SeguridadConfig {
                         .anyRequest().authenticated()
                 )
 
-                // 4. Configura la política de sesiones como sin estado (STATELESS)
+                // 4. Configurar la política de sesiones como sin estado
                 .sessionManagement(sess -> sess
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // 5. Agrega nuestro proveedor de autenticación.
+                // 5. Agregar proveedor de autenticación.
                 .authenticationProvider(daoAuthenticationProvider)
 
-                // 6. AGREGAR EL FILTRO JWT (inyectado por campo)
+                // 6. AGREGAR EL FILTRO JWT
                 .addFilterBefore(jwtAuthFiltro, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

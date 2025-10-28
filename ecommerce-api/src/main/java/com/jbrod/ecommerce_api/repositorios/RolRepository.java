@@ -8,7 +8,6 @@ import java.util.Optional; // <-- IMPORTACIÓN NECESARIA
 
 /**
  * Repositorio de Spring Data JPA para la entidad Rol.
- * Permite realizar operaciones CRUD sin escribir código SQL.
  */
 @Repository
 public interface RolRepository extends JpaRepository<Rol, Integer> {

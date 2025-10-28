@@ -1,14 +1,12 @@
 package com.jbrod.ecommerce_api.servicios;
 
 
-// Imports necesarios (ajustar según la ubicación de tus clases)
 import com.jbrod.ecommerce_api.modelos.Usuario;
 import com.jbrod.ecommerce_api.modelos.pedidos.Pedido;
 import com.jbrod.ecommerce_api.modelos.pedidos.EstadoPedido;
 import com.jbrod.ecommerce_api.repositorios.UsuarioRepository;
 import com.jbrod.ecommerce_api.repositorios.pedido.PedidoRepository;
 import com.jbrod.ecommerce_api.repositorios.pedido.EstadoPedidoRepository;
-import com.jbrod.ecommerce_api.servicios.NotificacionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-// ... (otros imports)
 
 @Service
 public class LogisticaService {
@@ -31,7 +28,7 @@ public class LogisticaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Constantes para los IDs de estado
+    // Constantes para los IDs de estadooooo
     private static final int ESTADO_EN_CURSO = 1;
     private static final int ESTADO_ENVIADO = 2;
     private static final int ESTADO_ENTREGADO = 3;
@@ -39,7 +36,7 @@ public class LogisticaService {
     /**
      * Obtiene todos los pedidos pendientes de entrega (en curso o enviados).
      * Usa la consulta con FETCH JOIN para evitar la LazyInitializationException.
-     * @return Lista de Pedido (o DTO si lo mapeas)
+     * @return Lista de Pedido
      */
     public List<Pedido> obtenerPedidosPendientes() {
         // Usa el nuevo método con FETCH JOIN
@@ -51,7 +48,7 @@ public class LogisticaService {
      * @param idPedido ID del pedido a actualizar.
      * @return El Pedido actualizado.
      */
-    @Transactional // Asegura que la DB se actualice si todo va bien
+    @Transactional // Asegura que la DB se actualice si todo va bien :3
     public Pedido avanzarEstadoPedido(Long idPedido) {
         Pedido pedido = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new EntityNotFoundException("Pedido no encontrado con ID: " + idPedido));
@@ -63,7 +60,7 @@ public class LogisticaService {
             nuevoEstadoId = ESTADO_ENVIADO;
         } else if (estadoActualId == ESTADO_ENVIADO) {
             nuevoEstadoId = ESTADO_ENTREGADO;
-            // Si el nuevo estado es ENTREGADO, registramos la fecha real de entrega
+            // Si el nuevo estado es ENTREGADO, registramos la fecha real de entrega :3
             pedido.setFechaEntregaReal(LocalDateTime.now());
         } else if (estadoActualId == ESTADO_ENTREGADO) {
             throw new IllegalStateException("El pedido con ID " + idPedido + " ya ha sido entregado.");
@@ -109,7 +106,7 @@ public class LogisticaService {
         }
 
         notificacionService.generarNotificacion(
-                usuario.getCorreo(), // Para el envío del correo electrónico
+                usuario.getCorreo(), // Para el enviar el correo :3
                 titulo,
                 cuerpo
         );

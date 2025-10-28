@@ -20,27 +20,17 @@ public interface SuspensionRepository extends JpaRepository<Suspension, Long> {
     /**
      * Busca todas las suspensiones por el ID del usuario y las ordena
      * de la más reciente a la más antigua.
-     * El nombre de este método es crucial para que JPA lo entienda.
      */
     //List<Suspension> findByUsuarioIdUsuarioOrderByFechaSuspensionDesc(Long idUsuario);
 
     /**
-     * CORRECCIÓN FINAL:
-     * La consulta utiliza la propiedad 'id' de la entidad Usuario (s.usuarioSancionado.id)
-     * para referirse a la llave primaria, lo cual es confirmado por la clase Usuario.java.
-     *
-     * * JPQL:
-     * - 's.usuarioSancionado' accede a la entidad Usuario (propiedad en Suspension.java).
-     * - '.id' accede a la llave primaria dentro de la entidad Usuario (propiedad en Usuario.java).
+     * La consulta utiliza la propiedad 'id' de la entidad Usuario para referirse a la llave primaria.
      */
     @Query("SELECT s FROM Suspension s WHERE s.usuarioSancionado.id = :idUsuario ORDER BY s.fechaSuspension DESC")
     List<Suspension> obtenerHistorialSuspensionesPorUsuario(@Param("idUsuario") Long idUsuario);
 
     /**
      * Busca la única suspensión activa (activa = true) para un usuario específico.
-     * Spring Data JPA lo traduce automáticamente:
-     * - `UsuarioSancionadoId`: Propiedad de la entidad 'Suspension' seguida del ID del usuario FK.
-     * - `AndActivaTrue`: Condición booleana de la suspensión.
      * Devuelve un Optional porque puede no haber ninguna activa.
      */
     Optional<Suspension> findByUsuarioSancionadoIdAndActivaTrue(Long idUsuario);

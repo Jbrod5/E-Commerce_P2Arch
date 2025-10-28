@@ -2,7 +2,6 @@ package com.jbrod.ecommerce_api.controladores;
 
 import com.jbrod.ecommerce_api.modelos.Usuario;
 import com.jbrod.ecommerce_api.servicios.UsuarioService;
-// ... (Otros servicios y modelos necesarios: ReporteService, etc.)
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Controlador para la gestión de usuarios/empleados y reportes por el Administrador.
@@ -20,18 +18,14 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/admin")
-// *** IMPORTANTE: Se requiere configuración de Spring Security para el PreAuthorize
-// En el método, se usará 'ROLE_ADMINISTRADOR'
-@PreAuthorize("hasAuthority('administrador')")
 public class AdministracionController {
 
     @Autowired
     private UsuarioService usuarioService;
 
 
-    // --------------------------------------------------------------------------
-    // --- GESTIÓN DE EMPLEADOS ---
-    // --------------------------------------------------------------------------
+
+    // --- GESTIÓN DE EMPLEADOS ----------------------------------------------------------------------------------------
 
     /**
      * Endpoint para registrar nuevos empleados (moderador, logistica, administrador).
@@ -40,7 +34,7 @@ public class AdministracionController {
     @PostMapping("/empleados")
     public ResponseEntity<?> registrarEmpleado(@RequestBody Usuario nuevoEmpleado) {
 
-        // Se espera que 'nuevoEmpleado' tenga el campo 'rol' (con el nombre del rol)
+        // Se espera que 'nuevoEmpleado' tenga el campo 'rol'
         String rolNombre = nuevoEmpleado.getRol().getNombre();
 
         try {
@@ -62,9 +56,6 @@ public class AdministracionController {
     public ResponseEntity<?> obtenerListaEmpleados() {
         try {
             List<Usuario> empleados = usuarioService.obtenerEmpleados();
-
-            // La contraseña ya debería venir limpia del servicio, pero aseguramos
-            // empleados.forEach(e -> e.setContrasena(null));
 
             return ResponseEntity.ok(empleados);
 

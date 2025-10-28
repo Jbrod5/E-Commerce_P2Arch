@@ -16,10 +16,10 @@ public class EncriptadorContrasenas {
         // 1. Instancia el codificador que utiliza Spring Security
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        // 2. Define la contraseña que deseas encriptar (ej. la de tu usuario ADMIN)
+        // 2. Contraseña a encriptar
         String contrasenaPlana = "admin123";
 
-        // 3. Genera el hash (el resultado es diferente cada vez)
+        // 3. Genera el hash (el resultado es diferente cada vez aaaaaaaaaaaa)
         String hashGenerado = encoder.encode(contrasenaPlana);
 
         // 4. Muestra la informacion para copiar y pegar
@@ -28,11 +28,12 @@ public class EncriptadorContrasenas {
         System.out.println("Hash BCrypt (para la DB): " + hashGenerado);
         System.out.println("----------------------------------------------------------------------");
 
-        // Opcional: Probar si el hash es correcto (debería ser true)
+        // Probar si el hash es correcto (debería ser true)
         boolean esValida = encoder.matches(contrasenaPlana, hashGenerado);
         System.out.println("Prueba de validación (debe ser TRUE): " + esValida);
 
 
+        // CLAVE SECRETA QUE YA NO ES SECRETA XD
         System.out.println();
         System.out.println();
         System.out.println();

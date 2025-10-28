@@ -31,7 +31,7 @@ public class Notificacion {
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha = LocalDateTime.now(); // Por defecto al momento de creación
 
-    // Opcional: Campo para rastrear si el usuario ya la leyó
+
     @Column(name = "leida", nullable = false)
     private Boolean leida = false;
 

@@ -9,13 +9,12 @@ import java.util.List;
 
 /**
  * Entidad JPA que mapea la tabla 'usuario' de la base de datos.
- * CORREGIDA: Eliminado 'apellido' y 'telefono', y arreglado el nombre de la columna foranea del 'Rol'.
  */
 @Entity
 @Table(name = "usuario")
 public class Usuario {
 
-    // --- Mapeo de Campos de la Tabla ---
+
 
     // Llave primaria
     @Id
@@ -49,7 +48,7 @@ public class Usuario {
     @JsonIgnore
     private List<Producto> productosVendidos;
 
-    // --- Constructores ---
+
 
     // Constructor vacio, requerido por JPA
     public Usuario() {}
@@ -64,7 +63,7 @@ public class Usuario {
         this.rol = rol;
     }
 
-    // --- Getters y Setters ---
+
 
     public Integer getId() {
         return id;

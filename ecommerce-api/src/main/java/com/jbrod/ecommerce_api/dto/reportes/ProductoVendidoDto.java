@@ -1,6 +1,5 @@
 package com.jbrod.ecommerce_api.dto.reportes;
 
-import java.math.BigInteger;
 
 /**
  * DTO para el reporte de Top Productos Vendidos.
@@ -9,9 +8,9 @@ import java.math.BigInteger;
 public class ProductoVendidoDto {
 
     private String nombreProducto;
-    private Long totalVendido; // Usamos Long para el total sumado de la cantidad
+    private Long totalVendido;
 
-    // Constructor que usa JPA (es clave para consultas nativas/proyecciones)
+
     public ProductoVendidoDto(String nombreProducto, Long totalVendido) {
         this.nombreProducto = nombreProducto;
         this.totalVendido = totalVendido;

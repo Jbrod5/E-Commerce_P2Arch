@@ -24,8 +24,6 @@ public interface DetalleCarritoRepository extends JpaRepository<DetalleCarrito, 
 
     /**
      * Elimina todos los ítems de un carrito.
-     * (Aunque con CascadeType.ALL en Carrito, esto podría no ser estrictamente necesario,
-     * es bueno tener la funcionalidad de "Borrar Carrito").
      */
     void deleteByCarrito(Carrito carrito);
 

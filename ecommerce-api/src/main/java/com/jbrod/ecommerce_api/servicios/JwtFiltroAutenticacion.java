@@ -17,16 +17,28 @@ import java.io.IOException;
 @Component
 public class JwtFiltroAutenticacion extends OncePerRequestFilter {
 
-    // Cambiar a final e inyectar por constructor
     private final JwtService jwtService;
-    private final UsuarioService usuarioService; // Tu UserDetailsService
+    private final UsuarioService usuarioService;
 
-    // Inyección de Constructor: Spring inyecta las dependencias al crear el bean
     public JwtFiltroAutenticacion(JwtService jwtService, UsuarioService usuarioService) {
         this.jwtService = jwtService;
         this.usuarioService = usuarioService;
     }
 
+    /**
+     * Intercepta la solicitud HTTP para manejar la autenticación con un Token Web JSON (JWT).
+     * Busca el JWT en el encabezado 'Authorization'.
+     * Si lo encuentra y es valido, carga los datos del usuario.
+     * Establece la identidad del usuario en el contexto de seguridad de Spring Security,
+     * permitiendo que la solicitud continúe con los permisos de ese usuario.
+     * Si no hay token o no es válido, permite que la cadena de filtros continúe sin autenticar al usuario.
+     *
+     * @param request La solicitud HTTP.
+     * @param response La respuesta HTTP.
+     * @param filterChain La cadena de filtros para continuar el proceso.
+     * @throws jakarta.servlet.ServletException Si ocurre un error interno del servidor.
+     * @throws java.io.IOException Si ocurre un error de entrada/salida.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

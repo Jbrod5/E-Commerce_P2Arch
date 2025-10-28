@@ -10,12 +10,12 @@ public class ProductoDetalleDto {
     private BigDecimal precio;
     private Integer stock;
     private Boolean esNuevo;
-    private String nombreVendedor; // De Usuario
-    private String nombreCategoria; // De Categoria
+    private String nombreVendedor;
+    private String nombreCategoria;
 
     // Datos de Calificación
-    private BigDecimal promedioCalificaciones; // De Producto
-    private Integer cantidadResenas; // Nuevo: El tamaño de la lista de reseñas
+    private BigDecimal promedioCalificaciones;
+    private Integer cantidadResenas;
 
     // Lista de Reseñas
     private List<ResenaDto> resenas;

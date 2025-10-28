@@ -76,7 +76,7 @@ public class ModeradorController {
 
         String username = authentication.getName(); // Correo del moderador (username)
 
-        // Llamada al servicio unificado
+        // Llamada al servicio para revisar el producto
         Producto productoActualizado = productoService.revisarProducto(idProducto, dto, username);
 
         return ResponseEntity.ok(productoActualizado);

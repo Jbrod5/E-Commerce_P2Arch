@@ -14,7 +14,7 @@ public class ResenaRequestDto {
     private Integer calificacion;
 
     @Size(max = 500, message = "El comentario no debe exceder los 500 caracteres.")
-    private String comentario; // Puede ser nulo o vacío
+    private String comentario; // Puede ser nulo o vacío :3
 
     // Getters y Setters
     public Integer getCalificacion() {

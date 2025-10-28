@@ -13,18 +13,16 @@ import java.math.BigDecimal;
 @Table(name = "detalle_carrito")
 public class DetalleCarrito {
 
-    // Asegúrate de que DetalleCarritoId y Carrito estén accesibles (importados o en el mismo paquete)
-    // El paquete del DetalleCarritoId lo he asumido como com.jbrod.ecommerce_api.modelos.carrito;
     @EmbeddedId
     private DetalleCarritoId id;
 
-    // 2. Relación con Carrito (Parte de la clave)
+    // 2. Relación con Carrito (Parte de la clave compuesta)
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("carritoId")
     @JoinColumn(name = "carrito")
     private Carrito carrito;
 
-    // 3. Relación con Producto (Parte de la clave)
+    // 3. Relación con Producto (Parte de la clave compuesta)
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("productoId")
     @JoinColumn(name = "producto")
@@ -39,11 +37,9 @@ public class DetalleCarrito {
 
     // Constructores
     public DetalleCarrito() {
-        // Asegúrate de que DetalleCarritoId se importa correctamente
         this.id = new DetalleCarritoId();
     }
 
-    // Nota: El paquete de Carrito debe ser com.jbrod.ecommerce_api.modelos.carrito;
     public DetalleCarrito(Carrito carrito, Producto producto, Integer cantidad, BigDecimal precioUnitario) {
         this.id = new DetalleCarritoId(carrito.getIdCarrito(), producto.getId());
         this.carrito = carrito;
@@ -69,7 +65,6 @@ public class DetalleCarrito {
 
     public void setProducto(Producto producto) {
         this.producto = producto;
-        // Se asume que Producto.getId() devuelve Long
         this.id = new DetalleCarritoId(this.id.getCarritoId(), producto.getId());
     }
 

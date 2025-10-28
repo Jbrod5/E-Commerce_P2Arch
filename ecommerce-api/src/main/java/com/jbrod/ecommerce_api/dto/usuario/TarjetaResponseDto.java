@@ -10,7 +10,6 @@ public class TarjetaResponseDto {
     private Integer mesVencimiento;
     private Integer anioVencimiento;
 
-    // Opcional: Tipo de tarjeta (Visa, Mastercard, etc.)
 
     // Constructor de mapeo (conveniente para el servicio)
     public TarjetaResponseDto(Tarjetas tarjeta) {

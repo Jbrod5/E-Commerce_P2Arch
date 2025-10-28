@@ -47,7 +47,7 @@ public class TarjetasService {
     /**
      * Obtiene todas las tarjetas de un usuario.
      * @param usuarioId ID del usuario.
-     * @return Lista de DTOs de tarjetas, omitiendo el número completo.
+     * @return Lista de DTOs de tarjetas, omitiendo el numero completo.
      */
     public List<TarjetaResponseDto> obtenerTarjetasPorUsuario(Long usuarioId) {
         List<Tarjetas> tarjetas = tarjetasRepository.findByUsuarioId(usuarioId);
@@ -66,7 +66,7 @@ public class TarjetasService {
         Tarjetas tarjeta = tarjetasRepository.findById(tarjetaId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Tarjeta", tarjetaId));
 
-        // Verificación de propiedad (CRÍTICO)
+        // Verificación de propiedadddd
         if (!tarjeta.getUsuarioId().equals(usuarioId)) {
             // Lanza una excepción de seguridad o acceso denegado
             throw new IllegalArgumentException("Acceso denegado. La tarjeta no pertenece al usuario.");

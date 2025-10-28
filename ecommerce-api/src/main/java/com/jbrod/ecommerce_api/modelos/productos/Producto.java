@@ -150,7 +150,7 @@ public class Producto {
         return promedioCalificaciones;
     }
 
-    // Usamos BigDecimal para el parámetro
+
     public void setPromedioCalificaciones(BigDecimal promedioCalificaciones) {
         this.promedioCalificaciones = promedioCalificaciones;
     }

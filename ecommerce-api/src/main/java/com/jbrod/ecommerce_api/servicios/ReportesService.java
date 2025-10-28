@@ -51,7 +51,7 @@ public class ReportesService {
 
 
     /**
-     * Obtiene el Top 5 de clientes (compradores) que más monto total han gastado.
+     * Obtiene el Top 5 de clientes compradores que más dinero total han gastado.
      */
     public List<ClienteGananciaProyeccion> obtenerTop5ClientesCompradores(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
 
@@ -65,7 +65,7 @@ public class ReportesService {
 
 
     /**
-     * Obtiene el Top 5 de usuarios que más productos han vendido (vendedores).
+     * Obtiene el Top 5 de usuarios que mas productos han vendido (vendedores).
      */
     public List<VendedorMasVentasProyeccion> obtenerTop5Vendedores(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         System.out.println("se solicitaron los 5 clientes mas vendedores");
@@ -92,24 +92,24 @@ public class ReportesService {
 
 
     /**
-     * Obtiene el Top 10 de clientes (vendedores) con más productos listados.
+     * Obtiene el Top 10 de clientes (vendedores) con mas productos listados.
      */
     public List<VendedorProductosProyeccion> obtenerTop10VendedoresConMasProductos() {
         System.out.println("se solicitaron los 10 vendedores con más productos listados");
 
-        // No se requieren fechas para este reporte (a menos que se quiera filtrar por fecha de creación)
+        // No se requieren fechas para este reporteeee
         return productoRepository.findTop10VendedoresConMasProductos();
     }
 
 
     /**
-     * Obtiene el historial completo de todas las suspensiones, ordenado por la fecha más reciente.
+     * Obtiene el historial completo de todas las suspensiones, ordenado por la fecha mas reciente.
      */
     public List<SuspensionHistorialDto> obtenerHistorialSuspensiones() {
         System.out.println("se solicitó el historial de suspensiones");
 
-        // 1. OBTENER LA LISTA: Se usa el método con FETCH JOIN para que Hibernate cargue los nombres de Usuario.
-        List<Suspension> suspensiones = suspensionRepository.findAllWithUsuariosEagerly(); // <-- CAMBIO APLICADO
+        // 1. OBTENER LA LISTAAAAAAAAA
+        List<Suspension> suspensiones = suspensionRepository.findAllWithUsuariosEagerly();
 
         // 2. Transformar cada entidad a nuestro DTO de reporte
         return suspensiones.stream()
@@ -119,7 +119,7 @@ public class ReportesService {
 
 
     /**
-     * Obtiene el historial completo de todas las notificaciones, ordenado por la fecha más reciente.
+     * Obtiene el historial completo de todas las notificaciones, ordenado por la fecha mas reciente.
      */
     public List<NotificacionHistorialDto> obtenerHistorialNotificaciones() {
         System.out.println("se solicitó el historial de notificaciones");

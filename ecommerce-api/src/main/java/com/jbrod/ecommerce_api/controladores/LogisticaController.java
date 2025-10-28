@@ -17,19 +17,16 @@ public class LogisticaController {
 
     @Autowired
     private LogisticaService logisticaService;
-    // Debes tener un Mapper o un método en el servicio para convertir Pedido a DTO
-    // por simplicidad, aquí usaremos la entidad o mapearemos simple
 
     /**
      * GET /api/logistica/pedidos
      * Obtiene todos los pedidos que necesitan gestión (en curso o enviados).
      */
     @GetMapping("/pedidos")
-    // Se recomienda retornar DTOs, usaré PedidoResumenDto para el ejemplo
     public ResponseEntity<List<PedidoResumenDto>> obtenerPedidosPendientes() {
         List<Pedido> pedidos = logisticaService.obtenerPedidosPendientes();
 
-        // Mapeo simple de Pedido a PedidoResumenDto
+        // Mapeo de Pedido a PedidoResumenDto
         List<PedidoResumenDto> dtos = pedidos.stream()
                 .map(p -> {
                     PedidoResumenDto dto = new PedidoResumenDto();
@@ -38,7 +35,6 @@ public class LogisticaController {
                     dto.setEstadoNombre(p.getEstado().getNombre());
                     dto.setFechaRealizacion(p.getFechaRealizacion());
                     dto.setDireccion(p.getDireccion());
-                    // Podrías añadir la fecha estimada también
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -51,7 +47,6 @@ public class LogisticaController {
      * Avanza el estado del pedido al siguiente (en curso -> enviado, o enviado -> entregado).
      */
     @PatchMapping("/pedidos/{id}/avanzar")
-    // El rol de Logística debe estar asegurado con Spring Security
     public ResponseEntity<?> avanzarEstadoPedido(@PathVariable Long id) {
         try {
             Pedido pedidoActualizado = logisticaService.avanzarEstadoPedido(id);

@@ -26,7 +26,7 @@ public class DetalleCarritoId implements Serializable {
     public Long getCarritoId() { return carritoId; }
     public Long getProductoId() { return productoId; }
 
-    // Sobreescritura obligatoria para JPA
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

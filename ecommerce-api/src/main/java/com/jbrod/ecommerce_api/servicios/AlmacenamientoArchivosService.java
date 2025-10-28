@@ -13,18 +13,17 @@ import java.util.Base64; // Importación necesaria para el Base64, aunque no se 
 /**
  * Servicio que encapsula la lógica de almacenamiento de archivos.
  * Para el desarrollo local, guarda físicamente en un directorio del proyecto.
- * En producción, esto se reemplazaría por una implementación de AWS S3 o Cloudinary.
  */
 @Service // Siguiendo la nomenclatura: AlmacenamientoArchivos + Service
 public class AlmacenamientoArchivosService {
 
-    // Directorio base donde se guardarán las imágenes (debe coincidir con WebConfig + subdirectorio)
+    // Directorio base donde se guardarán las imágenes (debe coincidir con WebConfig + subdirectorio) ojooooooooooo
     // El subdirectorio 'productos' ayuda a organizar las imágenes.
-    //private static final String UPLOAD_DIR = "src/main/resources/static/imagenes/productos";
+    // private static final String UPLOAD_DIR = "src/main/resources/static/imagenes/productos";
     private static final String UPLOAD_DIR = "uploads/productos"; // ruta física
 
 
-    // URL base que Spring mapeará para acceder al archivo
+    // URL base que Spring mapear para acceder al archivo
     private static final String BASE_URL = "http://localhost:8080/imagenes/productos/";
 
 
@@ -48,19 +47,19 @@ public class AlmacenamientoArchivosService {
             Files.createDirectories(uploadPath);
         }
 
-        // 2. Generar un nombre de archivo único con su extensión
+        // 2. Generar un nombre de archivo unico con su extensión
         String originalFilename = file.getOriginalFilename();
         String extension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
-        // Prefijo 'prod-' para distinguir imágenes de productos de otras subidas futuras
-        String uniqueFilename = "prod-" + UUID.randomUUID().toString() + extension;
+        // Prefijo 'prod-' para distinguir imágenes de productos de otras subidas futuras :3
+        String uniqueFilename = "prod-" + UUID.randomUUID().toString() + extension; //UUID random porque no se como llevar contador xd
 
         // 3. Crear el path final y guardar el archivo
         Path filePath = uploadPath.resolve(uniqueFilename);
 
-        // Transferir el contenido del archivo subido al disco
+        // Guardarrr
         file.transferTo(filePath.toFile());
 
         // 4. Devolver la URL de acceso público
@@ -68,11 +67,8 @@ public class AlmacenamientoArchivosService {
     }
 
     /**
-     * ***************************************************************
-     * NUEVO MÉTODO: Sube un arreglo de bytes (imagen decodificada de Base64)
-     * ***************************************************************
      * Guarda el array de bytes físicamente y genera una URL de acceso.
-     * Dado que Base64 no incluye la extensión, asumimos una extensión común (.png).
+     * Dado que Base64 no incluye la extensión, asumimos una extensión común (.png, igual funciona aunque no sea la extensión correcta jsjs).
      * @param bytes El array de bytes de la imagen decodificada.
      * @return La URL pública donde se accedería a la imagen.
      * @throws IOException Si la subida falla.
@@ -89,9 +85,7 @@ public class AlmacenamientoArchivosService {
         }
 
         // 2. Generar un nombre de archivo único y ASUMIR una extensión.
-        // Esto no detecta el tipo de archivos exactamente xd, tendría que
-        // examinar los primeros bytes del array (magic number) o requerir el mimetype
-        // en el DTO del producto. Asumimos .png por simplicidad.
+        // Esto no detecta el tipo de archivos exactamente xd peo juro por Dieguito Maradona que funciona igual
         String extension = ".png"; // Asumimos PNG o  usar .jpg??
         String uniqueFilename = "prod-" + UUID.randomUUID().toString() + extension;
 

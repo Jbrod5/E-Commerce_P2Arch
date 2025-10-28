@@ -17,7 +17,7 @@ public class Rol {
     @Column(name = "nombre_rol", nullable = false, unique = true)
     private String nombre;
 
-    // --- Constructores ---
+
 
     // Constructor vacio, requerido por JPA
     public Rol() {
@@ -27,7 +27,7 @@ public class Rol {
         this.nombre = nombre;
     }
 
-    // --- Getters y Setters ---
+
 
     public Integer getId() {
         return id;

@@ -39,8 +39,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     /**
      * Consulta para Logística: Obtiene todos los pedidos pendientes de entrega.
-     * Se usa FETCH JOIN para cargar el objeto 'estado' de forma EAGER
-     * dentro de la consulta, previniendo la 'LazyInitializationException'.
      */
     @Query("SELECT p FROM Pedido p JOIN FETCH p.estado e WHERE e.id <> :idEstadoExcluir ORDER BY p.fechaRealizacion ASC")
     List<Pedido> findPedidosGestionLogisticaWithEstado(Integer idEstadoExcluir);
@@ -57,7 +55,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
         SELECT
             u.nombre AS nombreCliente,
             SUM(p.monto_total) AS montoTotalCompras,
-            SUM(p.monto_total) * 0.05 AS gananciaPlataforma -- Cálculo del 5% de comisión de la plataforma
+            SUM(p.monto_total) * 0.05 AS gananciaPlataforma -- Cálculo del 5% de comisión de la plataforma :3
         FROM
             pedido p
         JOIN

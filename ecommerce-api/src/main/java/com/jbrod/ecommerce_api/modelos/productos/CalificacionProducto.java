@@ -20,7 +20,7 @@ public class CalificacionProducto {
     @JoinColumn(name = "producto", nullable = false)
     private Producto producto;
 
-    // Relación ManyToOne con Usuario (el reseñista)
+    // Relación ManyToOne con Usuario que reseña
     // Mapea la columna 'usuario' de la clave compuesta
     @ManyToOne(fetch = FetchType.EAGER) // EAGER para obtener el nombre del reseñista
     @MapsId("usuario")

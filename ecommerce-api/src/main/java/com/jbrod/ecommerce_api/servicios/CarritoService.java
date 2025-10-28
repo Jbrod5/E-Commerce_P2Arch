@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 /**
  * Servicio para la gestión del carrito de compras.
- * NOTA: Los métodos asumen que el 'usuarioId' proviene de un token JWT validado.
  */
 @Service
 public class CarritoService {
@@ -48,7 +47,7 @@ public class CarritoService {
     public CarritoResponseDto obtenerOCrearCarrito(Long usuarioId) {
         Carrito carrito = carritoRepository.findByUsuarioId(usuarioId)
                 .orElseGet(() -> {
-                    // Lógica de creación de un nuevo carrito integrada aquí
+                    // Logica de creacion de un nuevo carrito integrada aquí
                     Carrito nuevoCarrito = new Carrito();
                     nuevoCarrito.setUsuarioId(usuarioId);
                     return carritoRepository.save(nuevoCarrito); // INSERT permitido por @Transactional
@@ -66,7 +65,7 @@ public class CarritoService {
      */
     @Transactional
     public CarritoResponseDto agregarOActualizarProducto(Long usuarioId, CarritoItemDto itemDto) {
-        // y asegurar que si se necesita un nuevo carrito, se crea dentro de esta transacción de escritura.
+        // asegurar que si se necesita un nuevo carrito, se crea dentro de esta transacción de escritura.
         Carrito carrito = carritoRepository.findByUsuarioId(usuarioId)
                 .orElseGet(() -> {
                     Carrito nuevoCarrito = new Carrito();
@@ -81,7 +80,7 @@ public class CarritoService {
         if (producto.getStock() < itemDto.getCantidad()) {
             throw new IllegalArgumentException("La cantidad solicitada (" + itemDto.getCantidad() + ") excede el stock disponible (" + producto.getStock() + ").");
         }
-        if (producto.getEstado().getId() != 2) { // Asumiendo ID 2 es 'aprobado'
+        if (producto.getEstado().getId() != 2) { // Asumiendo ID 2 es 'aprobado' si no cambio nada en la bd vdd :c
             throw new IllegalArgumentException("El producto no está aprobado para la venta.");
         }
 
@@ -128,7 +127,7 @@ public class CarritoService {
 
         detalleCarritoRepository.delete(detalle);
 
-        // Recargar el carrito (posiblemente la lista de items se actualice automáticamente si el mapeo se hace con la entidad)
+        // Recargar el carrito (posiblemente la lista de items se actualice automáticamente si el mapeo se hace con la entidad xd)
         carrito.getItems().removeIf(item -> item.getProducto().getId().equals(productoId));
 
         return mapearACarritoResponseDto(carrito);
@@ -151,7 +150,9 @@ public class CarritoService {
         return mapearACarritoResponseDto(carrito);
     }
 
-    // --- Mapeo de Entidad a DTO y Cálculo de Total ---
+
+
+    // --- Mapeo de Entidad a DTO y Cálculo de Total -------------------------------------------------------------------
 
     private CarritoResponseDto mapearACarritoResponseDto(Carrito carrito) {
         CarritoResponseDto dto = new CarritoResponseDto();

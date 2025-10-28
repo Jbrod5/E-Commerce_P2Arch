@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
-    // Método para obtener productos por vendedor (útil para el dashboard de usuario común)
+    // Método para obtener productos por vendedor
     List<Producto> findByVendedor(Usuario vendedor);
 
     // Método para obtener productos que están APROBADOS y tienen stock > 0 (para el catálogo principal)
@@ -35,7 +35,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     @Query(value = """
         SELECT
             u.nombre AS nombreVendedor,
-            COUNT(p.id_producto) AS totalProductosListados -- Contamos los productos por vendedor
+            COUNT(p.id_producto) AS totalProductosListados -- Contamos los productos por vendedor :3
         FROM
             producto p
         JOIN

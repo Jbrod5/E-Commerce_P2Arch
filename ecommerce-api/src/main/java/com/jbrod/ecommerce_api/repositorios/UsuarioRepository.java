@@ -5,14 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional; // Necesario para manejar la posibilidad de que no se encuentre el usuario
+import java.util.Optional;
 
 /**
  * Repositorio de Spring Data JPA para la entidad Usuario.
  * Proporciona métodos CRUD y de consulta por correo electrónico.
  */
 @Repository
-// JpaRepository<[Clase Entidad], [Tipo de Dato de la Llave Primaria (Integer)]>
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     /**

@@ -26,7 +26,7 @@ public class NgrokImagenesFilter implements Filter {
 
         String path = httpRequest.getRequestURI();
 
-        // Solo agregar headers si la petición es para imágenes
+        // Solo agregar headers si la petición es para imagenes
         if (path.startsWith("/imagenes/")) {
             // Header para ngrok
             httpResponse.setHeader("ngrok-skip-browser-warning", "true");

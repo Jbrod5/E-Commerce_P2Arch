@@ -16,18 +16,18 @@ import java.util.stream.Collectors;
 public class IngresosService {
 
     private final DetalleVentaVendedorRepository detalleVentaVendedorRepository;
-    private final UsuarioService usuarioService; // NUEVA INYECCIÓN
+    private final UsuarioService usuarioService;
 
     @Autowired
     public IngresosService(DetalleVentaVendedorRepository detalleVentaVendedorRepository, UsuarioService usuarioService) {
         this.detalleVentaVendedorRepository = detalleVentaVendedorRepository;
-        this.usuarioService = usuarioService; // Asignación de la inyección
+        this.usuarioService = usuarioService;
     }
 
     /**
      * Obtiene el historial de ventas detallado para un vendedor específico,
-     * identificándolo por su correo electrónico.
-     * @param correoVendedor El correo del usuario vendedor (Usuario.correo).
+     * identificandolo por su correo electronico.
+     * @param correoVendedor El correo del usuario vendedor.
      * @return Una lista de DetalleVentaVendedorDTO.
      * @throws UsernameNotFoundException Si no se encuentra el usuario.
      */
@@ -35,7 +35,6 @@ public class IngresosService {
     public List<DetalleVentaVendedorDTO> obtenerHistorialVentasVendedor(String correoVendedor) {
 
         // 1. Obtener la entidad Usuario a partir del correo
-        // Este método lanzará UsernameNotFoundException si el correo no existe.
         Usuario vendedor = usuarioService.obtenerPorCorreo(correoVendedor);
         Long vendedorId = vendedor.getId().longValue();
 
@@ -49,7 +48,7 @@ public class IngresosService {
     }
 
     /**
-     * Método auxiliar para transformar la entidad DetalleVentaVendedor a su DTO.
+     * Metodo auxiliar para transformar la entidad DetalleVentaVendedor a su DTO.
      */
     private DetalleVentaVendedorDTO mapToDTO(DetalleVentaVendedor entidad) {
         DetalleVentaVendedorDTO dto = new DetalleVentaVendedorDTO();

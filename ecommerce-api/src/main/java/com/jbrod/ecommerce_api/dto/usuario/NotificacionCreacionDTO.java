@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 
 /**
  * DTO utilizado para la creación de una nueva notificación.
- * Convertido a POJO tradicional.
  */
 public class NotificacionCreacionDTO {
 

@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
 
 import java.security.Principal;
 import java.util.List;
@@ -35,7 +34,7 @@ public class PedidoController {
     }
 
     /**
-     * Obtiene el ID Long del usuario a partir del objeto Principal.
+     * Obtiene el ID Long del usuario a partir del objeto Principal (manejo de usuario de springgg).
      * Replicamos la lógica que tienes en CarritoController.
      */
     private Long obtenerUsuarioIdDePrincipal(Principal principal) {
@@ -50,12 +49,10 @@ public class PedidoController {
         return usuarioId;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
-    //  ENDPOINT: Finalizar Compra (Checkout)
-    // -----------------------------------------------------------------------------------------------------------------
+    //  ENDPOINT: Finalizar Compra  ------------------------------------------------------------------------------------
 
     /**
-     * Endpoint para finalizar la compra (Checkout).
+     * Endpoint para finalizar la compra.
      * Ejecuta la lógica transaccional de creación de pedido, descuento de stock y registro de comisiones.
      * URL: POST /api/pedidos/checkout
      * @param checkoutDto Datos de la compra (tarjeta ID, dirección).
@@ -81,7 +78,7 @@ public class PedidoController {
             // Manejo de errores de autenticación o recursos no encontrados (Usuario/Tarjeta/Carrito)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            // Manejo de errores de lógica de negocio (ej. Stock insuficiente)
+            // Manejo de errores de logica
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             // Manejo de errores generales (incluyendo problemas de transacción/BD)
@@ -104,7 +101,6 @@ public class PedidoController {
             Long usuarioId = obtenerUsuarioIdDePrincipal(principal);
 
             // 2. Ejecutar la lógica para obtener todos los pedidos
-            // La llamada al servicio ahora es compatible con su tipo de retorno (PedidoResumenDto)
             List<PedidoResumenDto> pedidos = pedidoService.obtenerPedidosPorUsuario(usuarioId);
 
             // 3. Devolver la respuesta
@@ -143,7 +139,7 @@ public class PedidoController {
             return ResponseEntity.ok(detalle);
 
         } catch (RecursoNoEncontradoException e) {
-            // Maneja el caso en que el ID no existe o no pertenece al usuario autenticado (seguridad)
+            // Maneja el caso en que el ID no existe o no pertenece al usuario autenticado
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
             // Manejo de errores generales

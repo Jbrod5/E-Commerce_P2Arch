@@ -38,9 +38,8 @@ public class TarjetasController {
                 .orElseThrow(() -> new NoSuchElementException("Usuario autenticado no encontrado en DB con correo: " + correoUsuario));
     }
 
-    // -----------------------------------------------------------------------------------
-    // GET /api/tarjetas: Obtener todas las tarjetas del usuario autenticado
-    // -----------------------------------------------------------------------------------
+
+    // GET /api/tarjetas: Obtener todas las tarjetas del usuario autenticado -------------------------------------------
 
     @GetMapping
     public ResponseEntity<List<TarjetaResponseDto>> obtenerTarjetas(Principal principal) {
@@ -53,9 +52,8 @@ public class TarjetasController {
         }
     }
 
-    // -----------------------------------------------------------------------------------
-    // POST /api/tarjetas: Agregar una nueva tarjeta al usuario autenticado
-    // -----------------------------------------------------------------------------------
+
+    // POST /api/tarjetas: Agregar una nueva tarjeta al usuario autenticado---------------------------------------------
 
     @PostMapping
     public ResponseEntity<?> agregarTarjeta(
@@ -68,14 +66,12 @@ public class TarjetasController {
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Usuario no encontrado.");
         } catch (Exception e) {
-            // Puede capturar Unique Constraint Violations de la DB si el número de tarjeta ya existe
+            // Puede capturar Unique Constraint Violations de la DB si el numero de tarjeta ya existe
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al guardar la tarjeta: " + e.getMessage());
         }
     }
 
-    // -----------------------------------------------------------------------------------
-    // DELETE /api/tarjetas/{id}: Eliminar una tarjeta específica
-    // -----------------------------------------------------------------------------------
+    // DELETE /api/tarjetas/{id}: Eliminar una tarjeta especifica ------------------------------------------------------
 
     @DeleteMapping("/{tarjetaId}")
     public ResponseEntity<?> eliminarTarjeta(
@@ -91,7 +87,7 @@ public class TarjetasController {
         } catch (NoSuchElementException | RecursoNoEncontradoException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            // Error de seguridad: la tarjeta no pertenece al usuario
+            // Error de seguridad: la tarjeta no pertenece al usuario >:c
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage()); // 403 Forbidden
         }
     }

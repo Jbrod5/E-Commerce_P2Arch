@@ -5,7 +5,7 @@ public class DecisionModeracionDto {
     private boolean aprobado;
     private String comentario;
 
-    // Constructor vacío (necesario para algunos frameworks)
+    // Constructor vacío
     public DecisionModeracionDto() {}
 
     // Getters y Setters

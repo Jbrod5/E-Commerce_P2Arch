@@ -39,7 +39,7 @@ public class ModeradorService {
      * @return El objeto Suspension creado.
      * @throws RuntimeException Si el usuario a sancionar no existe o es un empleado.
      */
-    @Transactional // Asegura que ambas operaciones (crear suspensión y desactivar usuario) se hagan o ninguna
+    @Transactional // Asegura que ambas operaciones (crear suspensión y desactivar usuario) se hagan o no se haga ninguna >:c
     public Suspension sancionarUsuario(SuspensionPeticionDto dto, String correoModerador) {
 
         // 1. Obtener el Moderador (quien ejecuta la acción)
@@ -51,12 +51,12 @@ public class ModeradorService {
                 .orElseThrow(() -> new NoSuchElementException("Usuario a sancionar no encontrado con ID: " + dto.getIdUsuarioASuspender()));
 
         // 3. Validar: Solo se puede sancionar a usuarios COMUNES (vendedores)
-        // rol 'comun' tiene ID = 1 o nombre = 'comun'
+        // rol 'comun' tiene ID = 1 o nombre = 'comun' si no cambio la bd pipipi
         if (!"comun".equalsIgnoreCase(usuarioASancionar.getRol().getNombre())) {
             throw new RuntimeException("No se pueden sancionar usuarios que no sean de tipo 'comun' (vendedor).");
         }
 
-        // 4. Actualizar el estado 'activo' del usuario a false
+        // 4. Actualizar el estado 'activo' del usuario a false (o no debería hacer eso???)
         usuarioASancionar.setActivo(false);
         usuarioRepository.save(usuarioASancionar); // Persistir el cambio
 
@@ -80,7 +80,7 @@ public class ModeradorService {
      * @return Lista de DTOs de vendedores.
      */
     public List<UsuarioVendedorDto> obtenerUsuariosVendedores() {
-        // Asumimos que el rol 'comun' tiene ID = 1, basándonos en tu script SQL.
+        // rol 'comun' tiene ID = 1 si no lo cambio despues xd
         final Integer ID_ROL_COMUN = 1;
 
         List<Usuario> vendedores = usuarioRepository.findByRolId(ID_ROL_COMUN);
@@ -118,7 +118,7 @@ public class ModeradorService {
     @Transactional
     public void levantarSuspension(Long idUsuario, String correoModerador) {
         System.out.println("Se intentara levantar la sancion del usuario: " + idUsuario);
-        // 1. Obtener el Moderador (quien ejecuta la acción) - Opcional para logs, pero buena práctica
+        // 1. Obtener el Moderador (quien ejecuta la acción)
         Usuario moderador = usuarioRepository.findByCorreo(correoModerador)
                 .orElseThrow(() -> new NoSuchElementException("Moderador autenticado no encontrado."));
 
@@ -126,25 +126,24 @@ public class ModeradorService {
         Usuario usuarioAActivar = usuarioRepository.findById(idUsuario.intValue())
                 .orElseThrow(() -> new NoSuchElementException("Usuario a reactivar no encontrado con ID: " + idUsuario));
 
-        // 3. Validar si está inactivo por suspensión
+        // 3. Validar si esta inactivo por suspensión
         if (usuarioAActivar.getActivo()) {
             // Se puede considerar un caso de éxito si ya está activo
             return;
-            // O lanzar una excepción si se espera que esté sancionado:
         }else{
             //para evitar problemas mejor reactivar xd
             usuarioAActivar.setActivo(true);
             usuarioRepository.save(usuarioAActivar);
         }
 
-        // 4. Buscar la Suspensión ACTIVA del usuario (debe haber solo una si alguien no toco la base de datos >:c)
+        // 4. Buscar la suspndsn activc del usuario (debe haber solo una si alguien no toco la base de datos >:c VERDADDD???)
         Suspension suspensionActiva = suspensionRepository.findByUsuarioSancionadoIdAndActivaTrue(idUsuario)
                 .orElseThrow(() -> new NoSuchElementException("No se encontró una suspensión activa para el usuario con ID: " + idUsuario));
 
 
         // 5. Marcar la suspensión como inactiva (finalizada)
         suspensionActiva.setActiva(false);
-        // Opcional: Actualizar la fecha de fin a la fecha actual si se levanta antes del tiempo
+        // Actualizar la fecha de fin a la fecha actual si se levanta antes del tiempo
         if (suspensionActiva.getFechaFin().isAfter(LocalDateTime.now())) {
             suspensionActiva.setFechaFin(LocalDateTime.now());
         }

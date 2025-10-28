@@ -18,12 +18,12 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Clave secreta fuerte (debe estar en application.properties, pero la ponemos aquí temporalmente)
-    //Ahora se encripta en EncriptadorContraseñas xd
+    // Clave secreta fuerte
+    // Se encripta en EncriptadorContraseñas xd
     //private static final String CLAVE_SECRETA = "TRES_TRISTES_tigres_tragaban_trigo_en_un_trigalllllll:333333";
     private static final String SECRET_KEY = "VFJFU19UUklTVEVTX3RpZ3Jlc190cmFnYWJhbl90cmlnb19lbl91bl90cmlnYWxsbGxsbGw6MzMzMzMz";
 
-    // Tiempo de expiración del token (1 dia en milisegundos - mil milisegundos * 60 segundos * 60 minutos * 24 horas)
+    // Tiempo de expiración del token (1 dia en milisegundossss - mil milisegundos * 60 segundos * 60 minutos * 24 horas)
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
     /**
@@ -37,7 +37,7 @@ public class JwtService {
                 .orElse("ROLE_DEFAULT");
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("rol", roles); // Añadimos el rol a los claims del token
+        claims.put("rol", roles); // Añadir el rol a los claims del token
 
         return construirToken(claims, userDetails);
     }
@@ -57,7 +57,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // --- Métodos de Validación (Necesarios para la Seguridad) ---
+    // --- Metodos de Validacion  --------------------------------------------------------------------------------------
 
     /**
      * 2. Extrae el correo (username) del token.
@@ -74,7 +74,7 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    // ... otros métodos auxiliares para Claims (puedes dejarlos o agregarlos según necesites) ...
+    // metodos auxiliares para Claims
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

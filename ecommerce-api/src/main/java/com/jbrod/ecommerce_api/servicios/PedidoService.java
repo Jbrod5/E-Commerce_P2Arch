@@ -37,7 +37,6 @@ public class PedidoService {
     // 5% de comisión para la plataforma
     private static final BigDecimal COMISION_PLATAFORMA = new BigDecimal("0.05");
 
-    // ... (Inyección de dependencias existentes)
     @Autowired private CarritoRepository carritoRepository;
     @Autowired private DetalleCarritoRepository detalleCarritoRepository;
     @Autowired private ProductoRepository productoRepository;
@@ -49,18 +48,17 @@ public class PedidoService {
     @Autowired private RecaudacionPlataformaRepository recaudacionPlataformaRepository;
 
     /**
-     * Procesa la compra de un usuario: valida stock, crea el pedido, actualiza inventario
-     * y registra ventas/comisiones.
+     * Procesa la compra de un usuario: valida stock, crea el pedido, actualiza inventari y registra ventas/comisiones.
      * * @param usuarioId ID del usuario que compra (obtenido del token JWT)
      * @param checkoutDto Datos de la compra (tarjeta, dirección)
      * @return PedidoResponseDto de la compra exitosa.
      */
-    @Transactional(rollbackFor = Exception.class) // Aseguramos que cualquier excepción revierta todo.
+    @Transactional(rollbackFor = Exception.class)
     public PedidoResponseDto procesarCheckout(Long usuarioId, CheckoutRequestDto checkoutDto) {
 
-        // --- 1. OBTENER Y VALIDAR RECURSOS ---
+        // --- 1. OBTENER Y VALIDAR RECURSOSSSS ------------------------------------------------------------------------
 
-        // Obtener Carrito y verificar ítems
+        // Obtener Carrito y verificar items
         Carrito carrito = carritoRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Carrito", usuarioId));
 
@@ -77,10 +75,10 @@ public class PedidoService {
         EstadoPedido estadoInicial = estadoPedidoRepository.findById(1)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Estado Pedido Inicial", 1L));
 
-        // Calcular el monto total y validar stock final antes de proceder
+        // Calcular el monto total y validar stock final antes de proceder :3
         BigDecimal montoTotal = BigDecimal.ZERO;
 
-        // PRE-VERIFICACIÓN DE STOCK (CRÍTICOOOOOOOOOOOOOOOOO)
+        // PRE-VERIFICACIÓN DE STOCKKKKKKKKKKKKKK
         for (DetalleCarrito item : items) {
             Producto producto = item.getProducto();
 
@@ -93,7 +91,7 @@ public class PedidoService {
             montoTotal = montoTotal.add(subtotal);
         }
 
-        // --- 2. CREAR Y GUARDAR LA ENTIDAD PEDIDO ---
+        // 2. CREAR Y GUARDAR LA ENTIDAD PEDIDO
 
         Pedido pedido = new Pedido();
         pedido.setUsuarioId(usuarioId);
@@ -101,13 +99,13 @@ public class PedidoService {
         pedido.setTarjetaUsada(tarjetaUsada);
         pedido.setEstado(estadoInicial);
         pedido.setDireccion(checkoutDto.getDireccion());
-        // Estimamos la entrega para 3 días después
+        // Estimamos la entrega para 3 días después :333
         pedido.setFechaEntregaEstimada(LocalDateTime.now().plusDays(3));
         pedido.setFechaRealizacion(LocalDateTime.now());
 
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
 
-        // --- 3. PROCESAR ÍTEMS, INVENTARIO Y COMISIONES ---
+        // 3. PROCESAR ÍTEMS, INVENTARIO Y COMISIONES
 
         for (DetalleCarrito item : items) {
             Producto producto = item.getProducto();
@@ -115,7 +113,7 @@ public class PedidoService {
             BigDecimal precioUnitario = item.getPrecioUnitario().setScale(2, RoundingMode.HALF_UP);
             BigDecimal subtotal = precioUnitario.multiply(cantidadDecimal).setScale(2, RoundingMode.HALF_UP);
 
-            // 3a. Guardar en lista_producto_pedido (Copia del carrito al pedido)
+            // a. Guardar en lista_producto_pedido (Copia del carrito al pedido)
             ListaProductoPedido listaItem = new ListaProductoPedido();
             listaItem.setPedido(pedidoGuardado);
             listaItem.setProducto(producto);
@@ -124,12 +122,12 @@ public class PedidoService {
             listaItem.setSubtotal(subtotal);
             listaProductoPedidoRepository.save(listaItem);
 
-            // 3b. Actualizar Stock e historial de compras del Producto (Inventario)
+            // b. Actualizar Stock e historial de compras del Producto (Inventario)
             producto.setStock(producto.getStock() - item.getCantidad());
             producto.setCantidadCompras(producto.getCantidadCompras() + item.getCantidad());
             productoRepository.save(producto); // Guarda el cambio de stock
 
-            // 3c. Calcular y Guardar Detalle de Venta (Vendedor y Plataforma)
+            // c. Calcular y Guardar Detalle de Venta (Vendedor y Plataforma)
             BigDecimal comisionMonto = subtotal.multiply(COMISION_PLATAFORMA).setScale(2, RoundingMode.HALF_UP);
             BigDecimal gananciaVendedor = subtotal.subtract(comisionMonto).setScale(2, RoundingMode.HALF_UP);
 
@@ -146,7 +144,7 @@ public class PedidoService {
 
             detalleVentaVendedorRepository.save(detalleVenta);
 
-            // 3d. Guardar Recaudación de la Plataforma (Registro de Ingreso)
+            // d. Guardar Recaudación de la Plataforma (Registro de Ingreso)
             RecaudacionPlataforma recaudacion = new RecaudacionPlataforma();
             recaudacion.setMonto(comisionMonto);
             recaudacion.setDescripcion("Comisión (5%) por venta del producto '" + producto.getNombre() + "' en Pedido #" + pedidoGuardado.getId());
@@ -154,12 +152,12 @@ public class PedidoService {
             recaudacionPlataformaRepository.save(recaudacion);
         }
 
-        // --- 4. LIMPIEZA ---
+        // 4. LIMPIEZA DEL CARRITOOO
 
-        // Eliminar todos los detalles del carrito. El carrito queda vacío pero la entidad existe.
+        // Eliminar todos los detalles del carrito. El carrito queda vacío pero la entidad existe :3.
         detalleCarritoRepository.deleteByCarritoId(carrito.getIdCarrito());
 
-        // --- 5. DEVOLVER RESPUESTA ---
+        // 5. DEVOLVER RESPUESTA
 
         PedidoResponseDto responseDto = new PedidoResponseDto();
         responseDto.setIdPedido(pedidoGuardado.getId());
@@ -185,7 +183,7 @@ public class PedidoService {
      */
     @Transactional
     public List<PedidoResumenDto> obtenerPedidosPorUsuario(Long usuarioId) {
-        // Usamos el método de seguridad que creamos en PedidoRepository
+        // Buscar pedidosss
         List<Pedido> pedidos = pedidoRepository.findByUsuarioIdOrderByFechaRealizacionDesc(usuarioId);
 
         // Mapeamos las entidades a los DTOs de resumen
@@ -206,9 +204,7 @@ public class PedidoService {
     }
 
 
-    // -----------------------------------------------------------------------------------
-    // NUEVO: OBTENER DETALLE DE PEDIDO
-    // -----------------------------------------------------------------------------------
+
     /**
      * Obtiene el detalle de un pedido específico, validando que pertenezca al usuario.
      * @param pedidoId ID del pedido.
@@ -218,11 +214,11 @@ public class PedidoService {
     @Transactional
     public PedidoDetalleDto obtenerDetallePedido(Long pedidoId, Long usuarioId) {
 
-        // 1. BUSCAR PEDIDO Y VALIDAR PROPIEDAD (SEGURIDAD CRÍTICA)
+        // 1. BUSCAR PEDIDO Y VALIDAR PROPIEDAD AAAAAAAAAAA
         Pedido pedido = pedidoRepository.findByIdAndUsuarioId(pedidoId, usuarioId)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Pedido", pedidoId));
 
-        // 2. MAPEAR A DTO DE DETALLE
+        // 2. mapear s dto detalle
         return mapearADetalle(pedido);
     }
 
@@ -238,8 +234,8 @@ public class PedidoService {
         detalleDto.setFechaEntregaReal(pedido.getFechaEntregaReal());
         detalleDto.setDireccion(pedido.getDireccion());
 
-        // 3. OBTENER PARTE VISIBLE DE LA TARJETA (JOIN IMPLÍCITO)
-        // La entidad Pedido tiene la referencia a la Tarjeta (tarjeta_usada)
+        // 3. OBTENER PARTE VISIBLE DE LA TARJETA
+        // La entidad Pedido tiene la referencia a la Tarjeta (creo xd)
         Tarjetas tarjeta = tarjetasRepository.findById(pedido.getTarjetaUsada().getId())
                 .orElse(null);
 
@@ -250,7 +246,6 @@ public class PedidoService {
         }
 
         // 4. MAPEAR ITEMS DEL PEDIDO
-        // Asumo que la entidad Pedido tiene un getItems() que devuelve List<ListaProductoPedido>
         List<ListaProductoPedido> items = pedido.getItems();
 
 

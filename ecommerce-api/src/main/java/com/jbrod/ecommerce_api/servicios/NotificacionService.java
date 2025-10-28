@@ -20,7 +20,7 @@ public class NotificacionService {
     private final UsuarioService usuarioService;
     private final EmailService emailService;
 
-    // Solo se inyecta NotificacionRepository y UsuarioService
+
     public NotificacionService(NotificacionRepository notificacionRepository, UsuarioService usuarioService, EmailService emailService) {
         this.notificacionRepository = notificacionRepository;
         this.usuarioService = usuarioService;
@@ -29,9 +29,7 @@ public class NotificacionService {
 
     /**
      * Genera y guarda una nueva notificación.
-     * Este método se usaría internamente.
-     * Se cambió el parámetro de 'idUsuario' a 'correoDestinatario'.
-     * * @param correoDestinatario Correo del destinatario.
+     * @param correoDestinatario Correo del destinatario.
      * @param titulo Título de la notificación.
      * @param cuerpo Contenido.
      * @return Notificacion creada.
@@ -56,18 +54,17 @@ public class NotificacionService {
 
     /**
      * Obtiene la lista de notificaciones para el usuario autenticado.
-     * Nota: Usamos usuarioService.obtenerUsuarioPorCorreo().
      * @param correoUsuario Correo del usuario autenticado (Principal).
      * @return Lista de NotificacionListDTO.
      */
     public List<NotificacionListDTO> obtenerNotificacionesPorUsuario(String correoUsuario) {
-        // Usamos obtenerUsuarioPorCorreo, el cual existe y devuelve Optional
+        // Buscar usuario con obtenerUsuarioPorCorreo, obviamente usando el correo del usuario zd
         Usuario usuario = usuarioService.obtenerUsuarioPorCorreo(correoUsuario)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con correo: " + correoUsuario));
 
         List<Notificacion> notificaciones = notificacionRepository.findByUsuarioIdOrderByFechaDesc(usuario.getId());
 
-        // Asegúrate de usar los DTOs convertidos a POJO si es necesario (asumimos que ya lo hiciste)
+
         return notificaciones.stream()
                 .map(n -> new NotificacionListDTO(n.getId(), n.getTitulo(), n.getFecha(), n.getLeida()))
                 .collect(Collectors.toList());
@@ -78,11 +75,11 @@ public class NotificacionService {
      * Nota: Usamos usuarioService.obtenerUsuarioPorCorreo().
      */
     public long contarNoLeidas(String correoUsuario) {
-        // Usamos obtenerUsuarioPorCorreo, el cual existe y devuelve Optional
+        // Buscar usuario por correo
         Usuario usuario = usuarioService.obtenerUsuarioPorCorreo(correoUsuario)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con correo: " + correoUsuario));
 
-        // Nota: Si la lista es muy grande, sería mejor un método `countBy...` en el repositorio
+        //Retornar
         return notificacionRepository.findByUsuarioIdAndLeidaOrderByFechaDesc(usuario.getId(), false).size();
     }
 
@@ -98,7 +95,7 @@ public class NotificacionService {
         Notificacion notificacion = notificacionRepository.findById(idNotificacion)
                 .orElseThrow(() -> new NoSuchElementException("Notificación no encontrada con ID: " + idNotificacion));
 
-        // Validación de propiedad: Asegurarse de que el usuario autenticado es el destinatario
+        // Asegurarse de que el usuario autenticado es el destinatario xd
         if (!notificacion.getUsuario().getCorreo().equals(correoUsuario)) {
             throw new SecurityException("Acceso denegado: La notificación no pertenece a este usuario.");
         }

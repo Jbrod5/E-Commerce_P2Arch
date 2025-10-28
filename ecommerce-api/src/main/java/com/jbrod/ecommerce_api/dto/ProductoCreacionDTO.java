@@ -31,13 +31,11 @@ public class ProductoCreacionDTO {
     private Boolean esNuevo;
 
     @NotNull(message = "La categoría es obligatoria.")
-    private Long idCategoria; // Solo recibimos el ID de la categoría
+    private Long idCategoria; // Solo recibimos el ID de la categoría :3
 
-    // *************************************************************
-    // CAMBIO CLAVE: Nuevo campo para recibir la imagen Base64
-    // *************************************************************
+
     @NotBlank(message = "La imagen en formato Base64 es obligatoria.")
-    private String imagenBase64;
+    private String imagenBase64; //imagen en base64xd
 
     // --- Getters y Setters ---
 
@@ -97,9 +95,8 @@ public class ProductoCreacionDTO {
         this.idCategoria = idCategoria;
     }
 
-    // *************************************************************
-    // Getter y Setter para Base64
-    // *************************************************************
+
+
     public String getImagenBase64() {
         return imagenBase64;
     }

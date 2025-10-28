@@ -11,14 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-// IMPORTACIÓN ELIMINADA: import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Controlador para la gestión de Productos (CRUD básico para vendedores y consultas).
+ * Controlador para la gestión de Productos.
  */
 @RestController
 @RequestMapping("/api/productos")
@@ -52,22 +51,18 @@ public class ProductoController {
         String correoVendedor = authentication.getName();
 
         try {
-            // Llama al servicio. El servicio ahora debe manejar la decodificación del Base64
-            // (dto.getImagenBase64()) y el guardado en DB.
-            // Necesitarás actualizar la firma de tu servicio para que ya no reciba MultipartFile.
-
-            // ASUMO que tu servicio necesita ser corregido, aquí llamamos a un nuevo método:
+            // Llama al servicio. El servicio debe manejar la decodificación del Base64 :3
             Producto nuevoProducto = productoServicio.crearProductoBase64(dto, correoVendedor);
             return new ResponseEntity<>(nuevoProducto, HttpStatus.CREATED);
         } catch (IOException e) {
-            // Error en la subida del archivo (ej. fallo al escribir en disco)
+            // Error en la subida del archivo (fallo al escribir en disco o algo así)
             System.err.println("Error al decodificar o guardar imagen Base64: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // 400 Bad Request
         } catch (NoSuchElementException e) {
-            // Error de lógica (ej. Vendedor o Categoría no encontrados)
+            // Error interno (Vendedor o Categoría no encontrados)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
         } catch (IllegalStateException e) {
-            // Error de configuración (ej. Estado 'pendiente' no existe en DB)
+            // Error de configuración
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500
         } catch (IllegalArgumentException e) {
             // Captura si el Base64 no es válido
@@ -92,7 +87,7 @@ public class ProductoController {
             }
             return ResponseEntity.ok(productos);
         } catch (IllegalStateException e) {
-            // Este catch maneja si el estado 'aprobado' no existe en la DB (problema de configuración)
+            // maneja si el estado 'aprobado' no existe en la DB (aunque no dberia >:c)
             System.err.println("Error de configuración de estados: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -111,7 +106,7 @@ public class ProductoController {
         try {
             String correoUsuario = authentication.getName();
 
-            // Llama al servicio para obtener la lista de productos de ese usuario
+            // Llama al servicio para obtener la lista de productos de ese usuario :3
             List<Producto> productos = productoServicio.obtenerProductosPorVendedor(correoUsuario);
             for(Producto producto: productos){
                 producto.setImagenUrl(configuracionGlobalService.convertirUrlImagen(producto.getImagenUrl()));
@@ -119,14 +114,15 @@ public class ProductoController {
 
             return ResponseEntity.ok(productos);
         } catch (NoSuchElementException e) {
-            // Si el usuario autenticado no existe en la base de datos (muy improbable), devolvemos 404
+            // Si el usuario autenticado no existe en la base de datos (
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
 
 
-    // Reseñas y vista de producto:
+    // Reseñas y vista de producto -------------------------------------------------------------------------------------
+
     /**
      * Endpoint para obtener el detalle completo de un producto por su ID.
      * Incluye información de vendedor y lista de reseñas.
@@ -141,10 +137,10 @@ public class ProductoController {
             ProductoDetalleDto detalle = productoServicio.obtenerDetalleProducto(id);
             return ResponseEntity.ok(detalle);
         } catch (NoSuchElementException e) {
-            // Producto no encontrado o no aprobado (depende de la lógica del Service)
+            // Producto no encontrado o no aprobado
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            // Por ejemplo, si el Service filtra por estado 'aprobado' y falla.
+            // Si el Service filtra por y falla.
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             System.err.println("Error al obtener detalle del producto: " + e.getMessage());
@@ -171,7 +167,7 @@ public class ProductoController {
             // Llama al servicio para procesar la calificación (crear o actualizar)
             productoServicio.calificarProducto(id, correoUsuario, dto);
 
-            // Devuelve éxito. No necesitamos devolver la entidad completa.
+            // Devuelve éxito - No necesitamos devolver la entidad completa :3
             return ResponseEntity.ok("Reseña registrada/actualizada exitosamente. El promedio del producto ha sido recalculado.");
 
         } catch (NoSuchElementException e) {

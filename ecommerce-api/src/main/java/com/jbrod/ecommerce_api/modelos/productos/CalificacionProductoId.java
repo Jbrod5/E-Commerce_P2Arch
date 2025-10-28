@@ -12,7 +12,7 @@ public class CalificacionProductoId implements Serializable {
     // Mapea la columna 'producto' (FK a producto)
     private Long producto;
 
-    // Mapea la columna 'usuario' (FK a usuario). Usamos Long para consistencia con otras FKs de usuario.
+    // Mapea la columna 'usuario' (FK a usuario).
     private Integer usuario;
 
     public CalificacionProductoId() {}
@@ -22,9 +22,8 @@ public class CalificacionProductoId implements Serializable {
         this.usuario = usuario;
     }
 
-    // --- Getters, Setters, y Métodos Requeridos (equals y hashCode) ---
 
-    // JPA requiere que las claves compuestas implementen equals() y hashCode()
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

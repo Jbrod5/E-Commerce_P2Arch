@@ -38,9 +38,8 @@ public class AutenticacionController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // --------------------------------------------------------------------------
-    // --- ENDPOINT DE LOGIN ---
-    // --------------------------------------------------------------------------
+    // --- ENDPOINT DE LOGIN -------------------------------------------------------------------------------------------
+
 
     /**
      * Endpoint para el inicio de sesion (Login).
@@ -50,11 +49,11 @@ public class AutenticacionController {
     public ResponseEntity<Map<String, Object>> autenticarUsuario(@RequestBody CredencialesPeticion credenciales) {
 
         try {
-            // 1. Crear el token con las credenciales recibidas.
+            // 1. Crear el token con las credenciales recibidas
             Authentication authenticationToken =
                     new UsernamePasswordAuthenticationToken(credenciales.getCorreo(), credenciales.getContrasena());
 
-            // 2. Intentar autenticar.
+            // 2. Intentar autenticar
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
             // 3. Obtener los detalles del usuario
@@ -68,7 +67,7 @@ public class AutenticacionController {
             respuesta.put("token", jwt);
             respuesta.put("tipo", "Bearer");
 
-            // Opcional: Agregar el correo y rol
+            // Agregar info util como el correo y rol
             respuesta.put("correo", userDetails.getUsername());
             respuesta.put("rol", userDetails.getAuthorities().iterator().next().getAuthority());
             respuesta.put("nombre", usuarioService.obtenerPorCorreo(userDetails.getUsername()).getNombre());
@@ -78,7 +77,7 @@ public class AutenticacionController {
             return ResponseEntity.ok(respuesta);
 
         } catch (AuthenticationException e) {
-            // 7. Manejo de Error de autenticación (401 Unauthorized)
+            // 7. Manejo de Error de autenticacion
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Credenciales inválidas");
             errorResponse.put("mensaje", "Acceso denegado. Verifique su correo y contraseña.");
@@ -87,9 +86,9 @@ public class AutenticacionController {
         }
     }
 
-    // --------------------------------------------------------------------------
-    // --- ENDPOINT DE REGISTRO ---
-    // --------------------------------------------------------------------------
+
+    // --- ENDPOINT DE REGISTRO ----------------------------------------------------------------------------------------
+
 
     /**
      * Endpoint para el registro de nuevos usuarios.
@@ -104,10 +103,10 @@ public class AutenticacionController {
             // Llama al servicio para codificar la contraseña, asignar rol y guardar
             Usuario usuarioGuardado = usuarioService.registrarNuevoUsuario(nuevoUsuario);
 
-            // Buena práctica: Limpiar la contraseña antes de devolver el objeto
+            // Limpiar la contraseña antes de devolver el objeto
             usuarioGuardado.setContrasena(null);
 
-            // Retorna un estado 201 CREATED con el objeto del usuario creado
+            // Retorna un estado 201 CREATED con el objeto del usuario creado :3
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioGuardado);
 
         } catch (RuntimeException e) {

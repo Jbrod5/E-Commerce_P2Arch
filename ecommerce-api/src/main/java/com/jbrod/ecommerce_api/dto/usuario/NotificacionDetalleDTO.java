@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 /**
  * DTO utilizado para la vista de detalle de una notificación.
- * Convertido a POJO tradicional.
  */
 public class NotificacionDetalleDTO {
     private Long id;
@@ -24,7 +23,6 @@ public class NotificacionDetalleDTO {
         this.leida = leida;
     }
 
-    // Constructor vacío
     public NotificacionDetalleDTO() {}
 
     // Getters y Setters

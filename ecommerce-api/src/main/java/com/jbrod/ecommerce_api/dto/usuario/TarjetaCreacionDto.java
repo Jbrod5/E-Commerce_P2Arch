@@ -26,7 +26,7 @@ public class TarjetaCreacionDto {
 
     @NotNull(message = "El año de vencimiento es obligatorio.")
     // Asume que solo acepta tarjetas válidas por 10 años desde 2024
-    @Min(value = 2024, message = "Año de vencimiento inválido.")
+    @Min(value = 2000, message = "Año de vencimiento inválido.")
     @Max(value = 2034, message = "Año de vencimiento inválido.")
     private Integer anioVencimiento;
 

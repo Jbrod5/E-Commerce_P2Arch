@@ -35,7 +35,7 @@ public class SolicitudPendienteDto {
         return dto;
     }
 
-    // --- Getters y Setters (Necesarios para JSON serialization) ---
+    // --- Getters y Setters ---
 
     public Long getIdProducto() {
         return idProducto;

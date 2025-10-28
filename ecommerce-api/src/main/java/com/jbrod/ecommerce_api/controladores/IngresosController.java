@@ -19,7 +19,7 @@ public class IngresosController {
 
     private final IngresosService ingresosService;
 
-    // Inyección de dependencia a través del constructor
+    // Inyección de dependencia a través del constructorr
     @Autowired
     public IngresosController(IngresosService ingresosService) {
         this.ingresosService = ingresosService;
@@ -29,7 +29,7 @@ public class IngresosController {
      * GET /api/ingresos/vendedor/{correoVendedor}
      * Endpoint para obtener el historial de ventas detallado de un vendedor,
      * identificado por su correo electrónico (ya que este es el identificador de sesión).
-     * * @param correoVendedor El correo del usuario vendedor (ej: "vendedor@test.com").
+     * * @param correoVendedor El correo del usuario vendedor.
      * @return 200 OK con la lista de ventas, 204 No Content si la lista está vacía,
      * o 404 Not Found si el correo no existe.
      */

@@ -9,9 +9,6 @@ public class PedidoResponseDto {
     private BigDecimal montoTotal;
     private String direccion;
     private LocalDateTime fechaEntregaEstimada;
-    // Opcional: Podrías añadir detalles de los ítems o el estado, pero estos son los básicos de confirmación.
-
-    // --- Getters y Setters ---
 
     public Long getIdPedido() {
         return idPedido;
