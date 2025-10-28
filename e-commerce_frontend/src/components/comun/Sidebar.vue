@@ -10,14 +10,6 @@
       E-COMMERCE
     </router-link>
 
-    <div class="mb-4">
-      <input
-        type="search"
-        class="form-control form-control-sm bg-secondary border-0 text-white"
-        placeholder="Buscar productos..."
-        aria-label="Search"
-      />
-    </div>
 
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
@@ -38,6 +30,21 @@
       </li>
 
       <div class="flex-grow-1"></div>
+
+      <li>
+        <router-link
+          :to="{ name: 'Notificaciones' }"
+          class="nav-link text-white text-start mb-2 d-flex justify-content-between align-items-center"
+          active-class="active"
+        >
+          <div><i class="bi bi-bell me-2"></i> Notificaciones</div>
+
+        </router-link>
+      </li>
+
+
+
+
     </ul>
 
     <hr class="text-white-50" />

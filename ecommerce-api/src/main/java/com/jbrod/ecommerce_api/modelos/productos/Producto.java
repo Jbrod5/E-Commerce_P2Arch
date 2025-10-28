@@ -49,7 +49,7 @@ public class Producto {
     // Relación con Categoria (categoria)
     @ManyToOne
     @JoinColumn(name = "categoria", nullable = false)
-    @JsonBackReference("categoria-productos") // Rompe el ciclo Categoria <-> Producto >:c
+    //@JsonBackReference("categoria-productos") // Rompe el ciclo Categoria <-> Producto >:c
     private Categoria categoria;
 
     // --- CAMBIOOOOOO 2: Usar BigDecimal para promedio_calificaciones ---

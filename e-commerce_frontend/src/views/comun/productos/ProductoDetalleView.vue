@@ -132,12 +132,6 @@ onMounted(() => {
 
 <template>
   <div class="container py-5">
-    <router-link
-      :to="{ name: 'vendedor-dashboard' }"
-      class="btn btn-outline-secondary btn-sm mb-4"
-    >
-      <i class="bi bi-arrow-left me-2"></i> Volver al Catálogo
-    </router-link>
 
     <div v-if="isLoading" class="text-center p-5">
       <div class="spinner-border text-primary" role="status"></div>
